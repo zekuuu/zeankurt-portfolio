@@ -991,3 +991,42 @@ body {
   body { cursor: auto; }
   a, button { cursor: auto; }
 }
+
+/* DEV/STATION showcase badge */
+.devstation-floating-badge {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: flex-end;
+  text-decoration: none;
+  transform: translateY(-50%);
+}
+
+.devstation-floating-badge img {
+  display: block;
+  width: 36px;
+  height: 130px;
+}
+
+.devstation-floating-badge:focus-visible {
+  outline: 2px solid var(--blue-300);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .devstation-floating-badge img {
+    width: 30px;
+    height: auto;
+  }
+}
+
+@media print {
+  .devstation-floating-badge {
+    display: none;
+  }
+}

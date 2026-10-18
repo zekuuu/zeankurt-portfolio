@@ -14,6 +14,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { getPortfolioContent } from "@/lib/cms/queries";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GlobalScrollManager } from "@/components/layout/GlobalScrollManager";
+import { DevStationBadge } from "@/components/ui/DevStationBadge";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -69,6 +70,7 @@ export default async function RootLayout({
             {children}
 
             <Footer siteConfig={siteConfig} />
+            <DevStationBadge />
             <ScrollToTopButton />
             <MobileViewingTip />
             <SavingIndicator />
