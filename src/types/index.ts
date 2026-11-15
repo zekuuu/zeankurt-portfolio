@@ -35,6 +35,8 @@ export interface Project {
   featured: boolean;
   /** Optional status badge shown on the card */
   status?: "wip" | "archived" | "live";
+  /** ISO timestamp from the CMS, used for sitemap lastModified. */
+  updatedAt?: string;
 }
 
 export interface SkillCategory {

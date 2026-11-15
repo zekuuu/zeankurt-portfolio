@@ -26,6 +26,12 @@ function formatEventDate(value: string) {
   });
 }
 
+// The GitHub account was renamed from xKurty06 to zekuuu. GitHub redirects old
+// links, but canonical URLs keep the entity signals consistent.
+function normalizeGithubUrl(url: string | null) {
+  return url?.replace(/github\.com\/xKurty06\//i, "github.com/zekuuu/") || undefined;
+}
+
 export function mapProject(row: CmsProjectRow): Project {
   return {
     slug: row.slug,
@@ -33,7 +39,7 @@ export function mapProject(row: CmsProjectRow): Project {
     description: row.description,
     longDescription: row.long_description ?? undefined,
     tags: row.tags ?? [],
-    githubUrl: row.github_url ?? undefined,
+    githubUrl: normalizeGithubUrl(row.github_url),
     liveUrl: row.live_url ?? undefined,
     image: row.image_path ?? "",
     imageSeed: row.image_seed || row.slug,
@@ -41,6 +47,7 @@ export function mapProject(row: CmsProjectRow): Project {
     role: row.role,
     featured: row.featured,
     status: row.status ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
   };
 }
 

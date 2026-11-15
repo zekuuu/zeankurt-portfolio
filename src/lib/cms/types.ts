@@ -34,6 +34,7 @@ export interface CmsProjectRow {
   status: Project["status"] | null;
   sort_order: number | null;
   published: boolean;
+  updated_at?: string | null;
 }
 
 export interface CmsExperienceRow {

@@ -160,7 +160,7 @@ async function fetchPortfolioContent(): Promise<PortfolioContent> {
 
   const experience = uniqueBy(
     ((experienceResult.data ?? []) as CmsExperienceRow[]).map(mapExperience),
-    (item) => item.id,
+    (item) => `${item.organization}|${item.role}`.toLowerCase(),
   );
 
   const certifications = uniqueBy(
