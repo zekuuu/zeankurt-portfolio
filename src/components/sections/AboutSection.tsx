@@ -10,6 +10,7 @@ import { FlickeringGrid } from "@/components/ui/FlickeringGridHero";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { useLowMotionDevice } from "@/hooks/useLowMotionDevice";
+import { identity } from "@/lib/identity";
 import type { Certification, EventHighlight, Project, SkillCategory } from "@/types";
 
 type CounterData = {
@@ -18,13 +19,13 @@ type CounterData = {
   prefix?: string;
 };
 
-type CounterLabel = "Projects" | "Events" | "Education" | "Creative";
+type CounterLabel = "Projects" | "Events" | "Education" | "Hackathons";
 
 const ABOUT_HIGHLIGHTS: Array<{ label: CounterLabel; value: string }> = [
   { label: "Projects", value: "Featured builds" },
   { label: "Events", value: "Community work" },
   { label: "Education", value: "Verified learning" },
-  { label: "Creative", value: "Photo/video sets" },
+  { label: "Hackathons", value: "Builds & awards" },
 ];
 
 function AboutAccent({ children }: { children: ReactNode }) {
@@ -35,8 +36,23 @@ function WarmAccent({ children }: { children: ReactNode }) {
   return <strong className="emphasis-glow-gold font-semibold">{children}</strong>;
 }
 
-function RoseAccent({ children }: { children: ReactNode }) {
-  return <strong className="emphasis-glow-rose font-semibold">{children}</strong>;
+const ACCENTS: Array<[string, typeof AboutAccent]> = [
+  ["full-stack web developer", AboutAccent],
+  ["Next.js, React, TypeScript, Tailwind CSS, Laravel, Supabase and PostgreSQL", AboutAccent],
+  ["WebX", AboutAccent],
+  ["Best Pivot Award", WarmAccent],
+];
+
+/** Renders bio copy verbatim, wrapping known phrases in accent styles. */
+function withAccents(text: string) {
+  const pattern = new RegExp(
+    `(${ACCENTS.map(([phrase]) => phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
+  );
+
+  return text.split(pattern).map((part, index) => {
+    const Accent = ACCENTS.find(([phrase]) => phrase === part)?.[1];
+    return Accent ? <Accent key={index}>{part}</Accent> : part;
+  });
 }
 
 interface AboutSectionProps {
@@ -44,7 +60,7 @@ interface AboutSectionProps {
   skillCategories: SkillCategory[];
   certifications: Certification[];
   eventHighlights: EventHighlight[];
-  creativePhotoCount: number;
+  hackathonCount: number;
 }
 
 export function AboutSection({
@@ -52,7 +68,7 @@ export function AboutSection({
   skillCategories,
   certifications,
   eventHighlights,
-  creativePhotoCount,
+  hackathonCount,
 }: AboutSectionProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const lowMotion = useLowMotionDevice();
@@ -61,7 +77,7 @@ export function AboutSection({
     Projects: { to: projects.length, suffix: "+ builds" },
     Events: { to: eventHighlights.length, suffix: "+ events" },
     Education: { to: certifications.length, suffix: "+ certs" },
-    Creative: { to: creativePhotoCount, suffix: "+ shoots" },
+    Hackathons: { to: hackathonCount, suffix: "+ hackathons" },
   };
 
   useGSAP(
@@ -139,57 +155,27 @@ export function AboutSection({
             title={
               <>
                 Building{" "}
-                <span className="emphasis-glow-blue">digital products</span>{" "}
-                and{" "}
-                <span className="emphasis-glow-rose">visual stories</span>.
-              </>
-            }
-            description={
-              <>
-                I turn ideas into{" "}
-                <span className="emphasis-glow-blue font-medium">usable web products</span>
-                , creative systems, and{" "}
-                <span className="emphasis-glow-gold font-medium">visual stories</span>{" "}
-                that connect technology with{" "}
-                <span className="emphasis-glow-white font-medium">real communities</span>.
+                <span className="emphasis-glow-blue">full-stack web products</span>.
               </>
             }
           />
 
           <div className="min-w-0">
             <div className="mx-auto max-w-3xl space-y-5 text-center sm:space-y-6 lg:mx-0 lg:max-w-none lg:text-left">
-              <p
-                data-about-para
-                className="text-base leading-8 text-[var(--foreground-muted)] sm:text-[1.05rem] sm:leading-8"
-                style={{ perspective: 600 }}
-              >
-                I work across <AboutAccent>full-stack development</AboutAccent>, Web3 experiments,
-                and creative production, building interfaces that feel fast, clear, and useful.
-                Most of my work sits where product thinking, engineering, and visual storytelling
-                need to meet.
-              </p>
-
-              <p
-                data-about-para
-                className="text-base leading-8 text-[var(--foreground-muted)] sm:text-[1.05rem] sm:leading-8 lg:border-l lg:border-[rgba(72,202,228,0.32)] lg:pl-5"
-                style={{ perspective: 600 }}
-              >
-                Recent work includes <AboutAccent>portfolio designs</AboutAccent>, <AboutAccent>campus projects,</AboutAccent>{" "}
-                <WarmAccent>hackathon builds</WarmAccent>, blockchain community projects,{" "}
-                <RoseAccent>event coverage</RoseAccent>, and branded visual assets for teams that
-                need both technical execution and stronger presentation.
-              </p>
-
-              <p
-                data-about-para
-                className="text-base leading-8 text-[var(--foreground-muted)] sm:text-[1.05rem] sm:leading-8"
-                style={{ perspective: 600 }}
-              >
-                Outside the code editor, I shoot and edit photos and videos through{" "}
-                <span className="emphasis-glow-rose font-semibold">Studio Nomads</span>, which keeps
-                my frontend work grounded in composition, pacing, contrast, and how people scan a
-                story on screen.
-              </p>
+              {identity.bios.long.map((paragraph, index) => (
+                <p
+                  key={index}
+                  data-about-para
+                  className={
+                    index === 1
+                      ? "text-base leading-8 text-[var(--foreground-muted)] sm:text-[1.05rem] sm:leading-8 lg:border-l lg:border-[rgba(72,202,228,0.32)] lg:pl-5"
+                      : "text-base leading-8 text-[var(--foreground-muted)] sm:text-[1.05rem] sm:leading-8"
+                  }
+                  style={{ perspective: 600 }}
+                >
+                  {withAccents(paragraph)}
+                </p>
+              ))}
             </div>
           </div>
 
