@@ -39,8 +39,9 @@ export async function generateMetadata({
   }
 
   return {
-    title: creativeCategory.name,
-    description: creativeCategory.description ?? "Photography category",
+    title: { absolute: `${creativeCategory.name} | Photography by Zean Kurt Balboa (Shot by ZK)` },
+    description: creativeCategory.description ?? "Photography by Zean Kurt Balboa (Shot by ZK).",
+    alternates: { canonical: `/photography/${creativeCategory.slug}` },
   };
 }
 
@@ -61,5 +62,9 @@ export default async function AlbumPage({ params }: AlbumPageProps) {
     notFound();
   }
 
-  return <AlbumPageContent album={album} photos={creativeCategory.photos} />;
+  return (
+    <main id="main-content">
+      <AlbumPageContent album={album} photos={creativeCategory.photos} />
+    </main>
+  );
 }

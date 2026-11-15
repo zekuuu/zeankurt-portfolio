@@ -6,11 +6,10 @@ export const revalidate = 60;
 export const dynamic = "force-static";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { siteConfig } = await getPortfolioContent();
-
   return {
-    title: "Photography",
-    description: `Photography portfolio by ${siteConfig.name} — ${siteConfig.photographyBrand} and Studio Nomads.`,
+    title: { absolute: "Photography by Zean Kurt Balboa (Shot by ZK)" },
+    description: "Photography by Zean Kurt Balboa (Shot by ZK): portraits, events and street photography.",
+    alternates: { canonical: "/photography" },
   };
 }
 
@@ -18,9 +17,11 @@ export default async function PhotographyPage() {
   const content = await getPortfolioContent();
 
   return (
-    <PhotographyPageContent
-      creativeCategories={content.creativeCategories}
-      siteConfig={content.siteConfig}
-    />
+    <main id="main-content">
+      <PhotographyPageContent
+        creativeCategories={content.creativeCategories}
+        siteConfig={content.siteConfig}
+      />
+    </main>
   );
 }
