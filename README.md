@@ -1,12 +1,12 @@
 # Zean Kurt Balboa — Personal Portfolio
 
-> A modern, responsive personal portfolio and photography gallery built with Next.js, TypeScript, and Tailwind CSS.
+> Developer portfolio of Zean Kurt Balboa, full-stack web developer and aspiring software engineer. Built with Next.js 16, React 19, TypeScript, Tailwind CSS 4 and Supabase as a CMS.
 
 ---
 
 ## Overview
 
-Welcome to my personal portfolio website. This is a showcase of my projects, professional experience, skills, and photography work. Built with modern web technologies and optimized for performance, accessibility, and user experience.
+This site shows my projects, experience, hackathons and skills. A separate photography section lives at `/photography`. Built with modern web technologies and optimized for performance, accessibility, and user experience.
 
 **Live:** [zeankurt.vercel.app](https://zeankurt.vercel.app)
 
@@ -27,12 +27,13 @@ Welcome to my personal portfolio website. This is a showcase of my projects, pro
 
 | Layer | Technology |
 |-------|------------|
-| **Framework** | [Next.js](https://nextjs.org) (App Router) |
+| **Framework** | [Next.js](https://nextjs.org) 16 (App Router, Turbopack) |
+| **UI** | React 19 with Server/Client boundaries |
 | **Language** | [TypeScript](https://www.typescriptlang.org) |
-| **Styling** | [Tailwind CSS](https://tailwindcss.com) |
-| **Animation** | [GSAP](https://greensock.com/gsap/) |
-| **Components** | React 18+ with Server/Client boundaries |
-| **Deployment** | Vercel |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com) 4 |
+| **Animation** | GSAP, Framer Motion, three.js |
+| **Content** | [Supabase](https://supabase.com) (Postgres CMS + Auth + Storage) with an `/admin` panel |
+| **Deployment** | Vercel (+ Analytics, Speed Insights) |
 
 ---
 
@@ -74,17 +75,23 @@ npm start
 ```
 src/
 ├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Homepage
-│   └── photography/       # Photography section
+│   ├── layout.tsx         # Root layout, site metadata, site-wide JSON-LD
+│   ├── page.tsx           # Homepage (ProfilePage + FAQPage JSON-LD)
+│   ├── projects/          # /projects index + /projects/[slug] detail pages
+│   ├── events/            # Events & community list
+│   ├── photography/       # Photography section
+│   ├── admin/             # CMS admin (noindex, auth-gated)
+│   ├── robots.ts, sitemap.ts, manifest.ts, opengraph-image.tsx
+│   └── llms.txt/, llms-full.txt/  # Plain-text profile for AI crawlers
 ├── components/
 │   ├── animation/         # GSAP & animation components
 │   ├── layout/            # Header, Footer
 │   ├── photography/       # Gallery, Lightbox, Albums
 │   ├── sections/          # Hero, Projects, Skills, etc.
 │   └── ui/                # Reusable UI elements
-├── data/                  # Static data & config
-├── lib/                   # Utilities (cn, gsap helpers)
+├── data/                  # Seed data for Supabase
+├── lib/                   # identity.ts (SEO source of truth), CMS queries, structured data
+
 └── types/                 # TypeScript type definitions
 ```
 
@@ -147,16 +154,16 @@ Each album supports:
 ### Scripts
 
 ```bash
-npm run dev       # Start dev server (http://localhost:3000)
-npm run build     # Create production build
-npm start         # Start production server
-npm run lint      # Run ESLint
+npm run dev        # Start dev server (http://localhost:3000)
+npm run build      # Create production build
+npm start          # Start production server
+npm run check:seo  # After build: validate JSON-LD, canonical, h1, no hidden hero
 ```
 
 ### Configuration
 
 - **TypeScript** – `tsconfig.json`
-- **Tailwind** – `tailwind.config.ts`
+- **Tailwind** – CSS-first config in `src/app/globals.css`
 - **PostCSS** – `postcss.config.mjs`
 - **Next.js** – `next.config.ts`
 
@@ -182,12 +189,13 @@ Set these Vercel environment variables for **Production**, **Preview**, and **De
 
 In Supabase Auth URL Configuration, set the **Site URL** to `https://zeankurt.vercel.app` and add `https://zeankurt.vercel.app/auth/callback` to the allowed redirect URLs. Remove any `http://localhost:3000` value from the production Vercel environment. Keep the service-role key and admin email list in Vercel Environment Variables only.
 
-### Docker
+## 🔎 SEO & AI discoverability
 
-```bash
-docker build -t zeankurt-portfolio .
-docker run -p 3000:3000 zeankurt-portfolio
-```
+- `src/lib/identity.ts` is the single source for name, bios, roles, profiles and awards. Metadata, JSON-LD, `llms.txt` and OG images read from it.
+- JSON-LD: `Person`, `WebSite`, `Organization` (site-wide); `ProfilePage` + `FAQPage` (home); `ItemList` (projects); `SoftwareSourceCode`/`SoftwareApplication` + `BreadcrumbList` (each project).
+- Crawl files: `/robots.txt` (search + AI crawlers allowed, `/admin` `/api` `/auth` disallowed), `/sitemap.xml` (built from the CMS), `/llms.txt`, `/llms-full.txt`.
+- Optional env: `GOOGLE_SITE_VERIFICATION`, `BING_SITE_VERIFICATION`.
+- Content-only fixes that live in Supabase are tracked in `TODO_ZEAN.md`.
 
 ---
 
@@ -210,14 +218,14 @@ This project is open source under the [MIT License](LICENSE).
 
 - **GitHub** – [@zekuuu](https://github.com/zekuuu)
 - **Email** – [zkg.balboa@gmail.com](mailto:zkg.balboa@gmail.com)
-- **LinkedIn** – [Zean Kurt](https://linkedin.com/in/zeankurt)
+- **LinkedIn** – [Zean Kurt Balboa](https://www.linkedin.com/in/zeank/)
 
 ---
 
 <div align="center">
 
-**Built by Zean Kurt**
+**Built by Zean Kurt Balboa**
 
-*Last updated: June 2026*
+*Last updated: November 2026*
 
 </div>
