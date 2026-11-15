@@ -433,7 +433,7 @@ function MobileExperienceCarousel({
                 "shrink-0 snap-center transform-gpu transition-all duration-500 ease-out motion-reduce:transform-none motion-reduce:opacity-100",
                 currentSlide === index
                   ? "scale-100 opacity-100"
-                  : "scale-[0.96] opacity-70",
+                  : "scale-[0.96] opacity-80",
                 isSingleItem
                   ? "w-[calc(100vw-2rem)] max-w-none"
                   : "w-[82vw] max-w-[21rem]",

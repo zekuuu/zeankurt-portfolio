@@ -162,10 +162,10 @@ export function PageLoader({ onComplete }: { onComplete: () => void }) {
         </div>
 
         <div className="overflow-hidden">
-          <h2 className="font-display text-[clamp(2.8rem,12vw,8rem)] font-semibold leading-[0.9] text-white">
+          <p aria-hidden className="font-display text-[clamp(2.8rem,12vw,8rem)] font-semibold leading-[0.9] text-white">
             Zean
             <span className="block text-gradient">Kurt</span>
-          </h2>
+          </p>
         </div>
 
         <div className="mt-10">
