@@ -10,6 +10,7 @@ interface SectionHeadingProps {
   titleClassName?: string;
   descriptionClassName?: string;
   centered?: boolean;
+  as?: "h1" | "h2";
 }
 
 export function SectionHeading({
@@ -20,6 +21,7 @@ export function SectionHeading({
   titleClassName,
   descriptionClassName,
   centered = false,
+  as: Heading = "h2",
 }: SectionHeadingProps) {
   return (
     <div
@@ -44,7 +46,7 @@ export function SectionHeading({
         </div>
       ) : null}
 
-      <h2
+      <Heading
         className={cn(
           "mt-3 max-w-[16ch] font-[family-name:var(--font-syne)] text-[clamp(2.1rem,7vw,3.45rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-white sm:mt-4 sm:max-w-[20ch] lg:max-w-none lg:text-[clamp(2.75rem,4.8vw,3.7rem)]",
           centered ? "mx-auto" : "mx-auto lg:mx-0",
@@ -52,7 +54,7 @@ export function SectionHeading({
         )}
       >
         {title}
-      </h2>
+      </Heading>
 
       {description ? (
         <p
