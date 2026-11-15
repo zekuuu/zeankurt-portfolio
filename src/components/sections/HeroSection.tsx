@@ -14,18 +14,9 @@ import { Container } from "@/components/ui/Container";
 import { SocialLinks } from "@/components/ui/SocialLinks";
 import { useLowMotionDevice } from "@/hooks/useLowMotionDevice";
 import { useRouter } from "next/navigation";
+import { identity } from "@/lib/identity";
 
-const ROLES = [
-  "Full-Stack Developer",
-  "Web3 Builder",
-  "Co-Founder",
-  "Photographer & Videographer",
-  "Creative Technologist",
-  "Photo Editor",
-  "Colorist",
-];
-
-const HERO_STACK = ["Build", "Ship", "Capture", "Connect"];
+const HERO_STACK = ["Build", "Ship", "Debug", "Connect"];
 
 function ShatterName({ name }: { name: string }) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -86,15 +77,7 @@ function ShatterName({ name }: { name: string }) {
   );
 }
 
-interface HeroSectionProps {
-  siteConfig: {
-    name: string;
-    headline: string;
-    description: string;
-  };
-}
-
-export function HeroSection({ siteConfig }: HeroSectionProps) {
+export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const lowMotion = useLowMotionDevice();
   const [loaderComplete, setLoaderComplete] = useState(false);
@@ -118,9 +101,14 @@ export function HeroSection({ siteConfig }: HeroSectionProps) {
 
   useGSAP(
     () => {
-      if (!loaderComplete) return;
-
       registerGsapPlugins();
+
+      // Hidden only after hydration, so server HTML stays readable to crawlers.
+      if (!loaderComplete) {
+        gsap.set(sectionRef.current, { visibility: "hidden" });
+        return;
+      }
+
 
       gsap.set(sectionRef.current, { autoAlpha: 1 });
 
@@ -128,7 +116,6 @@ export function HeroSection({ siteConfig }: HeroSectionProps) {
         gsap.set(
           [
             "[data-hero='name']",
-            "[data-hero='role']",
             "[data-hero='tagline']",
             "[data-hero='copy']",
             "[data-hero='actions'] > *",
@@ -163,7 +150,6 @@ export function HeroSection({ siteConfig }: HeroSectionProps) {
         ease: "back.out(1.4)",
       });
 
-      tl.from("[data-hero='role']", { autoAlpha: 0, y: 12, duration: 0.45 }, "-=0.25");
       tl.from("[data-hero='tagline']", { autoAlpha: 0, y: 8, duration: 0.3 }, "-=0.2");
       tl.from("[data-hero='copy']", { autoAlpha: 0, y: 12, duration: 0.45 }, "-=0.25");
       tl.from(
@@ -208,8 +194,8 @@ export function HeroSection({ siteConfig }: HeroSectionProps) {
   return (
     <section
       ref={sectionRef}
+      aria-labelledby="hero-name"
       className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden pt-16 md:min-h-svh md:pt-[var(--header-height)]"
-      style={{ visibility: "hidden" }}
     >
       <div data-hero-bg className="absolute inset-0">
         <AnimatedBackground />
@@ -230,36 +216,29 @@ export function HeroSection({ siteConfig }: HeroSectionProps) {
                 data-hero="tagline"
                 className="mx-auto mb-4 inline-flex max-w-[22rem] items-center justify-center py-1.5 text-center text-[0.68rem] font-medium uppercase leading-relaxed tracking-[0.13em] text-[var(--blue-100)] backdrop-blur-sm sm:max-w-full sm:text-xs sm:tracking-[0.16em] lg:mx-0 lg:justify-start lg:text-left"
               >
-                <span className="whitespace-normal break-words">
-                  {siteConfig.headline}
+                <span aria-hidden className="whitespace-nowrap">
+                  <TypewriterCycle phrases={[...identity.rotatingRoles]} />
                 </span>
               </div>
 
-              <h1 className="max-w-full font-[family-name:var(--font-syne)] text-[clamp(2.3rem,8vw,4.15rem)] font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-6xl md:text-7xl lg:max-w-[13ch]">
+              <h1
+                id="hero-name"
+                className="max-w-full font-[family-name:var(--font-syne)] text-[clamp(2.3rem,8vw,4.15rem)] font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-6xl md:text-7xl lg:max-w-[13ch]"
+              >
                 <span data-hero="name">
-                  <ShatterName name={siteConfig.name} />
-                </span>
-
-                <span
-                  data-hero="role"
-                  className="mt-3 block max-w-full text-[clamp(1.25rem,5vw,2rem)] font-medium leading-tight tracking-[-0.035em] text-[var(--blue-200)] sm:text-3xl md:text-4xl"
-                >
-                  <TypewriterCycle
-                    phrases={ROLES}
-                    className="inline-block max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--font-syne)] align-bottom"
-                  />
+                  <ShatterName name={identity.name} />
                 </span>
               </h1>
+
+              <p className="mt-3 max-w-full font-[family-name:var(--font-syne)] text-[clamp(1.15rem,4.4vw,1.75rem)] font-medium leading-tight tracking-[-0.03em] text-[var(--blue-200)] md:text-3xl">
+                {identity.role}
+              </p>
 
               <p
                 data-hero="copy"
                 className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[var(--foreground-muted)] sm:text-[1.05rem] sm:leading-8 lg:mx-0"
               >
-                <span className="emphasis-glow-gold font-medium">Co-Founder at Studio Nomads</span>,{" "}
-                <span className="emphasis-glow-blue font-medium">Co-Founder at WebX</span>, aspiring
-                full-stack developer, Web3 community contributor, {" "}
-                <span className="emphasis-glow-rose font-medium">photographer, videographer</span> and <span className="emphasis-glow-rose font-medium">editor</span>{" "}
-                based in Cavite, Philippines.
+                {identity.heroCopy}
               </p>
 
               <div
@@ -276,8 +255,13 @@ export function HeroSection({ siteConfig }: HeroSectionProps) {
 
                 <MagneticButton>
                   <RippleButton>
-                    <Button href="/photography" variant="secondary" className="min-h-12 px-5">
-                      Creatives
+                    <Button
+                      href={identity.profiles.github}
+                      external
+                      variant="secondary"
+                      className="min-h-12 px-5"
+                    >
+                      GitHub <ArrowUpRight className="h-4 w-4" />
                     </Button>
                   </RippleButton>
                 </MagneticButton>
