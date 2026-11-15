@@ -9,9 +9,9 @@ export async function middleware(request: NextRequest) {
     const isAdminRoute = pathname.startsWith("/admin") && pathname !== "/admin/login";
     if (!supabaseUrl || !supabaseKey) {
         if (isAdminRoute) {
-            return withSecurityHeaders(NextResponse.redirect(new URL("/admin/login?error=env", request.url)));
+            return withSecurityHeaders(NextResponse.redirect(new URL("/admin/login?error=env", request.url)), pathname);
         }
-        return withSecurityHeaders(NextResponse.next());
+        return withSecurityHeaders(NextResponse.next(), pathname);
     }
 
     let response = NextResponse.next({ request });
@@ -39,21 +39,24 @@ export async function middleware(request: NextRequest) {
             const redirectUrl = request.nextUrl.clone();
             redirectUrl.pathname = "/admin/login";
             redirectUrl.search = "";
-            return withSecurityHeaders(NextResponse.redirect(redirectUrl));
+            return withSecurityHeaders(NextResponse.redirect(redirectUrl), pathname);
         }
 
         if (!isAllowedAdminEmail(user.email)) {
             const redirectUrl = request.nextUrl.clone();
             redirectUrl.pathname = "/admin/login";
             redirectUrl.search = "?error=forbidden";
-            return withSecurityHeaders(NextResponse.redirect(redirectUrl));
+            return withSecurityHeaders(NextResponse.redirect(redirectUrl), pathname);
         }
     }
 
-    return withSecurityHeaders(response);
+    return withSecurityHeaders(response, pathname);
 }
 
-function withSecurityHeaders(response: NextResponse) {
+function withSecurityHeaders(response: NextResponse, pathname: string) {
+    if (/^\/(admin|api|auth)(\/|$)/.test(pathname)) {
+        response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    }
     response.headers.set("X-Content-Type-Options", "nosniff");
     response.headers.set("X-Frame-Options", "DENY");
     response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
