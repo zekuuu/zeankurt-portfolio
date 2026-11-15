@@ -15,33 +15,78 @@ import { getPortfolioContent } from "@/lib/cms/queries";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GlobalScrollManager } from "@/components/layout/GlobalScrollManager";
 import { DevStationBadge } from "@/components/ui/DevStationBadge";
+import { identity, SITE_URL } from "@/lib/identity";
+import { JsonLdScript, siteGraph } from "@/lib/structured-data";
 import "./globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 const syne = Syne({ variable: "--font-syne", subsets: ["latin"] });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { siteConfig } = await getPortfolioContent();
+const verification: Metadata["verification"] = {
+  ...(process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : {}),
+  ...(process.env.BING_SITE_VERIFICATION
+    ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } }
+    : {}),
+};
 
-  return {
-    title: {
-      default: `${siteConfig.name} — My Personal Portfolio`,
-      template: `%s · ${siteConfig.shortName}`,
+const defaultTitle = `${identity.name} | ${identity.role}`;
+
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: defaultTitle,
+    template: `%s | ${identity.name}`,
+  },
+  description: identity.metaDescription,
+  applicationName: identity.name,
+  authors: [{ name: identity.name, url: SITE_URL }],
+  creator: identity.name,
+  publisher: identity.name,
+  keywords: [
+    identity.name,
+    ...identity.alternateNames,
+    ...identity.jobTitles,
+    "Full-Stack Developer Philippines",
+    "Web Developer Cavite",
+    "Next.js Developer",
+    "Web3 Developer",
+    "Cavite State University",
+    "WebX",
+  ],
+  openGraph: {
+    type: "profile",
+    firstName: identity.givenName,
+    lastName: identity.familyName,
+    username: "zekuuu",
+    siteName: identity.name,
+    locale: "en_PH",
+    url: "/",
+    title: defaultTitle,
+    description: identity.metaDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+    creator: identity.twitterHandle,
+    site: identity.twitterHandle,
+    title: defaultTitle,
+    description: identity.metaDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
     },
-    description: siteConfig.description,
-    icons: {
-      icon: "/favicon.jpg",
-      shortcut: "/favicon.jpg",
-      apple: "/favicon.jpg",
-    },
-    openGraph: {
-      title: `${siteConfig.name} — ${siteConfig.title}`,
-      description: siteConfig.description,
-      type: "website",
-    },
-  };
-}
+  },
+  verification,
+};
 
 export default async function RootLayout({
   children,
@@ -59,6 +104,13 @@ export default async function RootLayout({
         className="flex min-h-full flex-col bg-background text-foreground"
         suppressHydrationWarning
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10000] focus:rounded-full focus:bg-[var(--accent)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-[var(--blue-950)]"
+        >
+          Skip to content
+        </a>
+        <JsonLdScript data={siteGraph()} />
         <ThemeProvider>
           <SavingProvider>
             <GlobalScrollManager />
