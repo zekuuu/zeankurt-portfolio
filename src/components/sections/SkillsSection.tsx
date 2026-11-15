@@ -101,7 +101,7 @@ export function SkillsSection({ skillCategories }: SkillsSectionProps) {
   );
 
   return (
-    <Section id="skills" ref={sectionRef} className="py-10 sm:py-16 lg:py-24">
+    <Section id="skills" ref={sectionRef} className="z-[1] py-10 sm:py-16 lg:py-24">
       {!lowMotion ? (
         <div aria-hidden className="skills-ambient-bg hidden sm:block">
           <span className="skills-bg-stream skills-bg-stream-a" />
