@@ -2,6 +2,31 @@ import type { Project } from "@/types";
 
 export const projects: Project[] = [
   {
+    slug: "clario",
+    title: "Clario — Spreadsheet Validation & Auditing Tool",
+    description:
+      "Desktop tool for validating and auditing spreadsheets, built as a full-stack Electron app.",
+    tags: ["React", "TypeScript", "Vite", "FastAPI", "SQLite", "Electron"],
+    // TODO(Zean): add githubUrl/liveUrl and the real year.
+    imageSeed: "clario",
+    year: "",
+    role: "Full-Stack Developer",
+    featured: true,
+  },
+  {
+    slug: "cliniq",
+    title: "CLINIQ — Clinic Tracking System",
+    description:
+      "Clinic tracking system for Mendez Christian Academy, built with CvSU CEIT teammates.",
+    tags: ["React", "TypeScript", "Laravel", "Tailwind CSS", "MySQL"],
+    // TODO(Zean): add githubUrl and confirm year.
+    imageSeed: "cliniq",
+    year: "2026",
+    role: "Lead Developer",
+    featured: true,
+    status: "wip",
+  },
+  {
     slug: "salikop",
     title: "Salikop — Centralized Campus Org Event Management",
     description:
@@ -60,12 +85,12 @@ export const projects: Project[] = [
     slug: "namethat",
     title: "NameThat",
     description:
-      "Web3 naming product co-founded to simplify on-chain identity — exploring cross-chain wallet naming for the Philippines builder ecosystem.",
-    tags: ["Web3", "Startup", "Product", "Blockchain"],
+      "Hackathon project: a Web3 mini app on Base with image upload, community name suggestions and voting, a leaderboard, wallet linking and Supabase APIs.",
+    tags: ["Next.js", "Tailwind CSS", "Supabase", "Web3", "Base", "Hackathon"],
     image: "",
     imageSeed: "namethat",
     year: "2025",
-    role: "Co-Founder & Developer",
+    role: "Full-stack Developer",
     featured: true,
   },
   {

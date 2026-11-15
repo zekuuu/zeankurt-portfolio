@@ -46,13 +46,21 @@ export const skillCategories: SkillCategory[] = [
 
 export const experience: ExperienceItem[] = [
   {
+    id: "webx",
+    role: "Co-Founder & Full-Stack Developer",
+    organization: "WebX",
+    period: "2026 - Present",
+    description: "Co-founded WebX, a web development team that builds websites and web apps for clients.",
+    type: "work",
+  },
+  {
     id: "namethat",
-    role: "Co-Founder & Developer",
+    role: "Full-stack Developer",
     organization: "NameThat",
     period: "Nov 2025",
     description:
-      "Building a Web3 naming product focused on simplifying on-chain identity for users and developers in the Philippines ecosystem.",
-    type: "work",
+      "Built NameThat, a hackathon project: a Web3 mini app on Base with image upload, community name suggestions and voting, a leaderboard, wallet linking and Supabase APIs.",
+    type: "hackathon",
   },
   {
     id: "salikop",
@@ -65,11 +73,10 @@ export const experience: ExperienceItem[] = [
   },
   {
     id: "studio-nomads",
-    role: "Co-Founder, Photographer, Videographer & Editor",
+    role: "Co-Founder",
     organization: "Studio Nomads",
     period: "Nov 2025 - Present",
-    description:
-      "Producing photo and video content for events and brands under the Studio Nomads collective. Creative work published via shot.by.zk.",
+    description: "Co-founder of Studio Nomads.",
     type: "work",
   },
   {
@@ -83,11 +90,11 @@ export const experience: ExperienceItem[] = [
   },
   {
     id: "base-buildathon",
-    role: "Builder - Global Buildathon",
-    organization: "Base Philippines",
+    role: "Best Pivot Award",
+    organization: "Base Batches Global Buildathon 2025",
     period: "May 2025",
     description:
-      "Participated in the Base Batches Global Buildathon, building within the Base ecosystem alongside PH contributors.",
+      "Won the Best Pivot Award at the Base Batches Global Buildathon 2025 with Team TryCatch Us.",
     type: "hackathon",
   },
   {
