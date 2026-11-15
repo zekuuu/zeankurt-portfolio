@@ -119,17 +119,14 @@ export function SkillsSection({ skillCategories }: SkillsSectionProps) {
             titleClassName="lg:max-w-none lg:whitespace-nowrap"
             title={
               <>
-                Tools for{" "}
-                <span className="emphasis-glow-blue">product</span>, web, and{" "}
-                <span className="emphasis-glow-rose">creative work</span>.
+                Tools I{" "}
+                <span className="emphasis-glow-blue">build</span> with.
               </>
             }
             description={
               <>
                 <span className="emphasis-glow-blue font-medium">Full-stack development</span>{" "}
-                for websites and software products, paired with{" "}
-                <span className="emphasis-glow-rose font-medium">media production</span>{" "}
-                shaped by hackathons, client work, and{" "}
+                for websites and software products, shaped by hackathons, client work, and{" "}
                 <span className="emphasis-glow-gold font-medium">hands-on builds</span>.
               </>
             }

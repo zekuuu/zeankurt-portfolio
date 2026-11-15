@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { identity } from "@/lib/identity";
 import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
@@ -125,7 +126,7 @@ export function Footer({ siteConfig }: FooterProps) {
             </Link>
 
             <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-[var(--foreground-muted)] lg:mx-0">
-              {siteConfig.description}
+              {identity.metaDescription}
             </p>
 
             <div className="mt-5">
@@ -182,24 +183,12 @@ export function Footer({ siteConfig }: FooterProps) {
           </p>
 
           <p>
-            Photography via{" "}
-            <a
-              href="https://www.instagram.com/shot.by.zk/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="cursor-pointer text-[var(--blue-300)] transition hover:text-white"
+            <Link
+              href="/photography"
+              className="cursor-pointer text-[var(--foreground-subtle)] transition hover:text-white"
             >
-              {siteConfig.photographyBrand}
-            </a>
-            {" · "}
-            <a
-              href="https://www.instagram.com/officialstudio.nomads/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="cursor-pointer text-[var(--blue-300)] transition hover:text-white"
-            >
-              Studio Nomads
-            </a>
+              Photography
+            </Link>
           </p>
         </div>
       </div>

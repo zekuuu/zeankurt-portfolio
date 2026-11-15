@@ -9,7 +9,7 @@ import { socialGroups } from "@/data/social";
 import { RevealOnScroll } from "@/components/animation/RevealOnScroll";
 import { MagneticButton } from "@/components/animation/MagneticButton";
 import { Button } from "@/components/ui/Button";
-import { SocialLinkGroups } from "@/components/ui/SocialLinks";
+import { SocialLinks } from "@/components/ui/SocialLinks";
 import { Section, Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { gsap, registerGsapPlugins } from "@/lib/gsap";
@@ -143,39 +143,17 @@ export function ContactSection({ siteConfig }: ContactSectionProps) {
     title={
       <>
         Open to{" "}
-        <span className="emphasis-glow-gold">
-          collaborations
-        </span>
-        ,{" "}
-        <span className="emphasis-glow-gradient">
-          web builds
-        </span>
-        , and{" "}
-        <span className="emphasis-glow-rose">
-          photo/video
-        </span>{" "}
-        work.
+        <span className="emphasis-glow-gold">internships</span>,{" "}
+        <span className="emphasis-glow-gradient">client web projects</span>, and
+        collaborations.
       </>
     }
     description={
       <>
         Reach out for{" "}
-        <span className="emphasis-glow-blue font-medium">
-          software projects
-        </span>
-        ,{" "}
-        <span className="emphasis-glow-gold font-medium">
-          hackathon teams
-        </span>
-        ,{" "}
-        <span className="emphasis-glow-rose font-medium">
-          event coverage
-        </span>
-        , or{" "}
-        <span className="emphasis-glow-white font-medium">
-          Studio Nomads
-        </span>{" "}
-        inquiries.
+        <span className="emphasis-glow-blue font-medium">software engineering internships</span>,{" "}
+        <span className="emphasis-glow-white font-medium">client web projects through WebX</span>, or{" "}
+        <span className="emphasis-glow-gold font-medium">hackathon teams</span>.
       </>
     }
   />
@@ -194,10 +172,10 @@ export function ContactSection({ siteConfig }: ContactSectionProps) {
 
             <RevealOnScroll delay={0.18}>
               <div className="mx-auto mt-8 max-w-[22rem] sm:max-w-2xl lg:mx-0 lg:max-w-none">
-                <SocialLinkGroups
-                  personal={socialGroups.personal}
-                  photography={socialGroups.photography}
-                  affiliation={socialGroups.affiliation}
+                <SocialLinks
+                  links={socialGroups.personal}
+                  showLabels
+                  className="justify-center lg:justify-start"
                 />
               </div>
             </RevealOnScroll>
