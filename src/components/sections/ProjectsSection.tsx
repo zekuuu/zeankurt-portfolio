@@ -10,6 +10,7 @@ import {
   type CSSProperties,
 } from "react";
 import { createPortal } from "react-dom";
+import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
@@ -468,7 +469,7 @@ function MobileProjectCarousel({
               "shrink-0 snap-center transform-gpu transition-all duration-500 ease-out motion-reduce:transform-none motion-reduce:opacity-100",
               currentSlide === index
                 ? "scale-100 opacity-100"
-                : "scale-[0.96] opacity-70",
+                : "scale-[0.96] opacity-80",
               isSingleProject
                 ? "w-[calc(100vw-2rem)] max-w-none"
                 : showImage
@@ -598,7 +599,9 @@ function MobileProjectCard({
         </div>
 
         <h3 className="font-[family-name:var(--font-syne)] text-lg font-semibold leading-tight text-white">
-          {project.title}
+          <Link href={`/projects/${project.slug}`} data-interactive className="transition hover:text-[var(--blue-200)] focus-visible:underline">
+            {project.title}
+          </Link>
         </h3>
 
         <p className="line-clamp-4 text-sm leading-7 text-[var(--foreground-muted)]">
@@ -740,7 +743,9 @@ function FeaturedCard({
             </p>
 
             <h3 className="mt-1.5 break-words font-[family-name:var(--font-syne)] text-lg font-semibold leading-tight text-white sm:text-xl xl:text-lg">
-              {project.title}
+              <Link href={`/projects/${project.slug}`} data-interactive className="transition hover:text-[var(--blue-200)] focus-visible:underline">
+            {project.title}
+          </Link>
             </h3>
           </div>
 
@@ -801,7 +806,9 @@ function CompactCard({ project }: { project: Project }) {
           </p>
 
           <h3 className="mt-1 break-words font-[family-name:var(--font-syne)] text-base font-semibold leading-snug text-white">
+            <Link href={`/projects/${project.slug}`} data-interactive className="transition hover:text-[var(--blue-200)] focus-visible:underline">
             {project.title}
+          </Link>
           </h3>
         </div>
 
@@ -1132,6 +1139,16 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             ) : null}
           </div>
         ) : null}
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/projects"
+            data-interactive
+            className="inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-[var(--blue-300)] transition hover:text-white"
+          >
+            Browse all {projects.length} projects <ArrowUpRight className="h-4 w-4" />
+          </Link>
+        </div>
       </Container>
     </Section>
   );
