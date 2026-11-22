@@ -41,3 +41,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Visual QA screenshots (regenerate with scripts/design-qa.mjs)
+/design-qa/

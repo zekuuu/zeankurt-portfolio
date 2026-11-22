@@ -3,69 +3,67 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 interface SectionHeadingProps {
+  /** Section index, e.g. "02". Rendered as `02 / EYEBROW`. */
+  index?: string;
   eyebrow?: string;
   title: ReactNode;
   description?: ReactNode;
+  action?: ReactNode;
   className?: string;
   titleClassName?: string;
   descriptionClassName?: string;
+  /** Kept for API compatibility; headings are always flush-left. */
   centered?: boolean;
   as?: "h1" | "h2";
+  id?: string;
 }
 
 export function SectionHeading({
+  index,
   eyebrow,
   title,
   description,
+  action,
   className,
   titleClassName,
   descriptionClassName,
-  centered = false,
   as: Heading = "h2",
+  id,
 }: SectionHeadingProps) {
   return (
-    <div
-      className={cn(
-        "section-heading-block relative w-full min-w-0 max-w-3xl lg:max-w-none",
-        centered
-          ? "mx-auto text-center"
-          : "mx-auto text-center lg:mx-0 lg:text-left",
-        className,
-      )}
-    >
-      {eyebrow ? (
-        <div
-          className={cn(
-            "flex items-center text-[var(--blue-200)]",
-            centered ? "justify-center" : "justify-center lg:justify-start",
-          )}
-        >
-          <p className="font-[family-name:var(--font-syne)] text-[0.72rem] font-medium tracking-[0.14em] text-[var(--blue-200)] drop-shadow-[0_0_12px_rgba(72,202,228,0.16)] sm:text-[0.79rem]">
-            {eyebrow}
+    <div className={cn("grid min-w-0 gap-4 lg:grid-cols-12 lg:items-end lg:gap-6", className)}>
+      <div className="min-w-0 lg:col-span-8">
+        {eyebrow || index ? (
+          <p className="label text-ink-muted">
+            {[index, eyebrow].filter(Boolean).join(" / ")}
           </p>
-        </div>
-      ) : null}
+        ) : null}
 
-      <Heading
-        className={cn(
-          "mt-3 max-w-[16ch] font-[family-name:var(--font-syne)] text-[clamp(2.1rem,7vw,3.45rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-white sm:mt-4 sm:max-w-[20ch] lg:max-w-none lg:text-[clamp(2.75rem,4.8vw,3.7rem)]",
-          centered ? "mx-auto" : "mx-auto lg:mx-0",
-          titleClassName,
-        )}
-      >
-        {title}
-      </Heading>
-
-      {description ? (
-        <p
+        <Heading
+          id={id}
           className={cn(
-            "mt-3 max-w-[60ch] text-base leading-7 text-[var(--foreground-muted)] sm:mt-4 sm:text-[1.02rem] sm:leading-8",
-            centered ? "mx-auto" : "mx-auto lg:mx-0",
-            descriptionClassName,
+            "display mt-3 max-w-[22ch] text-[clamp(1.875rem,5vw,3.5rem)] text-ink [overflow-wrap:anywhere]",
+            titleClassName,
           )}
         >
-          {description}
-        </p>
+          {title}
+        </Heading>
+      </div>
+
+      {description || action ? (
+        <div className="min-w-0 lg:col-span-4">
+          {description ? (
+            <p
+              className={cn(
+                "max-w-[52ch] text-base leading-relaxed text-ink-muted",
+                descriptionClassName,
+              )}
+            >
+              {description}
+            </p>
+          ) : null}
+          {action ? <div className={description ? "mt-4" : undefined}>{action}</div> : null}
+        </div>
       ) : null}
     </div>
   );
