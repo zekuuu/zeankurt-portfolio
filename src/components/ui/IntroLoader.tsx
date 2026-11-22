@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 const KEY = "zk-intro";
 const MIN_MS = 1000; // lets the entrance animation finish
 const MAX_MS = 1800;
-const EXIT_MS = 700; // line completes, then the panel slides up
+const FILL_MS = 350; // line glides to full from wherever it is
+const EXIT_MS = FILL_MS + 500; // then the panel slides up
 
 /**
  * Runs before paint (see layout.tsx): shows the intro once per tab session, only
@@ -18,6 +19,7 @@ const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 /** All motion is CSS, so it plays from first paint, before hydration. */
 export function IntroLoader({ name }: { name: string }) {
   const [state, setState] = useState<"in" | "out">("in");
+  const barRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -33,6 +35,27 @@ export function IntroLoader({ name }: { name: string }) {
       try {
         sessionStorage.setItem(KEY, "1");
       } catch {}
+
+      // Freeze the CSS fill at its current width, then ease it to full, so
+      // the end never jumps.
+      const bar = barRef.current;
+      if (bar?.animate) {
+        const from = getComputedStyle(bar).transform;
+        bar.getAnimations().forEach((animation) => animation.cancel());
+        bar.style.transform = from === "none" ? "scaleX(0)" : from;
+        bar
+          .animate([{ transform: bar.style.transform }, { transform: "scaleX(1)" }], {
+            duration: FILL_MS,
+            easing: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+            fill: "forwards",
+          })
+          .finished.then(() => {
+            bar.style.transform = "scaleX(1)";
+          })
+          .catch(() => {});
+      } else if (bar) {
+        bar.style.transform = "scaleX(1)";
+      }
       setState("out");
       exitTimer = window.setTimeout(() => root.classList.remove("zk-intro"), EXIT_MS);
     };
@@ -68,7 +91,7 @@ export function IntroLoader({ name }: { name: string }) {
         {name}
       </p>
       <span className="intro-fade relative block h-px w-48 overflow-hidden bg-line-soft" style={delay(380)}>
-        <span className="intro-bar absolute inset-0 origin-left bg-ink" />
+        <span ref={barRef} className="intro-bar absolute inset-0 origin-left bg-ink" />
       </span>
     </div>
   );
