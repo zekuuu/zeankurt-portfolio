@@ -111,14 +111,14 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${unbounded.variable} h-full antialiased`}
     >
-      <head>
-        {/* Decides before first paint whether the once-per-tab intro shows. */}
-        <script dangerouslySetInnerHTML={{ __html: introScript }} />
-      </head>
       <body
         className="flex min-h-full flex-col bg-bg text-ink"
         suppressHydrationWarning
       >
+        {/* Decides before any content paints whether the once-per-tab intro shows.
+            Kept in <body>, not <head>: extensions inject scripts into <head>
+            before hydration and would shift it out of place. */}
+        <script dangerouslySetInnerHTML={{ __html: introScript }} suppressHydrationWarning />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[10000] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-on-primary"
