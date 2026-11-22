@@ -3,13 +3,10 @@ import { Geist, Geist_Mono, Unbounded } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import ConditionalHeader from "@/components/layout/ConditionalHeader";
 import { ScrollProgressBar } from "@/components/animation/ScrollProgressBar";
-import { GsapInit } from "@/lib/gsap";
-import { LoaderWrapper } from "@/components/animation/LoaderWrapper";
 import { SavingIndicator } from "@/components/ui/SavingIndicator";
 import { SavingProvider } from "@/lib/saving";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ScrollToTopButton } from "@/components/ui/ScrollToTopButton";
-import { MobileViewingTip } from "@/components/ui/MobileViewingTip";
 import { Analytics } from "@vercel/analytics/next";
 import { getPortfolioContent } from "@/lib/cms/queries";
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -126,17 +123,16 @@ export default async function RootLayout({
         <ThemeProvider>
           <SavingProvider>
             <GlobalScrollManager />
-            <GsapInit />
-            <LoaderWrapper />
             <ScrollProgressBar />
-            <ConditionalHeader siteConfig={siteConfig} />
+            <div className="mx-auto flex w-full max-w-[var(--container-max)] flex-1 flex-col sm:border-x sm:border-line">
+              <ConditionalHeader siteConfig={siteConfig} />
 
-            {children}
+              {children}
 
-            <Footer siteConfig={siteConfig} />
+              <Footer siteConfig={siteConfig} />
+            </div>
             <DevStationBadge />
             <ScrollToTopButton />
-            <MobileViewingTip />
             <SavingIndicator />
           </SavingProvider>
         </ThemeProvider>
