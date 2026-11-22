@@ -27,6 +27,15 @@ interface ImageViewerProps {
   filmstrip?: boolean;
 }
 
+/**
+ * Serve viewer images through Next's optimizer (WebP, max 1920px) instead of
+ * the full-size originals. Data/blob URLs and PDFs pass through untouched.
+ */
+function viewerSrc(src: string, width = 1920) {
+  if (!/^(https?:)?\/\/|^\//.test(src) || src.startsWith("/_next/")) return src;
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+}
+
 const pill =
   "inline-flex h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-on-overlay px-3 text-on-overlay transition-colors hover:bg-on-overlay hover:text-overlay disabled:cursor-not-allowed disabled:opacity-40";
 
@@ -41,15 +50,20 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
   if (index !== null) lastIndex.current = index;
   const current = items[index ?? lastIndex.current];
 
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  // Load state is keyed by URL, so a cached image that finishes before an
+  // effect runs can never be reset back to "loading".
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const drag = useRef<{ x: number; y: number; panX: number; panY: number; moved: boolean } | null>(null);
   const [dragging, setDragging] = useState(false);
-  const lastTap = useRef(0);
 
   const open = index !== null && Boolean(current);
+  // Content renders only while open (plus the 120ms exit), so closed viewers
+  // never download their images.
+  const [visible, setVisible] = useState(false);
   const hasPrev = index !== null && index > 0;
   const hasNext = index !== null && index < items.length - 1;
   const go = (next: number) => onIndexChange?.(Math.min(items.length - 1, Math.max(0, next)));
@@ -59,26 +73,30 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
     if (!dialog) return;
     if (open && !dialog.open) dialog.showModal();
     if (!open && dialog.open) dialog.close();
-    if (!open) return;
+    if (!open) {
+      const timer = window.setTimeout(() => setVisible(false), 150);
+      return () => window.clearTimeout(timer);
+    }
+    setVisible(true);
     lockScroll(true);
     return () => lockScroll(false);
   }, [open]);
 
-  // New image: reset zoom and loading state, preload the neighbours.
+  // New image: reset zoom, preload the neighbours.
   useEffect(() => {
-    setStatus("loading");
     setZoom(1);
     setPan({ x: 0, y: 0 });
     if (index === null) return;
     [items[index - 1], items[index + 1]].forEach((item) => {
-      if (item?.src && item.kind !== "pdf") new Image().src = item.src;
+      if (item?.src && item.kind !== "pdf") new Image().src = viewerSrc(item.src);
     });
   }, [index, items, retry]);
 
-  const toggleZoom = (to?: number) => {
+  /** Zoom 2x toward a point (relative to the frame centre), or back to fit. */
+  const toggleZoom = (to?: number, focus?: { x: number; y: number }) => {
     const next = to ?? (zoom > 1 ? 1 : 2);
     setZoom(next);
-    if (next === 1) setPan({ x: 0, y: 0 });
+    setPan(next === 1 || !focus ? { x: 0, y: 0 } : { x: -focus.x, y: -focus.y });
   };
 
   const onKeyDown = (event: React.KeyboardEvent) => {
@@ -118,13 +136,19 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
       return;
     }
 
-    // Double tap (touch) toggles zoom; mouse uses onDoubleClick.
-    if (event.pointerType === "touch" && !start.moved) {
-      const now = performance.now();
-      if (now - lastTap.current < 300) toggleZoom();
-      lastTap.current = now;
+    // A plain click or tap (no drag) zooms in toward that point, or back out.
+    if (!start.moved && Math.abs(dx) < 6 && Math.abs(dy) < 6) {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      toggleZoom(undefined, {
+        x: event.clientX - (rect.left + rect.width / 2),
+        y: event.clientY - (rect.top + rect.height / 2),
+      });
     }
   };
+
+  const src = current?.src ? (current.kind === "pdf" ? current.src : viewerSrc(current.src)) : undefined;
+  const status: "loading" | "ready" | "error" =
+    src && failedSrc === src ? "error" : src && loadedSrc === src ? "ready" : "loading";
 
   const count = items.length > 1 && index !== null ? `${index + 1} of ${items.length}` : null;
 
@@ -136,7 +160,7 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
       aria-label={current?.alt ?? "Image viewer"}
       className="viewer m-auto h-[min(92dvh,60rem)] w-[min(96vw,80rem)] max-h-none max-w-none bg-transparent p-0 text-on-overlay"
     >
-      {current ? (
+      {current && (open || visible) ? (
         <div className="flex h-full flex-col overflow-hidden rounded-tile border border-on-overlay bg-overlay">
           <div className="flex items-center justify-between gap-3 border-b border-on-overlay px-3 py-2 sm:px-4">
             <div className="min-w-0">
@@ -173,10 +197,9 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
               onPointerMove={current.kind === "pdf" ? undefined : onPointerMove}
               onPointerUp={current.kind === "pdf" ? undefined : onPointerUp}
               onPointerCancel={() => (drag.current = null)}
-              onDoubleClick={current.kind === "pdf" ? undefined : () => toggleZoom()}
             >
               {status === "loading" && current.src ? (
-                <span aria-hidden className="absolute inset-x-0 top-0 h-px overflow-hidden">
+                <span aria-hidden className="viewer-loading-wrap absolute inset-x-0 top-0 h-px overflow-hidden">
                   <span className="viewer-loading block h-full w-1/3 bg-on-overlay" />
                 </span>
               ) : null}
@@ -185,7 +208,14 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
                 <div role="alert" className="flex flex-col items-center gap-3 p-6 text-center">
                   <p>{current.src ? "Couldn't load this image." : "No image uploaded."}</p>
                   {current.src ? (
-                    <button type="button" onClick={() => setRetry((n) => n + 1)} className={pill}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFailedSrc(null);
+                        setRetry((n) => n + 1);
+                      }}
+                      className={pill}
+                    >
                       Retry
                     </button>
                   ) : null}
@@ -194,18 +224,21 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
                 <iframe
                   src={current.src}
                   title={current.alt}
-                  onLoad={() => setStatus("ready")}
+                  onLoad={() => setLoadedSrc(src ?? null)}
                   className="h-full w-full rounded-field border-0 bg-surface"
                 />
               ) : (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   key={`${current.id}-${retry}`}
-                  src={current.src}
+                  ref={(el) => {
+                    if (el?.complete && el.naturalWidth > 0 && src) setLoadedSrc(src);
+                  }}
+                  src={src}
                   alt={current.alt}
                   draggable={false}
-                  onLoad={() => setStatus("ready")}
-                  onError={() => setStatus("error")}
+                  onLoad={() => setLoadedSrc(src ?? null)}
+                  onError={() => setFailedSrc(src ?? null)}
                   style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
                   className={cn(
                     "viewer-img max-h-full max-w-full object-contain",
@@ -243,7 +276,7 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
                     >
                       {item.thumb ?? item.src ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={item.thumb ?? item.src} alt="" loading="lazy" className="h-full w-full object-cover" />
+                        <img src={viewerSrc((item.thumb ?? item.src)!, 128)} alt="" loading="lazy" className="h-full w-full object-cover" />
                       ) : null}
                     </button>
                   </li>

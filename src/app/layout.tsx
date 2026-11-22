@@ -11,6 +11,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { getPortfolioContent } from "@/lib/cms/queries";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GlobalScrollManager } from "@/components/layout/GlobalScrollManager";
+import { HideOnAdmin } from "@/components/layout/HideOnAdmin";
 import { DevStationBadge } from "@/components/ui/DevStationBadge";
 import { IntroLoader, introScript } from "@/components/ui/IntroLoader";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
@@ -133,16 +134,22 @@ export default async function RootLayout({
             <SmoothScroll />
             <HoverColor />
             <GlobalScrollManager />
-            <ScrollProgressBar />
+            <HideOnAdmin>
+              <ScrollProgressBar />
+            </HideOnAdmin>
             <div className="mx-auto flex w-full max-w-[var(--container-max)] flex-1 flex-col sm:border-x sm:border-line">
               <ConditionalHeader siteConfig={siteConfig} />
 
               {children}
 
-              <Footer siteConfig={siteConfig} />
+              <HideOnAdmin>
+                <Footer siteConfig={siteConfig} />
+              </HideOnAdmin>
             </div>
-            <DevStationBadge />
-            <ScrollToTopButton />
+            <HideOnAdmin>
+              <DevStationBadge />
+              <ScrollToTopButton />
+            </HideOnAdmin>
             <SavingIndicator />
           </SavingProvider>
         </ThemeProvider>

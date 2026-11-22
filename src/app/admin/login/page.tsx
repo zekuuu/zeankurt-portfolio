@@ -23,12 +23,9 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
   if (user && isAllowedAdminEmail(user.email)) redirect("/admin");
 
   return (
-    <main className="min-h-dvh bg-bg px-4 py-24 text-ink">
-      <div className="mx-auto max-w-md rounded-tile border border-line bg-surface p-6">
-        <p className="font-mono text-xs text-primary">
-          Admin
-        </p>
-        <h1 className="mt-3 font-display text-3xl font-semibold">
+    <main className="flex min-h-[calc(100dvh-var(--header-height))] items-center bg-bg px-4 py-12 text-ink">
+      <div className="mx-auto w-full max-w-md rounded-tile border border-line bg-surface p-6">
+        <h1 className="font-display text-3xl font-semibold">
           Portfolio CMS
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">

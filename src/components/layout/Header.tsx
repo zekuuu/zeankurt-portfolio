@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { mainNav, photographyNav } from "@/data/navigation";
+import { contactNavItem, mainNav, photographyNav } from "@/data/navigation";
 import type { SiteConfig } from "@/types/site";
 import type { NavItem } from "@/types";
 import { cn } from "@/lib/cn";
@@ -250,7 +250,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
 
           <nav aria-label="Mobile" className="flex-1 px-4 py-6 sm:px-6">
             <ol className="grid">
-              {navItems.map((item, index) => (
+              {[...navItems, contactNavItem].map((item, index) => (
                 <li key={item.href} className="enter border-b border-line" style={{ "--i": index } as React.CSSProperties}>
                   <NavAnchor
                     item={item}
