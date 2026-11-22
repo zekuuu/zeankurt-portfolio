@@ -1,297 +1,89 @@
-"use client";
-
-import { useEffect, useRef, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
-import { useGSAP } from "@gsap/react";
+import Link from "next/link";
+import { ArrowUpRight, Mail } from "lucide-react";
 import { socialGroups } from "@/data/social";
-import { gsap, registerGsapPlugins, SplitText, ScrollTrigger } from "@/lib/gsap";
-import { AnimatedBackground } from "@/components/animation/AnimatedBackground";
-import { MagneticButton } from "@/components/animation/MagneticButton";
-import { TypewriterCycle } from "@/components/animation/TypewriterCycle";
-import { RippleButton } from "@/components/animation/RippleButton";
 import { Button } from "@/components/ui/Button";
-import { Container } from "@/components/ui/Container";
+import { Marquee } from "@/components/ui/Marquee";
 import { SocialLinks } from "@/components/ui/SocialLinks";
-import { useLowMotionDevice } from "@/hooks/useLowMotionDevice";
-import { useRouter } from "next/navigation";
+import { Tile } from "@/components/ui/Tile";
 import { identity } from "@/lib/identity";
+import type { Project } from "@/types";
 
-const HERO_STACK = ["Build", "Ship", "Debug", "Connect"];
-
-function ShatterName({ name }: { name: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  const [key, setKey] = useState(0);
-  const lowMotion = useLowMotionDevice();
-  const router = useRouter();
-
-  const handleClick = () => {
-    const el = ref.current;
-
-    if (!el) return;
-
-    if (lowMotion) {
-      router.push("/#about");
-      return;
-    }
-
-    registerGsapPlugins();
-
-    const split = new SplitText(el, { type: "chars" });
-
-    gsap.to(split.chars, {
-      y: () => (Math.random() - 0.5) * 140,
-      x: () => (Math.random() - 0.5) * 140,
-      rotation: () => (Math.random() - 0.5) * 360,
-      scale: () => Math.random() * 1.2 + 0.5,
-      autoAlpha: 0,
-      duration: 0.4,
-      stagger: { amount: 0.1, from: "random" },
-      ease: "power2.out",
-      onComplete: () => {
-        split.revert();
-
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, scale: 0.9 },
-          { autoAlpha: 1, scale: 1, duration: 0.35, ease: "power2.out" },
-        );
-
-        setKey((current) => current + 1);
-        router.push("/#about");
-      },
-    });
-  };
-
-  return (
-    <span
-      ref={ref}
-      key={key}
-      onClick={handleClick}
-      data-interactive
-      title="Click me"
-      className="hero-name-glow text-gradient block max-w-full cursor-pointer select-none break-words [overflow-wrap:anywhere]"
-      style={{ perspective: 600 }}
-    >
-      {name}
-    </span>
-  );
+interface HeroSectionProps {
+  email: string;
+  featured?: Project;
 }
 
-export function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const lowMotion = useLowMotionDevice();
-  const [loaderComplete, setLoaderComplete] = useState(false);
-
-  useEffect(() => {
-    if (document.documentElement.dataset.loaderComplete === "true") {
-      setLoaderComplete(true);
-      return;
-    }
-
-    const handleLoaderComplete = () => setLoaderComplete(true);
-    const fallback = window.setTimeout(() => setLoaderComplete(true), 5200);
-
-    window.addEventListener("portfolio-loader-complete", handleLoaderComplete);
-
-    return () => {
-      window.clearTimeout(fallback);
-      window.removeEventListener("portfolio-loader-complete", handleLoaderComplete);
-    };
-  }, []);
-
-  useGSAP(
-    () => {
-      registerGsapPlugins();
-
-      // Hidden only after hydration, so server HTML stays readable to crawlers.
-      if (!loaderComplete) {
-        gsap.set(sectionRef.current, { visibility: "hidden" });
-        return;
-      }
-
-
-      gsap.set(sectionRef.current, { autoAlpha: 1 });
-
-      if (lowMotion) {
-        gsap.set(
-          [
-            "[data-hero='name']",
-            "[data-hero='tagline']",
-            "[data-hero='copy']",
-            "[data-hero='actions'] > *",
-            "[data-hero='meta']",
-            "[data-hero='network']",
-          ],
-          {
-            autoAlpha: 1,
-            y: 0,
-            x: 0,
-            scale: 1,
-            clearProps: "filter,transform,opacity,visibility",
-          },
-        );
-
-        return;
-      }
-
-      const content = sectionRef.current?.querySelector<HTMLElement>("[data-hero-content]");
-      const background = sectionRef.current?.querySelector<HTMLElement>("[data-hero-bg]");
-
-      const setContentY = content ? gsap.quickSetter(content, "y", "px") : null;
-      const setBackgroundY = background ? gsap.quickSetter(background, "y", "px") : null;
-
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      tl.from("[data-hero='name']", {
-        autoAlpha: 0,
-        scale: 0.88,
-        y: 28,
-        duration: 0.65,
-        ease: "back.out(1.4)",
-      });
-
-      tl.from("[data-hero='tagline']", { autoAlpha: 0, y: 8, duration: 0.3 }, "-=0.2");
-      tl.from("[data-hero='copy']", { autoAlpha: 0, y: 12, duration: 0.45 }, "-=0.25");
-      tl.from(
-        "[data-hero='actions'] > *",
-        {
-          autoAlpha: 0,
-          y: 12,
-          scale: 0.94,
-          stagger: 0.05,
-          duration: 0.4,
-          ease: "back.out(1.3)",
-        },
-        "-=0.3",
-      );
-
-      tl.from("[data-hero='meta']", { autoAlpha: 0, y: 8, duration: 0.35 }, "-=0.2");
-      tl.from("[data-hero='network']", { autoAlpha: 0, x: 18, scale: 0.96, duration: 0.55 }, "-=0.35");
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 1,
-        onUpdate: (self) => {
-          setContentY?.(self.progress * 40);
-        },
-      });
-
-      ScrollTrigger.create({
-        trigger: sectionRef.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: 2,
-        onUpdate: (self) => {
-          setBackgroundY?.(self.progress * 24);
-        },
-      });
-    },
-    { dependencies: [loaderComplete, lowMotion], revertOnUpdate: true, scope: sectionRef },
-  );
-
+/** Server-rendered: every word of the hero is in the HTML, no JS involved. */
+export function HeroSection({ email, featured }: HeroSectionProps) {
   return (
-    <section
-      ref={sectionRef}
-      aria-labelledby="hero-name"
-      className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden pt-16 md:min-h-svh md:pt-[var(--header-height)]"
-    >
-      <div data-hero-bg className="absolute inset-0">
-        <AnimatedBackground />
+    <section aria-labelledby="hero-name" className="grid gap-1.5 p-1.5 lg:grid-cols-12">
+      <Tile className="flex flex-col justify-between gap-10 lg:col-span-8 lg:min-h-[34rem] lg:p-10">
+        <p className="label text-ink-muted">
+          {identity.jobTitles[0]} · {identity.location.label}
+        </p>
+
+        <div>
+          <h1
+            id="hero-name"
+            className="display text-[clamp(2.5rem,8vw,6.5rem)] leading-[0.95] tracking-[-0.03em] [overflow-wrap:anywhere]"
+          >
+            {identity.name}
+          </h1>
+          <p className="mt-4 text-lg font-medium sm:text-xl">{identity.role}</p>
+          <p className="mt-3 max-w-[58ch] leading-relaxed text-ink-muted">{identity.heroCopy}</p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button href="/#projects">
+            View projects <ArrowUpRight aria-hidden className="h-4 w-4" />
+          </Button>
+          <Button href={`mailto:${email}`} variant="secondary">
+            <Mail aria-hidden className="h-4 w-4" /> Email
+          </Button>
+          <SocialLinks links={socialGroups.personal} className="sm:ml-auto" />
+        </div>
+      </Tile>
+
+      <div className="grid gap-1.5 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-1">
+        <Tile variant="yellow" className="flex flex-col">
+          <p className="label">Status</p>
+          <p className="display mt-3 text-2xl">Open to</p>
+          <ul className="mt-3 grid gap-1.5 text-sm font-medium">
+            {identity.lookingFor.map((item) => (
+              <li key={item} className="flex gap-2">
+                <span aria-hidden>→</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </Tile>
+
+        {featured ? (
+          <Tile variant="primary" interactive className="flex flex-col">
+            <p className="label">Featured project</p>
+            <h2
+              className={`display mt-3 [overflow-wrap:anywhere] ${
+                featured.title.length > 24 ? "text-2xl leading-tight" : "text-[clamp(1.75rem,3vw,2.25rem)]"
+              }`}
+            >
+              <Link
+                href={`/projects/${featured.slug}`}
+                className="after:absolute after:inset-0 after:rounded-tile after:content-['']"
+              >
+                {featured.title}
+              </Link>
+            </h2>
+            <p className="mt-2 line-clamp-3 text-sm leading-relaxed">{featured.description}</p>
+            <span aria-hidden className="label mt-auto inline-flex items-center gap-1 pt-4">
+              Case study <ArrowUpRight className="h-3.5 w-3.5" />
+            </span>
+          </Tile>
+        ) : null}
       </div>
 
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(3,7,18,0.82)_0%,rgba(3,7,18,0.38)_45%,rgba(3,7,18,0.74)_100%)]" />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,rgba(3,7,18,0.92),transparent)]" />
-
-      <Container
-        className="relative z-10 py-10 text-center sm:py-14 md:py-20 lg:text-left"
-        data-hero-content=""
-      >
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 lg:mx-0 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.64fr)] lg:gap-14">
-          <div className="relative min-w-0">
-
-            <div className="mx-auto max-w-3xl lg:mx-0">
-              <div
-                data-hero="tagline"
-                className="mx-auto mb-4 inline-flex max-w-[22rem] items-center justify-center py-1.5 text-center text-[0.68rem] font-medium uppercase leading-relaxed tracking-[0.13em] text-[var(--blue-100)] backdrop-blur-sm sm:max-w-full sm:text-xs sm:tracking-[0.16em] lg:mx-0 lg:justify-start lg:text-left"
-              >
-                <span aria-hidden className="whitespace-nowrap">
-                  <TypewriterCycle phrases={[...identity.rotatingRoles]} />
-                </span>
-              </div>
-
-              <h1
-                id="hero-name"
-                className="max-w-full font-[family-name:var(--font-syne)] text-[clamp(2.3rem,8vw,4.15rem)] font-semibold leading-[0.98] tracking-[-0.045em] text-white sm:text-6xl md:text-7xl lg:max-w-[13ch]"
-              >
-                <span data-hero="name">
-                  <ShatterName name={identity.name} />
-                </span>
-              </h1>
-
-              <p className="mt-3 max-w-full font-[family-name:var(--font-syne)] text-[clamp(1.15rem,4.4vw,1.75rem)] font-medium leading-tight tracking-[-0.03em] text-[var(--blue-200)] md:text-3xl">
-                {identity.role}
-              </p>
-
-              <p
-                data-hero="copy"
-                className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[var(--foreground-muted)] sm:text-[1.05rem] sm:leading-8 lg:mx-0"
-              >
-                {identity.heroCopy}
-              </p>
-
-              <div
-                data-hero="actions"
-                className="mt-5 flex flex-wrap items-center justify-center gap-3 lg:justify-start"
-              >
-                <MagneticButton>
-                  <RippleButton>
-                    <Button href="/#projects" className="min-h-12 px-5">
-                      View projects <ArrowUpRight className="h-4 w-4" />
-                    </Button>
-                  </RippleButton>
-                </MagneticButton>
-
-                <MagneticButton>
-                  <RippleButton>
-                    <Button
-                      href={identity.profiles.github}
-                      external
-                      variant="secondary"
-                      className="min-h-12 px-5"
-                    >
-                      GitHub <ArrowUpRight className="h-4 w-4" />
-                    </Button>
-                  </RippleButton>
-                </MagneticButton>
-              </div>
-
-              <div data-hero="meta" className="mt-7">
-                <SocialLinks
-                  links={socialGroups.personal}
-                  size="sm"
-                  className="justify-center lg:justify-start"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div
-            data-hero="network"
-            aria-hidden
-            className="hero-network-panel pointer-events-none relative hidden min-h-[20rem] lg:block"
-          >
-            <div className="hero-network-orbit">
-              {HERO_STACK.map((item, index) => (
-                <span key={item} className={`hero-network-node hero-network-node-${index}`}>
-                  {item}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </Container>
+      <Tile variant="muted" className="px-0 py-4 sm:px-0 sm:py-4 lg:col-span-12">
+        <Marquee items={identity.stack} label="Tech stack" />
+      </Tile>
     </section>
   );
 }

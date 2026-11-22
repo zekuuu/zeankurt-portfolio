@@ -35,7 +35,10 @@ export default async function HomePage() {
     <main id="main-content">
       <JsonLdScript data={profilePageGraph(faq)} />
 
-      <HeroSection />
+      <HeroSection
+        email={content.siteConfig.email}
+        featured={content.projects.find((project) => project.featured) ?? content.projects[0]}
+      />
 
       <ProjectsSection projects={content.projects} />
 

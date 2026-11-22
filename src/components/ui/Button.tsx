@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-type ButtonVariant = "primary" | "secondary" | "ghost";
+/** `inverse` sits on a primary-colored tile. */
+type ButtonVariant = "primary" | "secondary" | "ghost" | "inverse";
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ const variants: Record<ButtonVariant, string> = {
   primary: "border-primary bg-primary text-on-primary hover:bg-ink hover:border-ink hover:text-bg",
   secondary: "border-line bg-transparent text-ink hover:bg-ink hover:text-bg",
   ghost: "border-transparent bg-transparent text-ink hover:border-line",
+  inverse: "border-on-primary bg-transparent text-on-primary hover:bg-on-primary hover:text-primary",
 };
 
 export const buttonClass = (variant: ButtonVariant = "primary", className?: string) =>

@@ -1,872 +1,119 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
-import { createPortal } from "react-dom";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  ArrowLeft,
-  ArrowRight,
-  ArrowUpRight,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
-import { useGSAP } from "@gsap/react";
+import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/types";
-import { RevealOnScroll } from "@/components/animation/RevealOnScroll";
-import { GlowCard } from "@/components/animation/GlowCard";
-import { Badge } from "@/components/ui/Badge";
-import { SocialIcon } from "@/components/ui/SocialIcon";
+import { Badge, statusBadgeVariant } from "@/components/ui/Badge";
+import { buttonClass } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { SocialIcon } from "@/components/ui/SocialIcon";
+import { Tile, tileVariantAt } from "@/components/ui/Tile";
 import { ZoomableImage } from "@/components/ui/ZoomableImage";
-import { gsap, registerGsapPlugins } from "@/lib/gsap";
 import { cn } from "@/lib/cn";
-import { useLowMotionDevice } from "@/hooks/useLowMotionDevice";
 
 const INITIAL_SHOW = 6;
-const ALL_FILTER = "All";
-const PRIMARY_ROLE_FILTER_LIMIT = 4;
+const ALL = "All";
+const STATUS_LABEL: Record<NonNullable<Project["status"]>, string> = {
+  live: "Live",
+  wip: "WIP",
+  archived: "Archived",
+};
 
-const STATUS_STYLES = {
-  live: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-  wip: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-  archived: "bg-zinc-500/15 text-zinc-400 border-zinc-500/30",
-} as const;
+const pad = (n: number) => String(n).padStart(2, "0");
 
-function getStatusClass(status: Project["status"]) {
-  if (!status) return "";
-
-  return (
-    STATUS_STYLES[status as keyof typeof STATUS_STYLES] ??
-    "border-[var(--border)] bg-white/[0.04] text-[var(--foreground-muted)]"
-  );
-}
-
-function getPrimaryFilterRoles(roles: string[], projects: Project[]) {
-  const roleCounts = new Map<string, number>();
-
-  projects.forEach((project) => {
-    if (!project.role) return;
-
-    roleCounts.set(project.role, (roleCounts.get(project.role) ?? 0) + 1);
-  });
-
-  return [...roles]
-    .sort((a, b) => {
-      const countDiff = (roleCounts.get(b) ?? 0) - (roleCounts.get(a) ?? 0);
-
-      if (countDiff !== 0) return countDiff;
-
-      return a.localeCompare(b);
-    })
-    .slice(0, PRIMARY_ROLE_FILTER_LIMIT);
-}
-
-function ProjectFilter({
-  roles,
-  projects,
-  activeRole,
-  onChange,
-}: {
-  roles: string[];
-  projects: Project[];
-  activeRole: string;
-  onChange: (role: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  const [dropdownStyle, setDropdownStyle] = useState<CSSProperties>({});
-  const [dropdownMode, setDropdownMode] = useState<"all" | "more">("all");
-
-  const rootRef = useRef<HTMLDivElement>(null);
-  const mobileFilterButtonRef = useRef<HTMLButtonElement>(null);
-  const moreButtonRef = useRef<HTMLButtonElement>(null);
-  const dropdownAnchorRef = useRef<HTMLButtonElement | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const primaryRoles = useMemo(
-    () => getPrimaryFilterRoles(roles, projects),
-    [projects, roles],
-  );
-
-  const moreRoles = useMemo(
-    () => roles.filter((role) => !primaryRoles.includes(role)),
-    [primaryRoles, roles],
-  );
-
-  const activeIsMore =
-    activeRole !== ALL_FILTER &&
-    !primaryRoles.includes(activeRole) &&
-    roles.includes(activeRole);
-
-  const visibleRoles = [ALL_FILTER, ...primaryRoles];
-
-  const dropdownRoles = dropdownMode === "all" ? [ALL_FILTER, ...roles] : moreRoles;
-
-  const updateDropdownPosition = useCallback(() => {
-    const button = dropdownAnchorRef.current;
-    if (!button) return;
-
-    const rect = button.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const isMobile = viewportWidth < 1024;
-
-    const width = isMobile ? viewportWidth - 24 : 384;
-    const left = isMobile
-      ? 12
-      : Math.min(Math.max(16, rect.right - width), viewportWidth - width - 16);
-
-    const dropdownMaxHeight = isMobile ? 300 : 300;
-    const preferredTop = rect.bottom + 8;
-    const top = Math.min(preferredTop, viewportHeight - dropdownMaxHeight - 16);
-
-    setDropdownStyle({
-      position: "fixed",
-      top: Math.max(12, top),
-      left,
-      width,
-      zIndex: 9999,
-    });
-  }, []);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useLayoutEffect(() => {
-    if (!open) return;
-
-    updateDropdownPosition();
-
-    window.addEventListener("resize", updateDropdownPosition);
-    window.addEventListener("scroll", updateDropdownPosition, true);
-
-    return () => {
-      window.removeEventListener("resize", updateDropdownPosition);
-      window.removeEventListener("scroll", updateDropdownPosition, true);
-    };
-  }, [open, updateDropdownPosition]);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node;
-
-      if (
-        rootRef.current?.contains(target) ||
-        dropdownRef.current?.contains(target)
-      ) {
-        return;
-      }
-
-      setOpen(false);
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-      }
-    };
-
-    window.addEventListener("pointerdown", handlePointerDown);
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("pointerdown", handlePointerDown);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [open]);
-
-  const openDropdown = (
-    mode: "all" | "more",
-    anchor: HTMLButtonElement | null,
-  ) => {
-    dropdownAnchorRef.current = anchor;
-    setDropdownMode(mode);
-    updateDropdownPosition();
-    setOpen((current) => (dropdownMode === mode ? !current : true));
-  };
-
-  const handleSelect = (role: string) => {
-    const nextRole = activeRole === role ? ALL_FILTER : role;
-
-    onChange(nextRole);
-    setOpen(false);
-  };
+function ProjectLinks({ project }: { project: Project }) {
+  const iconLink =
+    "relative z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-current transition-colors hover:bg-ink hover:text-bg hover:border-ink";
 
   return (
-    <>
-      <div ref={rootRef} className="relative w-full min-w-0 lg:w-auto lg:max-w-[40rem]">
-        <div className="flex justify-end lg:hidden">
-          <button
-            ref={mobileFilterButtonRef}
-            type="button"
-            data-interactive
-            onClick={() => openDropdown("all", mobileFilterButtonRef.current)}
-            aria-expanded={open && dropdownMode === "all"}
-            className={cn(
-              "inline-flex min-h-10 max-w-full cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-200",
-              activeRole !== ALL_FILTER || (open && dropdownMode === "all")
-                ? "border-[var(--blue-500)] bg-[var(--accent-soft)] text-white shadow-[0_0_12px_var(--accent-glow)]"
-                : "border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-strong)] hover:text-white",
-            )}
-          >
-            <span className="max-w-[13rem] truncate">
-              {activeRole === ALL_FILTER ? "All Filters" : activeRole}
-            </span>
-            <ChevronDown
-              className={cn(
-                "h-4 w-4 shrink-0 transition",
-                open && dropdownMode === "all" && "rotate-180",
-              )}
-            />
-          </button>
-        </div>
-
-        <div className="hidden max-w-full gap-2 pb-1 lg:flex lg:max-w-[40rem] lg:justify-end lg:overflow-visible">
-          {visibleRoles.map((role) => (
-            <button
-              key={role}
-              type="button"
-              data-interactive
-              onClick={() => handleSelect(role)}
-              className={cn(
-                "inline-flex min-h-9 shrink-0 cursor-pointer items-center rounded-full border px-3 py-1 text-xs font-medium transition-all duration-200",
-                activeRole === role
-                  ? "border-[var(--blue-500)] bg-[var(--accent-soft)] text-white shadow-[0_0_12px_var(--accent-glow)]"
-                  : "border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-strong)] hover:text-white",
-              )}
-            >
-              <span className="max-w-[8rem] truncate">{role}</span>
-            </button>
-          ))}
-
-          {moreRoles.length > 0 ? (
-            <button
-              ref={moreButtonRef}
-              type="button"
-              data-interactive
-              onClick={() => openDropdown("more", moreButtonRef.current)}
-              aria-expanded={open && dropdownMode === "more"}
-              className={cn(
-                "inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all duration-200",
-                activeIsMore || (open && dropdownMode === "more")
-                  ? "border-[var(--blue-500)] bg-[var(--accent-soft)] text-white shadow-[0_0_12px_var(--accent-glow)]"
-                  : "border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-strong)] hover:text-white",
-              )}
-            >
-              More roles
-              <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px]">
-                {moreRoles.length}
-              </span>
-              <ChevronDown
-                className={cn(
-                  "h-3.5 w-3.5 transition",
-                  open && dropdownMode === "more" && "rotate-180",
-                )}
-              />
-            </button>
-          ) : null}
-        </div>
-      </div>
-
-      {mounted && open && dropdownRoles.length > 0
-        ? createPortal(
-          <div
-            ref={dropdownRef}
-            style={dropdownStyle}
-            className="rounded-2xl border border-[var(--border-strong)] bg-[var(--background-elevated)] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl"
-          >
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--blue-300)]">
-                {dropdownMode === "all" ? "Filter by role" : "More roles"}
-              </p>
-
-              {activeRole !== ALL_FILTER ? (
-                <button
-                  type="button"
-                  onClick={() => handleSelect(ALL_FILTER)}
-                  className="cursor-pointer text-xs font-medium text-[var(--foreground-muted)] transition hover:text-white"
-                >
-                  Clear
-                </button>
-              ) : null}
-            </div>
-
-            <div className="max-h-64 overflow-y-auto pr-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              <div className="flex flex-wrap gap-2">
-                {dropdownRoles.map((role) => (
-                  <button
-                    key={role}
-                    type="button"
-                    data-interactive
-                    onClick={() => handleSelect(role)}
-                    className={cn(
-                      "inline-flex max-w-full cursor-pointer items-center rounded-full border px-3 py-1.5 text-xs font-medium transition-all duration-200",
-                      activeRole === role
-                        ? "border-[var(--blue-500)] bg-[var(--accent-soft)] text-white shadow-[0_0_12px_var(--accent-glow)]"
-                        : "border-[var(--border)] text-[var(--foreground-muted)] hover:border-[var(--border-strong)] hover:text-white",
-                    )}
-                  >
-                    <span className="max-w-[13rem] truncate sm:max-w-none">
-                      {role}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>,
-          document.body,
-        )
-        : null}
-    </>
-  );
-}
-
-
-function MobileProjectCarousel({
-  projects,
-  emptyMessage = "No projects available.",
-  showImage = true,
-}: {
-  projects: Project[];
-  emptyMessage?: string;
-  showImage?: boolean;
-}) {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(projects.length > 1);
-
-  const updateState = useCallback(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const items = Array.from(
-      scroller.querySelectorAll<HTMLElement>("[data-carousel-card]"),
-    );
-
-    if (items.length === 0) {
-      setCurrentSlide(0);
-      setCanScrollPrev(false);
-      setCanScrollNext(false);
-      return;
-    }
-
-    const scrollerCenter = scroller.scrollLeft + scroller.clientWidth / 2;
-    let closestIndex = 0;
-    let closestDistance = Number.POSITIVE_INFINITY;
-
-    items.forEach((item, index) => {
-      const itemCenter = item.offsetLeft + item.offsetWidth / 2;
-      const distance = Math.abs(scrollerCenter - itemCenter);
-
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestIndex = index;
-      }
-    });
-
-    setCurrentSlide(closestIndex);
-    setCanScrollPrev(scroller.scrollLeft > 8);
-    setCanScrollNext(
-      scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 8,
-    );
-  }, []);
-
-  const scrollToIndex = useCallback((index: number) => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const items = Array.from(
-      scroller.querySelectorAll<HTMLElement>("[data-carousel-card]"),
-    );
-
-    const target = items[index];
-    if (!target) return;
-
-    const left =
-      target.offsetLeft - (scroller.clientWidth - target.offsetWidth) / 2;
-
-    scroller.scrollTo({ left, behavior: "smooth" });
-  }, []);
-
-  const scrollPrev = () => {
-    scrollToIndex(Math.max(0, currentSlide - 1));
-  };
-
-  const scrollNext = () => {
-    scrollToIndex(Math.min(projects.length - 1, currentSlide + 1));
-  };
-
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-
-    setCurrentSlide(0);
-    setCanScrollPrev(false);
-    setCanScrollNext(projects.length > 1);
-
-    if (scroller) {
-      scroller.scrollTo({ left: 0, behavior: "auto" });
-    }
-
-    window.requestAnimationFrame(updateState);
-  }, [projects, updateState]);
-
-  useEffect(() => {
-    updateState();
-
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const handleScroll = () => {
-      window.requestAnimationFrame(updateState);
-    };
-
-    scroller.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", updateState);
-
-    return () => {
-      scroller.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", updateState);
-    };
-  }, [projects, updateState]);
-
-  if (projects.length === 0) {
-    return (
-      <p className="py-8 text-center text-sm text-[var(--foreground-subtle)]">
-        {emptyMessage}
-      </p>
-    );
-  }
-
-  const isSingleProject = projects.length === 1;
-
-  return (
-    <div className="relative md:hidden">
-      <div
-        ref={scrollerRef}
-        className={cn(
-          "-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-4 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-          isSingleProject && "justify-center overflow-hidden",
-        )}
-      >
-        {projects.map((project, index) => (
-          <div
-            key={project.slug}
-            data-carousel-card
-            className={cn(
-              "shrink-0 snap-center transform-gpu transition-all duration-500 ease-out motion-reduce:transform-none motion-reduce:opacity-100",
-              currentSlide === index
-                ? "scale-100 opacity-100"
-                : "scale-[0.96] opacity-80",
-              isSingleProject
-                ? "w-[calc(100vw-2rem)] max-w-none"
-                : showImage
-                  ? "w-[82vw] max-w-[21rem]"
-                  : "w-[80vw] max-w-[20rem]",
-            )}
-          >
-            <MobileProjectCard project={project} showImage={showImage} />
-          </div>
-        ))}
-      </div>
-
-      {projects.length > 1 ? (
-        <>
-          <button
-            type="button"
-            aria-label="Previous project"
-            onClick={scrollPrev}
-            disabled={!canScrollPrev}
-            className={cn(
-              "absolute left-0 z-10 inline-flex h-9 w-9 cursor-pointer -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border)] bg-[rgba(8,14,28,0.82)] text-white shadow-[0_12px_30px_rgba(0,0,0,0.32)] backdrop-blur-xl transition enabled:hover:border-[var(--border-strong)] disabled:cursor-not-allowed disabled:opacity-35",
-              showImage ? "top-[42%]" : "top-1/2",
-            )}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </button>
-
-          <button
-            type="button"
-            aria-label="Next project"
-            onClick={scrollNext}
-            disabled={!canScrollNext}
-            className={cn(
-              "absolute right-0 z-10 inline-flex h-9 w-9 cursor-pointer -translate-y-1/2 items-center justify-center rounded-full border border-[var(--border)] bg-[rgba(8,14,28,0.82)] text-white shadow-[0_12px_30px_rgba(0,0,0,0.32)] backdrop-blur-xl transition enabled:hover:border-[var(--border-strong)] disabled:cursor-not-allowed disabled:opacity-35",
-              showImage ? "top-[42%]" : "top-1/2",
-            )}
-          >
-            <ArrowRight className="h-4 w-4" />
-          </button>
-
-          <div className="mt-5 flex items-center justify-center gap-3">
-            <span className="min-w-6 text-right font-mono text-[10px] text-[var(--blue-300)]">
-              {String(currentSlide + 1).padStart(2, "0")}
-            </span>
-
-            <div className="relative h-1.5 w-28 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full bg-[var(--blue-300)] shadow-[0_0_12px_rgba(72,202,228,0.45)] transition-all duration-500 ease-out"
-                style={{
-                  width: `${((currentSlide + 1) / projects.length) * 100}%`,
-                }}
-              />
-            </div>
-
-            <span className="min-w-6 font-mono text-[10px] text-[var(--foreground-subtle)]">
-              {String(projects.length).padStart(2, "0")}
-            </span>
-          </div>
-        </>
+    <div className="flex items-center gap-1.5">
+      {project.githubUrl ? (
+        <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} on GitHub (opens in a new tab)`} className={iconLink}>
+          <SocialIcon platform="github" className="h-4 w-4" />
+        </a>
+      ) : null}
+      {project.liveUrl ? (
+        <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} live site (opens in a new tab)`} className={iconLink}>
+          <ArrowUpRight aria-hidden className="h-4 w-4" />
+        </a>
       ) : null}
     </div>
   );
 }
 
-function MobileProjectCard({
-  project,
-  showImage = true,
-}: {
-  project: Project;
-  showImage?: boolean;
-}) {
+function FeaturedTile({ project, index, wide }: { project: Project; index: number; wide: boolean }) {
   return (
-    <article
-      className={cn(
-        "h-full overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] shadow-[0_16px_44px_rgba(0,0,0,0.24)] transition-transform duration-300 active:scale-[0.985]",
-        !showImage && "p-4 text-left min-[390px]:p-5",
-      )}
+    <Tile
+      as="article"
+      variant={tileVariantAt(index)}
+      interactive
+      className={cn("flex flex-col gap-4", wide && "md:col-span-2")}
     >
-      {showImage ? (
-        <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-[linear-gradient(145deg,rgba(10,15,26,0.96),rgba(2,62,138,0.22))]">
-          {project.image ? (
-            <img
-              src={project.image}
-              alt={project.title}
-              loading="lazy"
-              className="h-full w-full rounded-2xl object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center rounded-2xl bg-[radial-gradient(circle_at_24%_24%,rgba(72,202,228,0.16),transparent_28%),radial-gradient(circle_at_78%_76%,rgba(0,119,182,0.2),transparent_32%)] px-6 text-center">
-              <p className="font-[family-name:var(--font-syne)] text-xl font-semibold text-white">
-                {project.title}
-              </p>
-            </div>
-          )}
+      <div className="flex items-center justify-between gap-3">
+        <p className="label">
+          {pad(index + 1)} / {project.year}
+        </p>
+        {project.status ? <Badge variant={statusBadgeVariant(project.status)}>{STATUS_LABEL[project.status]}</Badge> : null}
+      </div>
 
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-[#030712]/85 via-transparent to-transparent" />
-
-          {project.status ? (
-            <span
-              className={cn(
-                "absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-widest",
-                getStatusClass(project.status),
-              )}
-            >
-              {project.status}
-            </span>
-          ) : null}
+      {project.image ? (
+        <div className={cn("relative overflow-hidden rounded-[10px] border border-current", wide ? "aspect-[16/8]" : "aspect-[16/10]")}>
+          <ZoomableImage
+            src={project.image}
+            alt={`${project.title} screenshot`}
+            sizes={wide ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
+            imageClassName="object-cover"
+          />
         </div>
       ) : null}
 
-      <div className={cn("space-y-3 text-left", showImage ? "p-4" : "")}>
-        <div className="flex items-start justify-between gap-3">
-          <p className="min-w-0 break-words font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--blue-400)]">
-            {project.year} · {project.role}
-          </p>
-
-          {!showImage && project.status ? (
-            <span
-              className={cn(
-                "shrink-0 rounded-full border px-2 py-0.5 text-[9px] font-medium uppercase tracking-widest",
-                getStatusClass(project.status),
-              )}
-            >
-              {project.status}
-            </span>
-          ) : null}
-        </div>
-
-        <h3 className="font-[family-name:var(--font-syne)] text-lg font-semibold leading-tight text-white">
-          <Link href={`/projects/${project.slug}`} data-interactive className="transition hover:text-[var(--blue-200)] focus-visible:underline">
+      <div className="min-w-0">
+        <h3 className={cn("display [overflow-wrap:anywhere]", wide ? "text-[clamp(1.75rem,4vw,3rem)]" : "text-2xl")}>
+          <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0 after:rounded-tile after:content-['']">
             {project.title}
           </Link>
         </h3>
-
-        <p className="line-clamp-4 text-sm leading-7 text-[var(--foreground-muted)]">
-          {project.description}
-        </p>
-
-        <div className="flex flex-wrap gap-1.5">
-          {project.tags.slice(0, showImage ? 4 : 5).map((tag) => (
-            <Badge key={tag}>{tag}</Badge>
-          ))}
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2 pt-1">
-          {project.liveUrl ? (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-9 items-center gap-1 rounded-full border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--blue-300)] transition hover:border-[var(--border-strong)] hover:text-white"
-            >
-              View live <ArrowUpRight className="h-3.5 w-3.5" />
-            </a>
-          ) : null}
-
-          {project.githubUrl ? (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`GitHub — ${project.title}`}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white"
-            >
-              <SocialIcon platform="github" className="h-3.5 w-3.5" />
-            </a>
-          ) : null}
-        </div>
+        <p className="label mt-2 opacity-80">{project.role}</p>
+        <p className="mt-3 line-clamp-3 text-sm leading-relaxed">{project.description}</p>
       </div>
-    </article>
+
+      <div className="mt-auto flex flex-wrap items-end justify-between gap-3">
+        <ul className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+          {project.tags.slice(0, 6).map((tag) => (
+            <li key={tag}>
+              <Badge>{tag}</Badge>
+            </li>
+          ))}
+        </ul>
+        <ProjectLinks project={project} />
+      </div>
+    </Tile>
   );
 }
 
-function FeaturedCard({
-  project,
-  index,
-  lowMotion,
-}: {
-  project: Project;
-  index: number;
-  lowMotion: boolean;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      registerGsapPlugins();
-
-      if (lowMotion) {
-        gsap.set(cardRef.current, {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          rotateY: 0,
-          clearProps: "filter,transform,opacity,visibility",
-        });
-        return;
-      }
-
-      gsap.fromTo(
-        cardRef.current,
-        { autoAlpha: 0, y: 18, scale: 0.98 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.42,
-          delay: index * 0.04,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: cardRef.current,
-            start: "top 90%",
-            toggleActions: "play none none reverse",
-          },
-        },
-      );
-    },
-    { dependencies: [lowMotion], scope: cardRef },
-  );
-
+function ProjectRow({ project, index }: { project: Project; index: number }) {
   return (
-    <GlowCard
-      ref={cardRef}
-      intensity={lowMotion ? 0.18 : 0.35}
-      className="project-feature-card group min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] transition-shadow duration-300 hover:border-[var(--border-strong)] hover:shadow-[0_0_28px_rgba(0,180,216,0.08)]"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-[linear-gradient(145deg,rgba(10,15,26,0.96),rgba(2,62,138,0.22))] sm:aspect-[16/9]">
-        {project.image ? (
-          <ZoomableImage
-            src={project.image}
-            alt={project.title}
-            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            className="absolute inset-0 rounded-2xl"
-            imageClassName="rounded-2xl object-cover"
-            buttonClassName="right-3 top-3"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-[radial-gradient(circle_at_24%_24%,rgba(72,202,228,0.16),transparent_28%),radial-gradient(circle_at_78%_76%,rgba(0,119,182,0.2),transparent_32%)] px-6 text-center">
-            <p className="max-w-[80%] font-[family-name:var(--font-syne)] text-2xl font-semibold leading-tight text-white sm:text-3xl">
-              {project.title}
-            </p>
-          </div>
-        )}
-
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-[#030712] via-transparent to-transparent" />
-
-        {project.status ? (
-          <span
-            className={cn(
-              "absolute right-3 top-3 rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-widest",
-              getStatusClass(project.status),
-            )}
-          >
-            {project.status}
-          </span>
-        ) : null}
-      </div>
-
-      <div className="space-y-3 p-4 sm:p-5 md:p-6 xl:p-5">
-        <div aria-hidden className="project-module-rail">
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <p className="break-words font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--blue-400)]">
-              {project.year} · {project.role}
-            </p>
-
-            <h3 className="mt-1.5 break-words font-[family-name:var(--font-syne)] text-lg font-semibold leading-tight text-white sm:text-xl xl:text-lg">
-              <Link href={`/projects/${project.slug}`} data-interactive className="transition hover:text-[var(--blue-200)] focus-visible:underline">
+    <li className="group relative grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 border-t border-line py-4 transition-colors hover:bg-surface md:grid-cols-[3rem_minmax(0,1.4fr)_minmax(0,1fr)_auto_auto] md:px-2">
+      <span className="label text-ink-muted">{pad(index + 1)}</span>
+      <div className="min-w-0">
+        <h4 className="display text-lg [overflow-wrap:anywhere] sm:text-xl">
+          <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0 after:content-['']">
             {project.title}
           </Link>
-            </h3>
-          </div>
-
-          {project.githubUrl ? (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`GitHub — ${project.title}`}
-              data-interactive
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white hover:shadow-[0_0_14px_var(--accent-glow)] sm:h-11 sm:w-11"
-            >
-              <SocialIcon platform="github" className="h-4 w-4" />
-            </a>
-          ) : null}
-        </div>
-
-        <p className="text-sm leading-7 text-[var(--foreground-muted)]">
-          {project.description}
-        </p>
-
-        <div className="flex flex-wrap gap-1.5">
-          {project.tags.map((tag) => (
-            <Badge key={tag}>{tag}</Badge>
-          ))}
-        </div>
-
-        {project.liveUrl ? (
-          <a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-interactive
-            className="inline-flex min-h-9 items-center gap-1 text-sm font-medium text-[var(--blue-300)] transition hover:text-white"
-          >
-            View live <ArrowUpRight className="h-3.5 w-3.5" />
-          </a>
-        ) : null}
+        </h4>
+        <p className="mt-1 line-clamp-2 text-sm text-ink-muted md:line-clamp-1">{project.description}</p>
       </div>
-    </GlowCard>
-  );
-}
-
-function CompactCard({ project }: { project: Project }) {
-  return (
-    <GlowCard
-      intensity={0.22}
-      className="project-compact-card group flex h-full min-w-0 flex-col rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 transition duration-300 hover:border-[var(--border-strong)] hover:shadow-[0_0_22px_rgba(0,180,216,0.08)] sm:p-5"
-    >
-      <span aria-hidden className="project-corner project-corner-tl" />
-      <span aria-hidden className="project-corner project-corner-br" />
-      <span aria-hidden className="project-module-dot" />
-
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--blue-400)]">
-            {project.year} · {project.role}
-          </p>
-
-          <h3 className="mt-1 break-words font-[family-name:var(--font-syne)] text-base font-semibold leading-snug text-white">
-            <Link href={`/projects/${project.slug}`} data-interactive className="transition hover:text-[var(--blue-200)] focus-visible:underline">
-            {project.title}
-          </Link>
-          </h3>
-        </div>
-
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5 pt-0.5">
-          {project.status ? (
-            <span
-              className={cn(
-                "rounded-full border px-2 py-0.5 text-[9px] font-medium uppercase tracking-widest",
-                getStatusClass(project.status),
-              )}
-            >
-              {project.status}
-            </span>
-          ) : null}
-
-          {project.githubUrl ? (
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`GitHub — ${project.title}`}
-              data-interactive
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white sm:h-8 sm:w-8"
-            >
-              <SocialIcon platform="github" className="h-3.5 w-3.5" />
-            </a>
-          ) : null}
-
-          {project.liveUrl ? (
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Live — ${project.title}`}
-              data-interactive
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white sm:h-8 sm:w-8"
-            >
-              <ArrowUpRight className="h-3.5 w-3.5" />
-            </a>
-          ) : null}
-        </div>
+      <p className="label hidden text-ink-muted md:block">{project.role}</p>
+      <div className="col-start-2 row-start-2 flex flex-wrap items-center gap-1.5 md:col-start-auto md:row-start-auto">
+        <span className="label text-ink-muted">{project.year}</span>
+        {project.status ? <Badge variant={statusBadgeVariant(project.status)}>{STATUS_LABEL[project.status]}</Badge> : null}
       </div>
-
-      <p className="mt-2.5 flex-1 text-sm leading-7 text-[var(--foreground-muted)] sm:text-xs sm:leading-relaxed">
-        {project.description}
-      </p>
-
-      <div className="mt-3 flex flex-wrap gap-1.5">
-        {project.tags.map((tag) => (
-          <span
-            key={tag}
-            className="rounded-full border border-[var(--border)] bg-white/[0.02] px-2 py-0.5 text-[10px] font-medium text-[var(--blue-200)]"
-          >
-            {tag}
-          </span>
-        ))}
+      <div className="col-start-3 row-span-2 row-start-1 md:row-span-1 md:col-start-auto">
+        <ProjectLinks project={project} />
       </div>
-    </GlowCard>
+    </li>
   );
 }
 
@@ -875,280 +122,101 @@ interface ProjectsSectionProps {
 }
 
 export function ProjectsSection({ projects }: ProjectsSectionProps) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const allProjectsGridRef = useRef<HTMLDivElement>(null);
-  const gridHeightBeforeToggleRef = useRef<number | null>(null);
-  const lowMotion = useLowMotionDevice();
-  const [activeRole, setActiveRole] = useState(ALL_FILTER);
+  const [role, setRole] = useState(ALL);
   const [expanded, setExpanded] = useState(false);
 
-  const featuredProjects = useMemo(
-    () => projects.filter((project) => project.featured),
-    [projects],
+  const featured = useMemo(() => projects.filter((p) => p.featured), [projects]);
+  const rest = useMemo(() => projects.filter((p) => !p.featured), [projects]);
+  const roles = useMemo(
+    () => Array.from(new Set(rest.map((p) => p.role))).filter(Boolean).sort((a, b) => a.localeCompare(b)),
+    [rest],
   );
 
-  const nonFeatured = useMemo(
-    () => projects.filter((project) => !project.featured),
-    [projects],
-  );
+  // Filter lives in ?filter= so it is shareable and survives back/forward.
+  useEffect(() => {
+    const read = () => {
+      const value = new URLSearchParams(window.location.search).get("filter");
+      setRole(value && roles.includes(value) ? value : ALL);
+    };
+    read();
+    window.addEventListener("popstate", read);
+    return () => window.removeEventListener("popstate", read);
+  }, [roles]);
 
-  const nonFeaturedProjectRoles = useMemo(
-    () =>
-      Array.from(new Set(nonFeatured.map((project) => project.role)))
-        .filter(Boolean)
-        .sort((a, b) => a.localeCompare(b)),
-    [nonFeatured],
-  );
-
-  const filtered = useMemo(() => {
-    if (activeRole === ALL_FILTER) return nonFeatured;
-
-    return nonFeatured.filter((project) => project.role === activeRole);
-  }, [activeRole, nonFeatured]);
-
-  const visible = expanded ? filtered : filtered.slice(0, INITIAL_SHOW);
-  const hasMore = filtered.length > INITIAL_SHOW;
-
-  const handleFilterChange = (role: string) => {
-    setActiveRole(role);
+  const changeRole = (next: string) => {
+    setRole(next);
     setExpanded(false);
+    const url = new URL(window.location.href);
+    if (next === ALL) url.searchParams.delete("filter");
+    else url.searchParams.set("filter", next);
+    window.history.pushState(null, "", url);
   };
 
-  const handleToggleExpanded = () => {
-    const grid = allProjectsGridRef.current;
-
-    if (grid) {
-      gridHeightBeforeToggleRef.current = grid.getBoundingClientRect().height;
-    }
-
-    setExpanded((value) => !value);
-  };
-
-  useGSAP(
-    () => {
-      if (lowMotion) return;
-
-      return;
-    },
-    { dependencies: [lowMotion], revertOnUpdate: true, scope: sectionRef },
-  );
-
-  useLayoutEffect(() => {
-    const grid = allProjectsGridRef.current;
-    const previousHeight = gridHeightBeforeToggleRef.current;
-
-    if (!grid || previousHeight == null) return;
-
-    gridHeightBeforeToggleRef.current = null;
-
-    if (lowMotion) {
-      grid.style.height = "";
-      grid.style.overflow = "";
-      return;
-    }
-
-    registerGsapPlugins();
-
-    const nextHeight = grid.scrollHeight;
-
-    gsap.killTweensOf(grid);
-    gsap.fromTo(
-      grid,
-      {
-        height: previousHeight,
-        overflow: "hidden",
-      },
-      {
-        height: nextHeight,
-        duration: 0.48,
-        ease: "power2.out",
-        clearProps: "height,overflow",
-      },
-    );
-  }, [visible.length, lowMotion]);
-
-  useGSAP(
-    () => {
-      registerGsapPlugins();
-
-      const items = gsap.utils.toArray<HTMLElement>(
-        "[data-all-project-frame]",
-        allProjectsGridRef.current,
-      );
-
-      if (items.length === 0) return;
-
-      if (lowMotion) {
-        gsap.set(items, {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          clearProps: "filter,transform,opacity,visibility",
-        });
-        return;
-      }
-
-      gsap.fromTo(
-        items,
-        { autoAlpha: 0, y: 14, scale: 0.985 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.36,
-          stagger: 0.035,
-          ease: "power2.out",
-          clearProps: "filter",
-        },
-      );
-    },
-    {
-      dependencies: [visible, lowMotion],
-      revertOnUpdate: true,
-      scope: allProjectsGridRef,
-    },
-  );
+  const filtered = role === ALL ? rest : rest.filter((p) => p.role === role);
+  const visible = expanded ? filtered : filtered.slice(0, INITIAL_SHOW);
 
   return (
-    <Section id="projects" ref={sectionRef} className="relative z-20">
-      {!lowMotion ? (
-        <div aria-hidden className="projects-interactive-bg hidden sm:block">
-          <span className="projects-bg-band projects-bg-band-a" />
-          <span className="projects-bg-band projects-bg-band-b" />
-          <span className="projects-bg-pulse projects-bg-pulse-a" />
-          <span className="projects-bg-pulse projects-bg-pulse-b" />
-        </div>
-      ) : null}
+    <Section id="projects" aria-labelledby="projects-title">
+      <Container>
+        <SectionHeading
+          id="projects-title"
+          index="01"
+          eyebrow="Projects"
+          title="Software built for real use."
+          description="Web systems, product builds and blockchain work shaped by client needs, community projects and practical delivery."
+        />
 
-      <Container className="relative z-10 min-w-0 overflow-visible">
-        <RevealOnScroll>
-          <SectionHeading
-            eyebrow="Projects"
-            titleClassName="lg:max-w-none lg:whitespace-nowrap"
-            title={
-              <>
-                Software built for{" "}
-                <span className="emphasis-glow-blue">real use</span>.
-              </>
-            }
-            description={
-              <>
-                A selection of{" "}
-                <span className="emphasis-glow-blue font-medium">web systems</span>
-                , product builds, and{" "}
-                <span className="emphasis-glow-gold font-medium">blockchain work</span>{" "}
-                shaped by client needs, community projects, and{" "}
-                <span className="emphasis-glow-white font-medium">practical delivery</span>.
-              </>
-            }
-          />
-        </RevealOnScroll>
-
-        <div className="mt-7 md:hidden">
-          <MobileProjectCarousel projects={featuredProjects} />
-        </div>
-
-        <div
-          className="mt-7 hidden min-w-0 gap-4 sm:mt-10 sm:gap-5 md:grid md:grid-cols-2 xl:grid-cols-3"
-          style={{ perspective: lowMotion ? undefined : 1200 }}
-        >
-          {featuredProjects.map((project, index) => (
-            <FeaturedCard
-              key={project.slug}
-              project={project}
-              index={index}
-              lowMotion={lowMotion}
-            />
-          ))}
-        </div>
-
-        {nonFeatured.length > 0 ? (
-          <div className="relative z-20 mt-10 overflow-visible sm:mt-14">
-            <RevealOnScroll>
-              <div className="relative z-[80] flex items-center justify-between gap-3 overflow-visible text-left lg:items-start">
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-[family-name:var(--font-syne)] text-base font-semibold text-white min-[390px]:text-lg sm:text-xl">
-                    <span className="lg:hidden">More projects</span>
-                    <span className="hidden lg:inline">All projects</span>
-                    <span className="ml-2 align-middle font-mono text-sm font-normal text-[var(--foreground-subtle)]">
-                      {filtered.length}
-                    </span>
-                  </h3>
-                </div>
-
-                <div className="flex shrink-0 justify-end">
-                  <ProjectFilter
-                    roles={nonFeaturedProjectRoles}
-                    projects={nonFeatured}
-                    activeRole={activeRole}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-              </div>
-            </RevealOnScroll>
-
-            <div className="relative z-0 mt-5 md:hidden">
-              <MobileProjectCarousel
-                projects={filtered}
-                showImage={false}
-                emptyMessage="No projects match that role."
-              />
-            </div>
-
-            <div
-              ref={allProjectsGridRef}
-              className="relative z-0 mt-5 hidden min-w-0 grid-cols-1 gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4 md:grid xl:grid-cols-3"
-            >
-              {visible.map((project) => (
-                <div key={project.slug} data-all-project-frame>
-                  <CompactCard project={project} />
-                </div>
-              ))}
-
-              {filtered.length === 0 ? (
-                <p className="col-span-full py-8 text-center text-sm text-[var(--foreground-subtle)]">
-                  No projects match that role.
-                </p>
-              ) : null}
-            </div>
-
-            {hasMore ? (
-              <RevealOnScroll>
-                <div className="mt-6 hidden justify-center md:flex">
-                  <button
-                    type="button"
-                    data-interactive
-                    aria-expanded={expanded}
-                    onClick={handleToggleExpanded}
-                    className="group inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-white/[0.02] px-5 py-2 text-sm text-[var(--foreground-muted)] shadow-[0_0_0_rgba(72,202,228,0)] transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:bg-white/[0.04] hover:text-white hover:shadow-[0_0_20px_rgba(72,202,228,0.1)] active:translate-y-0 active:scale-[0.98] motion-reduce:transform-none"
-                  >
-                    {expanded ? (
-                      <>
-                        <ChevronUp className="h-4 w-4 transition-transform duration-300 group-hover:-translate-y-0.5" />
-                        Show less
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" />
-                        Show {filtered.length - INITIAL_SHOW} more
-                      </>
-                    )}
-                  </button>
-                </div>
-              </RevealOnScroll>
-            ) : null}
+        {featured.length ? (
+          <div className="mt-10 grid gap-1.5 md:grid-cols-2 lg:grid-cols-3">
+            {featured.map((project, index) => (
+              <FeaturedTile key={project.slug} project={project} index={index} wide={index === 0 && featured.length > 1} />
+            ))}
           </div>
         ) : null}
 
-        <div className="mt-8 flex justify-center">
-          <Link
-            href="/projects"
-            data-interactive
-            className="inline-flex min-h-10 items-center gap-1.5 text-sm font-medium text-[var(--blue-300)] transition hover:text-white"
-          >
-            Browse all {projects.length} projects <ArrowUpRight className="h-4 w-4" />
-          </Link>
-        </div>
+        {rest.length ? (
+          <div className="mt-14">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <h3 className="display text-xl">
+                More projects <span className="label align-middle text-ink-muted">({filtered.length})</span>
+              </h3>
+              {roles.length > 1 ? (
+                <label className="flex items-center gap-3">
+                  <span className="label text-ink-muted">Filter by role</span>
+                  <select
+                    value={role}
+                    onChange={(event) => changeRole(event.target.value)}
+                    className="label min-h-11 max-w-[60vw] cursor-pointer rounded-none border border-line bg-bg px-3 text-ink sm:max-w-xs"
+                  >
+                    {[ALL, ...roles].map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
+            </div>
+
+            <ol className="mt-5 border-b border-line" aria-live="polite">
+              {visible.map((project) => (
+                <ProjectRow key={project.slug} project={project} index={featured.length + rest.indexOf(project)} />
+              ))}
+              {filtered.length === 0 ? <li className="border-t border-line py-8 text-ink-muted">No projects match that role.</li> : null}
+            </ol>
+
+            <div className="mt-6 flex flex-wrap gap-2">
+              {filtered.length > INITIAL_SHOW ? (
+                <button type="button" aria-expanded={expanded} onClick={() => setExpanded((v) => !v)} className={buttonClass("secondary")}>
+                  {expanded ? "Show less" : `Show ${filtered.length - INITIAL_SHOW} more`}
+                </button>
+              ) : null}
+              <Link href="/projects" className={buttonClass("ghost")}>
+                All {projects.length} projects <ArrowUpRight aria-hidden className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        ) : null}
       </Container>
     </Section>
   );

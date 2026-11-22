@@ -221,25 +221,6 @@ select:-webkit-autofill {
 
 /* ─── Motion ────────────────────────────────────────────────────────────────── */
 
-/* Reveal: pure CSS scroll-driven animation. No JS, so nothing is ever gated
-   on hydration; browsers without view timelines simply show the content. */
-@keyframes reveal {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-}
-
-@media screen and (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    [data-reveal] {
-      animation: reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 30%;
-    }
-  }
-}
-
 /* Scroll progress: flat 2px primary bar on a CSS scroll timeline. */
 .scroll-progress {
   display: none;
