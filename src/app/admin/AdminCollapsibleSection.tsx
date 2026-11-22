@@ -38,7 +38,7 @@ export function AdminCollapsibleSection({
   return (
     <section
       id={id}
-      className="scroll-mt-6 rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-4 sm:p-6"
+      className="scroll-mt-6 rounded-tile border border-line bg-surface p-4 sm:p-6"
     >
       <button
         type="button"
@@ -48,19 +48,19 @@ export function AdminCollapsibleSection({
         className="flex min-h-11 w-full items-center justify-between gap-3 text-left"
       >
         <span className="flex min-w-0 items-center gap-3">
-          <span className="break-words font-[family-name:var(--font-syne)] text-lg font-semibold text-white sm:text-xl">
+          <span className="break-words font-display text-lg font-semibold text-ink sm:text-xl">
             {title}
           </span>
           {count !== undefined ? (
-            <span className="rounded-full border border-[var(--border)] px-3 py-1 text-xs text-[var(--foreground-muted)]">
+            <span className="rounded-full border border-line px-3 py-1 text-xs text-ink-muted">
               {count} {count === 1 ? "record" : "records"}
             </span>
           ) : null}
         </span>
         <span
           className={cn(
-            "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground-muted)] transition duration-300 sm:h-9 sm:w-9",
-            open && "border-[var(--border-strong)] text-white rotate-180",
+            "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-ink-muted transition duration-300 sm:h-9 sm:w-9",
+            open && "border-line text-ink rotate-180",
           )}
         >
           <ChevronDown className="h-4 w-4" />
@@ -78,7 +78,7 @@ export function AdminCollapsibleSection({
             transition={{ duration: prefersReducedMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
-            <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-5">
+            <div className="mt-5 flex flex-col gap-4 border-t border-line pt-5">
               {addDialog ? <div className="flex flex-wrap items-center justify-end gap-3">{addDialog}</div> : null}
               <div className="flex flex-col gap-3">{children}</div>
             </div>

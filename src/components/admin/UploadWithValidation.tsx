@@ -530,11 +530,11 @@ export default function UploadWithValidation({
   };
 
   return (
-    <div className="rounded-[1.75rem] border border-dashed border-[var(--border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-4 py-4 text-xs font-medium text-[var(--foreground-muted)]">
+    <div className="rounded-tile border border-dashed border-line bg-surface px-4 py-4 text-xs font-medium text-ink-muted">
       <div className="flex items-center justify-between">
         <span>{label}</span>
         {fileCount > 0 ? (
-          <span className="text-[10px] uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
+          <span className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">
             {fileCount} selected
           </span>
         ) : null}
@@ -553,7 +553,7 @@ export default function UploadWithValidation({
             <button
               type="button"
               onClick={handleDirectoryPick}
-              className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--blue-100)] transition hover:border-[var(--border-strong)] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-line bg-surface-2 px-4 py-2 text-sm font-semibold text-primary transition hover:border-line hover:text-ink"
             >
               <TriggerIcon className="h-4 w-4" />
               {triggerLabel}
@@ -569,7 +569,7 @@ export default function UploadWithValidation({
             />
           </>
         ) : (
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--blue-100)] transition hover:border-[var(--border-strong)] hover:text-white">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-surface-2 px-4 py-2 text-sm font-semibold text-primary transition hover:border-line hover:text-ink">
             <TriggerIcon className="h-4 w-4" />
             {triggerLabel}
             <input
@@ -582,7 +582,7 @@ export default function UploadWithValidation({
             />
           </label>
         )}
-        <p className="text-sm text-[var(--foreground-muted)]">
+        <p className="text-sm text-ink-muted">
           {fileCount === 0 ? "No files chosen" : `${fileCount} file${fileCount === 1 ? "" : "s"} ready`}
         </p>
         {fileCount > 0 ? (
@@ -603,7 +603,7 @@ export default function UploadWithValidation({
               uploadStartedAtRef.current = null;
               emitUploadState("idle");
             }}
-            className="inline-flex items-center gap-2 rounded-full border border-red-400/20 px-3 py-2 text-xs font-medium text-red-200 transition hover:bg-red-500/10"
+            className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-2 text-xs font-medium text-ink transition hover:bg-block-orange"
           >
             <Trash2 className="h-3.5 w-3.5" />
             Clear
@@ -612,7 +612,7 @@ export default function UploadWithValidation({
       </div>
 
       {fileCount > 0 ? (
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-[var(--foreground-muted)]">
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-ink-muted">
           <span>Total original: {formatBytes(totalOriginalBytes)}</span>
           <span>Total optimized: {Object.keys(metrics).length === fileCount ? formatBytes(totalOptimizedBytes) : "Estimating..."}</span>
           {submitting && estimatedRemainingMs ? (
@@ -628,23 +628,23 @@ export default function UploadWithValidation({
       ) : null}
 
       {overLimit && !selectionApproved ? (
-        <div className="mt-3 rounded-2xl border border-yellow-500/20 bg-yellow-500/8 p-3">
+        <div className="mt-3 rounded-tile border border-line bg-block-yellow p-3 text-on-block">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-yellow-400/20 bg-yellow-500/10 text-yellow-200">
+            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-on-block text-on-block">
               <AlertTriangle className="h-4 w-4" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-yellow-100">
+              <p className="text-sm font-semibold">
                 Review this large upload before uploading
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-yellow-100/80">
+              <p className="mt-1 text-xs leading-relaxed">
                 {fileCount} images are queued. That is above the recommended batch size of {maxFiles}. Keep this selection only if you want to upload the full batch now.
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setSelectionApproved(true)}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-200 transition hover:bg-emerald-500/15"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-block-green px-3 py-2 text-xs font-medium text-on-block transition hover:bg-block-green"
                 >
                   <Check className="h-3.5 w-3.5" />
                   Keep selection
@@ -665,7 +665,7 @@ export default function UploadWithValidation({
                     uploadStartedAtRef.current = null;
                     emitUploadState("idle");
                   }}
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-on-block px-3 py-2 text-xs font-medium text-on-block transition hover:bg-on-block hover:text-block-yellow"
                 >
                   <X className="h-3.5 w-3.5" />
                   Remove selection
@@ -677,17 +677,17 @@ export default function UploadWithValidation({
       ) : null}
 
       {uploadNotice ? (
-        <div className="mt-3 rounded-2xl border border-[var(--border)] bg-white/[0.02] p-3 text-xs text-[var(--foreground-muted)]">
+        <div className="mt-3 rounded-tile border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           {uploadNotice}
         </div>
       ) : null}
 
       {uploadErrors.length > 0 ? (
-        <div className="mt-3 rounded-2xl border border-red-400/20 bg-red-500/8 p-3 text-xs text-red-100">
-          <p className="font-semibold text-red-100">Some files failed to upload.</p>
+        <div className="mt-3 rounded-tile border border-line bg-block-orange p-3 text-xs text-on-block">
+          <p className="font-semibold">Some files failed to upload.</p>
           <div className="mt-2 space-y-1">
             {uploadErrors.slice(0, 3).map((error) => (
-              <p key={error} className="leading-relaxed text-red-100/85">
+              <p key={error} className="leading-relaxed">
                 {error}
               </p>
             ))}
@@ -696,7 +696,7 @@ export default function UploadWithValidation({
       ) : null}
 
       {fileCount > 0 ? (
-        <div className="mt-3 space-y-2 text-xs text-[var(--foreground-muted)]">
+        <div className="mt-3 space-y-2 text-xs text-ink-muted">
           {selectedFiles.map((file) => {
             const key = `${file.name}-${file.size}`;
             const currentProgress = progress[key];
@@ -705,15 +705,15 @@ export default function UploadWithValidation({
               <div key={key} className="flex items-center gap-3">
                 <div className="min-w-[220px]">
                   <div className="truncate">{file.name}</div>
-                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-[var(--foreground-subtle)]">
+                  <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-ink-muted">
                     <span>Original: {formatBytes(file.size)}</span>
                     <span>Optimized: {metric ? formatBytes(metric.optimizedBytes) : "Estimating..."}</span>
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="relative h-2 w-full rounded bg-white/[0.03]">
+                  <div className="relative h-2 w-full rounded bg-surface-2">
                     <div
-                      className="absolute left-0 top-0 h-2 rounded bg-[var(--blue-400)] transition-all"
+                      className="absolute left-0 top-0 h-2 rounded bg-primary transition-all"
                       style={{
                         width: currentProgress
                           ? `${(currentProgress.loaded / Math.max(1, currentProgress.total)) * 100}%`
@@ -740,7 +740,7 @@ export default function UploadWithValidation({
       ) : null}
 
       {submitting ? (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--border)] bg-white/[0.02] px-3 py-3 text-xs text-[var(--foreground-muted)]">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-tile border border-line bg-surface-2 px-3 py-3 text-xs text-ink-muted">
           <div className="flex items-center gap-2">
             <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" opacity="0.2" />
@@ -749,14 +749,14 @@ export default function UploadWithValidation({
             Uploading... many files may take a while.
           </div>
           {estimatedRemainingMs ? (
-            <div className="text-[11px] text-[var(--foreground-muted)]">
+            <div className="text-[11px] text-ink-muted">
               Estimated time remaining: {formatRemainingTime(estimatedRemainingMs)}
             </div>
           ) : null}
           <button
             type="button"
             onClick={cancelUpload}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-red-400/20 px-3 py-2 font-semibold text-red-200 transition hover:bg-red-500/10 hover:text-red-100"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-3 py-2 font-semibold text-ink transition hover:bg-block-orange hover:text-on-block"
           >
             <X className="h-3.5 w-3.5" />
             Cancel upload

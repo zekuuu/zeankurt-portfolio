@@ -139,7 +139,7 @@ function AdminCheckbox({
   defaultChecked?: boolean;
 }) {
   return (
-    <label className="group flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-2xl border border-[var(--border)] bg-white/[0.02] px-3 py-2 text-sm text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white">
+    <label className="group flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-tile border border-line bg-surface-2 px-3 py-2 text-sm text-ink-muted transition hover:border-line hover:text-ink">
       <span className="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">
         <input
           name={name}
@@ -149,7 +149,7 @@ function AdminCheckbox({
         />
         <span
           aria-hidden="true"
-          className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-[var(--border-strong)] bg-white/[0.025] text-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] transition peer-checked:border-[var(--blue-400)] peer-checked:bg-[var(--blue-500)] peer-checked:text-[#03121a] peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--blue-300)] peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-[var(--background-elevated)]"
+          className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-line bg-surface-2 text-transparent transition peer-checked:border-primary peer-checked:bg-primary peer-checked:text-on-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg"
         >
           <Check className="h-3.5 w-3.5 stroke-[3]" />
         </span>
@@ -162,9 +162,9 @@ function AdminCheckbox({
 function labelValue(label: string, valueText?: string) {
   if (!valueText) return null;
   return (
-    <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-white/[0.02] px-4 py-3">
-      <p className="text-[10px] uppercase tracking-[0.14em] text-[var(--foreground-subtle)]">{label}</p>
-      <p className="mt-1 break-words text-sm text-white">{valueText}</p>
+    <div className="min-w-0 rounded-tile border border-line bg-surface-2 px-4 py-3">
+      <p className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">{label}</p>
+      <p className="mt-1 break-words text-sm text-ink">{valueText}</p>
     </div>
   );
 }
@@ -184,14 +184,14 @@ function AssetPreview({
   if (!isImage) return null;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-white/[0.02] md:col-span-2">
+    <div className="overflow-hidden rounded-tile border border-line bg-surface-2 md:col-span-2">
       <div className={compact ? "relative h-48 sm:h-56" : "relative aspect-[16/10]"}>
         <ZoomableImage
           src={src}
           alt={alt}
           unoptimized={src.endsWith(".svg")}
           sizes="(max-width: 768px) 100vw, 720px"
-          imageClassName={compact ? "object-contain bg-black/20" : "object-cover"}
+          imageClassName={compact ? "object-contain bg-surface-2" : "object-cover"}
         />
       </div>
     </div>
@@ -221,13 +221,13 @@ function Field({
   options?: Array<{ label: string; value: string }>;
 }) {
   const className =
-    "rounded-xl border border-[var(--border)] bg-white/[0.03] px-3 py-2 text-sm text-white outline-none transition focus:border-[var(--border-strong)]";
+    "rounded-field border border-line bg-surface-2 px-3 py-2 text-sm text-ink transition focus:border-primary";
 
   return (
-    <label className="flex flex-col gap-1 text-xs text-[var(--foreground-muted)]">
+    <label className="flex flex-col gap-1 text-xs text-ink-muted">
       <span>
         {label}
-        {required ? <span className="ml-1 text-[var(--blue-300)]">*</span> : null}
+        {required ? <span className="ml-1 text-primary">*</span> : null}
       </span>
       {options ? (
         <AdminSelect
@@ -338,7 +338,7 @@ function DeleteButton({
       <button
         type="submit"
         formAction={deleteRecord}
-        className="inline-flex min-h-11 items-center rounded-full border border-red-400/20 px-3 py-2 text-xs font-medium text-red-200 transition hover:bg-red-500/10 sm:min-h-0 sm:py-1.5"
+        className="inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs font-medium text-ink transition hover:bg-block-orange sm:min-h-0 sm:py-1.5"
       >
         Delete
       </button>
@@ -359,7 +359,7 @@ function RowForm({
     <AdminActionForm
       action={action}
       refreshOnSuccess={refreshOnSuccess}
-      className="rounded-2xl border border-[var(--border)] bg-white/[0.02] p-4"
+      className="rounded-tile border border-line bg-surface-2 p-4"
     >
       <div className="flex min-w-0 flex-col gap-3">{children}</div>
     </AdminActionForm>
@@ -373,13 +373,13 @@ function ExistingImageField({ row }: { row?: Row }) {
       <input type="hidden" name="existing_image_path" value={current} />
       <AssetPreview src={current} alt={`${value(row, "title") || value(row, "name") || "Current"} preview`} compact />
       {current ? (
-        <p className="text-xs text-[var(--foreground-muted)]">
+        <p className="text-xs text-ink-muted">
           Current asset stored in Supabase:{" "}
           <a
             href={current}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[var(--blue-300)] transition hover:text-white"
+            className="text-primary transition hover:text-ink"
           >
             View current file
           </a>
@@ -396,13 +396,13 @@ function ExistingShowcaseImageField({ row }: { row?: Row }) {
       <input type="hidden" name="existing_image_path" value={current} />
       <AssetPreview src={current} alt={`${value(row, "name") || "Showcase"} preview`} compact />
       {current ? (
-        <p className="text-xs text-[var(--foreground-muted)]">
+        <p className="text-xs text-ink-muted">
           Current category showcase:{" "}
           <a
             href={current}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[var(--blue-300)] transition hover:text-white"
+            className="text-primary transition hover:text-ink"
           >
             View current file
           </a>
@@ -430,10 +430,10 @@ function RecordRow({
   editDialog: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-[var(--border)] bg-white/[0.02] px-4 py-4 md:flex-row md:items-center md:justify-between">
+    <div className="flex flex-col gap-3 rounded-tile border border-line bg-surface-2 px-4 py-4 md:flex-row md:items-center md:justify-between">
       <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-white">{title}</p>
-        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[var(--foreground-muted)]">
+        <p className="truncate text-sm font-semibold text-ink">{title}</p>
+        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink-muted">
           {subtitle ? <span>{subtitle}</span> : null}
           {meta ? <span>{meta}</span> : null}
         </div>
@@ -549,25 +549,25 @@ export default async function AdminPage() {
   });
 
   return (
-    <div className="min-h-dvh bg-[var(--background)] text-white">
+    <div className="min-h-dvh bg-bg text-ink">
       <AdminScrollReset />
-      <header className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]/90 backdrop-blur-sm">
+      <header className="sticky top-0 z-30 border-b border-line bg-bg">
         <div className="mx-auto flex min-h-14 max-w-screen-xl flex-wrap items-center justify-between gap-3 px-4 py-2 sm:flex-nowrap sm:px-5">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--blue-300)]">CMS</span>
-            <span className="h-4 w-px bg-[var(--border)]" />
-            <span className="font-[family-name:var(--font-syne)] text-sm font-semibold">Admin</span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">CMS</span>
+            <span className="h-4 w-px bg-line-soft" />
+            <span className="font-display text-sm font-semibold">Admin</span>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-4">
             <a
               href="/"
-              className="inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5"
+              className="inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs text-ink-muted transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5"
             >
               Back to portfolio
             </a>
-            <span className="hidden text-xs text-[var(--foreground-muted)] sm:block">{user.email}</span>
+            <span className="hidden text-xs text-ink-muted sm:block">{user.email}</span>
             <form action={signOut}>
-              <button className="inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5">
+              <button className="inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs text-ink-muted transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5">
                 Sign out
               </button>
             </form>
@@ -578,52 +578,52 @@ export default async function AdminPage() {
       <div className="mx-auto flex max-w-screen-xl gap-0 px-0 py-6 lg:gap-6 lg:px-5">
         <aside className="hidden w-52 shrink-0 lg:block">
           <nav className="sticky top-20 flex flex-col gap-1">
-            <p className="mb-2 px-3 text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--foreground-muted)]">
+            <p className="mb-2 px-3 text-[10px] font-medium uppercase tracking-[0.15em] text-ink-muted">
               Dev Portfolio
             </p>
             {navItems.filter((item) => item.id !== "creative-portfolio").map((item) => (
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className="group flex items-center justify-between rounded-xl px-3 py-2 text-sm text-[var(--foreground-muted)] transition hover:bg-white/[0.05] hover:text-white"
+                className="group flex items-center justify-between rounded-field px-3 py-2 text-sm text-ink-muted transition hover:bg-surface-2 hover:text-ink"
               >
                 <span className="flex items-center gap-2.5">
-                  <span className="text-base leading-none text-[var(--blue-300)] opacity-60 group-hover:opacity-100">
+                  <span className="text-base leading-none text-primary opacity-60 group-hover:opacity-100">
                     {item.icon}
                   </span>
                   {item.label}
                 </span>
-                <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-white/[0.07] px-2 text-[10px] leading-none tabular-nums">{item.count}</span>
+                <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-surface-2 px-2 text-[10px] leading-none tabular-nums">{item.count}</span>
               </a>
             ))}
 
-            <p className="mb-2 mt-5 px-3 text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--foreground-muted)]">
+            <p className="mb-2 mt-5 px-3 text-[10px] font-medium uppercase tracking-[0.15em] text-ink-muted">
               Creative Portfolio
             </p>
             {navItems.filter((item) => item.id === "creative-portfolio").map((item) => (
               <div key={item.id} className="space-y-1">
                 <a
                   href={`#${item.id}`}
-                  className="group flex items-center justify-between rounded-xl px-3 py-2 text-sm text-[var(--foreground-muted)] transition hover:bg-white/[0.05] hover:text-white"
+                  className="group flex items-center justify-between rounded-field px-3 py-2 text-sm text-ink-muted transition hover:bg-surface-2 hover:text-ink"
                 >
                   <span className="flex items-center gap-2.5">
-                    <span className="text-base leading-none text-[var(--blue-300)] opacity-60 group-hover:opacity-100">
+                    <span className="text-base leading-none text-primary opacity-60 group-hover:opacity-100">
                       {item.icon}
                     </span>
                     {item.label}
                   </span>
-                  <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-white/[0.07] px-2 text-[10px] leading-none tabular-nums">{item.count}</span>
+                  <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-surface-2 px-2 text-[10px] leading-none tabular-nums">{item.count}</span>
                 </a>
                 {creativeSidebarItems.length > 0 ? (
-                  <div className="ml-6 flex flex-col gap-1 border-l border-[var(--border)] pl-3">
+                  <div className="ml-6 flex flex-col gap-1 border-l border-line pl-3">
                     {creativeSidebarItems.map((category) => (
                       <a
                         key={category.id}
                         href={`#${category.anchorId}`}
-                        className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 py-2 text-xs text-[var(--foreground-muted)] transition hover:bg-white/[0.04] hover:text-white lg:min-h-0 lg:py-1.5"
+                        className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 py-2 text-xs text-ink-muted transition hover:bg-surface-2 hover:text-ink lg:min-h-0 lg:py-1.5"
                       >
                         <span className="truncate">{category.name}</span>
-                        <span className="pr-3 shrink-0 text-[10px] tabular-nums text-[var(--blue-300)]">
+                        <span className="pr-3 shrink-0 text-[10px] tabular-nums text-primary">
                           {category.photoCount}
                         </span>
                       </a>
@@ -633,11 +633,11 @@ export default async function AdminPage() {
               </div>
             ))}
 
-            <div className="mt-6 rounded-2xl border border-[var(--border)] bg-white/[0.02] p-3">
-              <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--foreground-muted)]">
+            <div className="mt-6 rounded-tile border border-line bg-surface-2 p-3">
+              <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.15em] text-ink-muted">
                 Total records
               </p>
-              <p className="font-[family-name:var(--font-syne)] text-2xl font-semibold text-[var(--blue-300)]">
+              <p className="font-display text-2xl font-semibold text-primary">
                 {projects.length + experiences.length + certifications.length + events.length + skills.length + creativePhotos.length}
               </p>
             </div>
@@ -650,10 +650,10 @@ export default async function AdminPage() {
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs text-[var(--foreground-muted)] transition hover:text-white"
+                className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-line px-3 py-2 text-xs text-ink-muted transition hover:text-ink"
               >
                 {item.label}
-                <span className="ml-1.5 text-[var(--blue-300)]">{item.count}</span>
+                <span className="ml-1.5 text-primary">{item.count}</span>
               </a>
             ))}
           </div>
@@ -667,15 +667,15 @@ export default async function AdminPage() {
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <AdminDialog title="Import Projects" description="Upload the CSV format, then add images later from each project record." triggerLabel="Import CSV">
                     <RowForm action={importProjectsCsv}>
-                      <div className="rounded-2xl border border-[var(--border)] bg-white/[0.02] p-4">
-                        <p className="text-sm font-medium text-white">CSV format</p>
-                        <p className="mt-1 text-xs leading-relaxed text-[var(--foreground-muted)]">
+                      <div className="rounded-tile border border-line bg-surface-2 p-4">
+                        <p className="text-sm font-medium text-ink">CSV format</p>
+                        <p className="mt-1 text-xs leading-relaxed text-ink-muted">
                           Required columns are slug, title, year, role, description, long_description, tags, github_url, live_url, status, featured, and published.
                         </p>
                         <a
                           href={PROJECT_CSV_TEMPLATE_HREF}
                           download="projects-import-template.csv"
-                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--blue-300)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5"
+                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs font-medium text-primary transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5"
                         >
                           Download format
                         </a>
@@ -782,15 +782,15 @@ export default async function AdminPage() {
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <AdminDialog title="Import Experience" description="Upload experience rows in CSV format." triggerLabel="Import CSV">
                     <RowForm action={importExperienceCsv}>
-                      <div className="rounded-2xl border border-[var(--border)] bg-white/[0.02] p-4">
-                        <p className="text-sm font-medium text-white">CSV format</p>
-                        <p className="mt-1 text-xs leading-relaxed text-[var(--foreground-muted)]">
+                      <div className="rounded-tile border border-line bg-surface-2 p-4">
+                        <p className="text-sm font-medium text-ink">CSV format</p>
+                        <p className="mt-1 text-xs leading-relaxed text-ink-muted">
                           Required columns are slug, organization, role, period, type, description, and published.
                         </p>
                         <a
                           href={EXPERIENCE_CSV_TEMPLATE_HREF}
                           download="experience-import-template.csv"
-                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--blue-300)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5"
+                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs font-medium text-primary transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5"
                         >
                           Download format
                         </a>
@@ -873,15 +873,15 @@ export default async function AdminPage() {
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <AdminDialog title="Import Certifications" description="Upload certification rows in CSV format. Assets can be added later per record." triggerLabel="Import CSV">
                     <RowForm action={importCertificationsCsv}>
-                      <div className="rounded-2xl border border-[var(--border)] bg-white/[0.02] p-4">
-                        <p className="text-sm font-medium text-white">CSV format</p>
-                        <p className="mt-1 text-xs leading-relaxed text-[var(--foreground-muted)]">
+                      <div className="rounded-tile border border-line bg-surface-2 p-4">
+                        <p className="text-sm font-medium text-ink">CSV format</p>
+                        <p className="mt-1 text-xs leading-relaxed text-ink-muted">
                           Required columns are name, issuer, issued, expires, and published.
                         </p>
                         <a
                           href={CERTIFICATIONS_CSV_TEMPLATE_HREF}
                           download="certifications-import-template.csv"
-                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--blue-300)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5"
+                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs font-medium text-primary transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5"
                         >
                           Download format
                         </a>
@@ -965,15 +965,15 @@ export default async function AdminPage() {
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <AdminDialog title="Import Events" description="Upload event rows in CSV format. Images can be attached later." triggerLabel="Import CSV">
                     <RowForm action={importEventsCsv}>
-                      <div className="rounded-2xl border border-[var(--border)] bg-white/[0.02] p-4">
-                        <p className="text-sm font-medium text-white">CSV format</p>
-                        <p className="mt-1 text-xs leading-relaxed text-[var(--foreground-muted)]">
+                      <div className="rounded-tile border border-line bg-surface-2 p-4">
+                        <p className="text-sm font-medium text-ink">CSV format</p>
+                        <p className="mt-1 text-xs leading-relaxed text-ink-muted">
                           Required columns are slug, title, event_date, venue, organizers, role, category, and published.
                         </p>
                         <a
                           href={EVENTS_CSV_TEMPLATE_HREF}
                           download="events-import-template.csv"
-                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--blue-300)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5"
+                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs font-medium text-primary transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5"
                         >
                           Download format
                         </a>
@@ -1066,15 +1066,15 @@ export default async function AdminPage() {
                 <div className="flex flex-wrap items-center justify-end gap-2">
                   <AdminDialog title="Import Skills" description="Upload skills as category and skill pairs. Missing categories will be created automatically." triggerLabel="Import CSV">
                     <RowForm action={importSkillsCsv}>
-                      <div className="rounded-2xl border border-[var(--border)] bg-white/[0.02] p-4">
-                        <p className="text-sm font-medium text-white">CSV format</p>
-                        <p className="mt-1 text-xs leading-relaxed text-[var(--foreground-muted)]">
+                      <div className="rounded-tile border border-line bg-surface-2 p-4">
+                        <p className="text-sm font-medium text-ink">CSV format</p>
+                        <p className="mt-1 text-xs leading-relaxed text-ink-muted">
                           Required columns are category, skill, and category_published.
                         </p>
                         <a
                           href={SKILLS_CSV_TEMPLATE_HREF}
                           download="skills-import-template.csv"
-                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--blue-300)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5"
+                          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-line px-3 py-2 text-xs font-medium text-primary transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5"
                         >
                           Download format
                         </a>
@@ -1094,11 +1094,11 @@ export default async function AdminPage() {
               {skillCategories.map((category) => {
                 const categorySkills = skills.filter((skill) => value(skill, "category_id") === value(category, "id"));
                 return (
-                  <div key={value(category, "id")} className="rounded-2xl border border-[var(--border)] bg-white/[0.02] p-4">
+                  <div key={value(category, "id")} className="rounded-tile border border-line bg-surface-2 p-4">
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div>
-                        <p className="text-sm font-semibold text-white">{value(category, "name")}</p>
-                        <p className="mt-1 text-xs text-[var(--foreground-muted)]">{categorySkills.length} skills</p>
+                        <p className="text-sm font-semibold text-ink">{value(category, "name")}</p>
+                        <p className="mt-1 text-xs text-ink-muted">{categorySkills.length} skills</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <AdminDialog title={value(category, "name")} description="Category overview" triggerLabel="View">
@@ -1126,7 +1126,7 @@ export default async function AdminPage() {
                       </div>
                     </div>
 
-                    <div className="mt-4 flex flex-col gap-2 border-t border-[var(--border)] pt-4">
+                    <div className="mt-4 flex flex-col gap-2 border-t border-line pt-4">
                       {categorySkills.map((skill) => (
                         <RecordRow
                           key={value(skill, "id")}
@@ -1180,13 +1180,13 @@ export default async function AdminPage() {
               }
             >
               {creativeCategories.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-[var(--border)] bg-white/[0.02] px-5 py-6">
+                <div className="rounded-tile border border-dashed border-line bg-surface-2 px-5 py-6">
                   <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="max-w-2xl">
-                      <p className="text-sm font-semibold text-white">
+                      <p className="text-sm font-semibold text-ink">
                         {creativeCategoriesMissing ? "Creative CMS tables are not available yet" : "No creative categories yet"}
                       </p>
-                      <p className="mt-1 text-sm leading-relaxed text-[var(--foreground-muted)]">
+                      <p className="mt-1 text-sm leading-relaxed text-ink-muted">
                         {creativeCategoriesMissing
                           ? "Run the latest Supabase schema for creative categories, then refresh this page to manage photography categories here."
                           : "Create them one by one, or add the default set used across the portfolio: Portrait, Event, Street, Creative, and Astrophotography."}
@@ -1194,7 +1194,7 @@ export default async function AdminPage() {
                     </div>
                     {!creativeCategoriesMissing ? (
                       <form action={seedDefaultCreativeCategories}>
-                        <SaveButton type="submit" className="rounded-full border border-[var(--border-strong)] px-4 py-2 text-sm font-medium text-white transition hover:border-[var(--blue-300)] hover:text-[var(--blue-200)]">
+                        <SaveButton type="submit" className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink transition hover:border-primary hover:text-primary">
                           Add default categories
                         </SaveButton>
                       </form>
@@ -1204,7 +1204,7 @@ export default async function AdminPage() {
               ) : null}
 
               {creativePhotosMissing ? (
-                <div className="rounded-2xl border border-yellow-500/20 bg-yellow-500/5 px-5 py-4 text-sm text-yellow-100">
+                <div className="rounded-tile border border-line bg-block-yellow px-5 py-4 text-sm text-on-block">
                   The creative_photos table is not available in Supabase. Category management still works, but photo upload and listings require the full creative schema.
                 </div>
               ) : null}
@@ -1264,14 +1264,14 @@ export default async function AdminPage() {
                                 {/* Client-side validated upload inputs for large folders */}
                                 <UploadWithValidation label="Upload single or multiple images" name="image_files" accept="image/*" multiple maxFiles={50} />
                                 <UploadWithValidation label="Upload a folder of images" name="image_files" accept="image/*" multiple directory maxFiles={200} />
-                                <p className="text-xs leading-relaxed text-[var(--foreground-muted)]">
+                                <p className="text-xs leading-relaxed text-ink-muted">
                                   Folder upload keeps all image files in this category. Each file becomes a photo record using the filename as the title.
                                 </p>
                               </RowForm>
                             </AdminDialog>
                           </>
                         ) : (
-                          <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-3 text-sm text-yellow-100">
+                          <div className="rounded-field border border-line bg-block-yellow p-3 text-sm text-on-block">
                             Photo uploads are unavailable because the creative_photos table is missing.
                           </div>
                         )}
@@ -1315,7 +1315,7 @@ export default async function AdminPage() {
                                 type="submit"
                                 aria-label={`Delete ${value(photo, "title")}`}
                                 title="Delete"
-                                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-red-400/20 bg-black/45 text-red-200 transition hover:bg-red-500/10 sm:h-8 sm:w-8"
+                                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-on-overlay bg-overlay text-on-overlay transition hover:bg-block-orange hover:text-on-block sm:h-8 sm:w-8"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </button>
@@ -1325,7 +1325,7 @@ export default async function AdminPage() {
                               description="Update or remove this photo."
                               triggerLabel="Edit photo"
                               triggerContent={<SquarePen className="h-3.5 w-3.5" />}
-                              triggerClassName="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/45 text-white transition hover:border-[var(--border-strong)] hover:text-white sm:h-8 sm:w-8"
+                              triggerClassName="inline-flex h-11 w-11 items-center justify-center rounded-full border border-on-overlay bg-overlay text-on-overlay transition hover:bg-on-overlay hover:text-overlay sm:h-8 sm:w-8"
                             >
                               <RowForm action={saveCreativePhoto} refreshOnSuccess={false}>
                                 <input type="hidden" name="id" value={value(photo, "id")} />
@@ -1361,8 +1361,8 @@ export default async function AdminPage() {
                   subtitle="JSON content"
                   viewDialog={
                     <AdminDialog title={value(row, "key")} description="Current JSON value" triggerLabel="View">
-                      <div className="rounded-2xl border border-[var(--border)] bg-[var(--background-subtle)]/60 p-4">
-                        <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-xs text-[var(--foreground-muted)]">
+                      <div className="rounded-tile border border-line bg-surface-2/60 p-4">
+                        <pre className="overflow-x-auto whitespace-pre-wrap break-words font-mono text-xs text-ink-muted">
                           {JSON.stringify(row.value, null, 2)}
                         </pre>
                       </div>
@@ -1372,16 +1372,16 @@ export default async function AdminPage() {
                     <AdminDialog title={`Edit ${value(row, "key")}`} description="Update this JSON content block." triggerLabel="Edit">
                       <RowForm action={saveSiteContent}>
                         <input type="hidden" name="key" value={value(row, "key")} />
-                        <label className="flex flex-col gap-1 text-xs text-[var(--foreground-muted)]">
+                        <label className="flex flex-col gap-1 text-xs text-ink-muted">
                           <span>
                             JSON value
-                            <span className="ml-1 text-[var(--blue-300)]">*</span>
+                            <span className="ml-1 text-primary">*</span>
                           </span>
                           <textarea
                             name="value"
                             rows={12}
                             defaultValue={JSON.stringify(row.value, null, 2)}
-                            className="rounded-xl border border-[var(--border)] bg-white/[0.03] px-3 py-2 font-mono text-xs text-white outline-none transition focus:border-[var(--border-strong)]"
+                            className="rounded-field border border-line bg-surface-2 px-3 py-2 font-mono text-xs text-ink transition focus:border-primary"
                             required
                           />
                         </label>

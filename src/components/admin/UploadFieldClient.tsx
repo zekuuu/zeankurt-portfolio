@@ -70,7 +70,7 @@ export default function UploadField({
   }, []);
 
   return (
-    <label className="rounded-2xl border border-dashed border-[var(--border)] bg-white/[0.015] px-4 py-3 text-xs font-medium text-[var(--foreground-muted)]">
+    <label className="rounded-tile border border-dashed border-line bg-surface-2 px-4 py-3 text-xs font-medium text-ink-muted">
       {label}
       <input
         ref={inputRef}
@@ -79,9 +79,9 @@ export default function UploadField({
         accept={accept}
         multiple={multiple}
         {...(directory ? { webkitdirectory: "" } : {})}
-        className="mt-2 text-sm text-[var(--foreground-muted)] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--accent-soft)] file:px-3 file:py-2 file:font-semibold file:text-[var(--blue-200)]"
+        className="mt-2 text-sm text-ink-muted file:mr-3 file:rounded-full file:border-0 file:bg-surface-2 file:px-3 file:py-2 file:font-semibold file:text-primary"
       />
-      {notice ? <span className="mt-2 block text-[11px] text-[var(--blue-200)]">{notice}</span> : null}
+      {notice ? <span className="mt-2 block text-[11px] text-primary">{notice}</span> : null}
       {selectedFiles.length > 0 ? (
         <div className="mt-3 space-y-2">
           {selectedFiles.map((file) => {
@@ -89,9 +89,9 @@ export default function UploadField({
             const metric = metrics[key];
 
             return (
-              <div key={key} className="rounded-2xl border border-[var(--border)] bg-white/[0.02] px-3 py-2">
-                <div className="truncate text-sm text-white">{file.name}</div>
-                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-[var(--foreground-muted)]">
+              <div key={key} className="rounded-tile border border-line bg-surface-2 px-3 py-2">
+                <div className="truncate text-sm text-ink">{file.name}</div>
+                <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-ink-muted">
                   <span>Original: {formatBytes(file.size)}</span>
                   <span>Optimized: {metric ? formatBytes(metric.optimizedBytes) : "Estimating..."}</span>
                 </div>

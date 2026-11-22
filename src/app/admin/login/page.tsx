@@ -22,33 +22,33 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
   if (user && isAllowedAdminEmail(user.email)) redirect("/admin");
 
   return (
-    <main className="min-h-dvh bg-[var(--background)] px-4 py-24 text-white">
-      <div className="mx-auto max-w-md rounded-3xl border border-[var(--border)] bg-[var(--background-elevated)] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.28)]">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--blue-300)]">
+    <main className="min-h-dvh bg-bg px-4 py-24 text-ink">
+      <div className="mx-auto max-w-md rounded-tile border border-line bg-surface p-6">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-primary">
           Admin
         </p>
-        <h1 className="mt-3 font-[family-name:var(--font-syne)] text-3xl font-semibold">
+        <h1 className="mt-3 font-display text-3xl font-semibold">
           Portfolio CMS
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-[var(--foreground-muted)]">
+        <p className="mt-3 text-sm leading-relaxed text-ink-muted">
           Sign in with an allowlisted email to manage projects, events,
           certifications, experience, skills, and site copy.
         </p>
 
         {!hasSupabasePublicEnv() ? (
-          <p className="mt-5 rounded-2xl border border-amber-500/20 bg-amber-500/10 p-4 text-sm text-amber-200">
+          <p className="mt-5 rounded-tile border border-line bg-block-yellow p-4 text-sm text-on-block">
             Supabase public environment variables are missing.
           </p>
         ) : null}
 
         {params.sent ? (
-          <p className="mt-5 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-200">
+          <p className="mt-5 rounded-tile border border-line bg-block-green p-4 text-sm text-on-block">
             Check your email for the login link.
           </p>
         ) : null}
 
         {params.error ? (
-          <p className="mt-5 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-200">
+          <p className="mt-5 rounded-tile border border-line bg-block-orange p-4 text-sm text-on-block">
             {params.error === "forbidden" ? (
               "This email is not allowlisted for admin access."
             ) : params.error === "callback" ? (
@@ -69,14 +69,14 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
         ) : null}
 
         <form action={signInWithMagicLink} className="mt-6 flex flex-col gap-4">
-          <label className="flex flex-col gap-2 text-sm font-medium text-[var(--foreground)]">
+          <label className="flex flex-col gap-2 text-sm font-medium text-ink">
             Email
             <input
               name="email"
               type="email"
               required
               autoComplete="email"
-              className="rounded-2xl border border-[var(--border)] bg-white/[0.03] px-4 py-3 text-white outline-none transition focus:border-[var(--border-strong)]"
+              className="rounded-field border border-line bg-surface-2 px-4 py-3 text-ink transition focus:border-primary"
               placeholder="you@example.com"
             />
           </label>

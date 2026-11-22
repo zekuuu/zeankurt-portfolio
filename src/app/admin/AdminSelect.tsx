@@ -79,16 +79,16 @@ export function AdminSelect({
         aria-expanded={open}
         aria-label={label}
         onClick={() => setOpen((current) => !current)}
-        className={`flex w-full items-center justify-between rounded-2xl border px-3 py-2 text-left text-sm outline-none transition ${
+        className={`flex w-full items-center justify-between rounded-field border px-3 py-2 text-left text-sm transition ${
           open
-            ? "border-[var(--border-strong)] bg-white/[0.05]"
-            : "border-[var(--border)] bg-white/[0.03] hover:border-[rgba(72,202,228,0.24)]"
+            ? "border-line bg-surface-2"
+            : "border-line bg-surface-2 hover:border-line"
         }`}
       >
-        <span className={selected ? "text-white" : "text-[var(--foreground-muted)]"}>
+        <span className={selected ? "text-ink" : "text-ink-muted"}>
           {selected?.label ?? `Select ${label.toLowerCase()}`}
         </span>
-        <span className="ml-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[var(--blue-300)]">
+        <span className="ml-3 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-primary">
           <svg
             viewBox="0 0 16 16"
             className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
@@ -102,15 +102,15 @@ export function AdminSelect({
       </button>
 
       {open ? (
-        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-2xl border border-[var(--border-strong)] bg-[var(--background-elevated)] shadow-[0_18px_42px_rgba(0,0,0,0.38)]">
+        <div className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-20 overflow-hidden rounded-tile border border-line bg-surface">
           <div className="max-h-64 overflow-y-auto p-1.5">
             <button
               type="button"
               onClick={() => updateValue("")}
-              className={`flex w-full rounded-xl px-3 py-2 text-left text-sm transition ${
+              className={`flex w-full rounded-field px-3 py-2 text-left text-sm transition ${
                 value === ""
-                  ? "bg-[rgba(72,202,228,0.18)] text-[var(--blue-200)]"
-                  : "text-[var(--foreground-muted)] hover:bg-white/[0.04] hover:text-white"
+                  ? "bg-surface-2 text-primary"
+                  : "text-ink-muted hover:bg-surface-2 hover:text-ink"
               }`}
             >
               {`Select ${label.toLowerCase()}`}
@@ -120,10 +120,10 @@ export function AdminSelect({
                 key={option.value}
                 type="button"
                 onClick={() => updateValue(option.value)}
-                className={`mt-1 flex w-full rounded-xl px-3 py-2 text-left text-sm transition ${
+                className={`mt-1 flex w-full rounded-field px-3 py-2 text-left text-sm transition ${
                   value === option.value
-                    ? "bg-[rgba(72,202,228,0.18)] text-[var(--blue-200)]"
-                    : "text-white hover:bg-white/[0.04]"
+                    ? "bg-surface-2 text-primary"
+                    : "text-ink hover:bg-surface-2"
                 }`}
               >
                 {option.label}

@@ -422,8 +422,8 @@ export function AdminDialog({
 
   const defaultTriggerClassName =
     triggerVariant === "primary"
-      ? "inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--blue-500)] px-4 py-2 text-sm font-medium text-[#03121a] transition hover:bg-[var(--blue-300)]"
-      : "inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--border)] px-3 py-2 text-xs font-medium text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white sm:min-h-0 sm:py-1.5";
+      ? "inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-on-primary transition hover:bg-ink"
+      : "inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3 py-2 text-xs font-medium text-ink-muted transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5";
 
   return (
     <>
@@ -444,8 +444,8 @@ export function AdminDialog({
                 ref={overlayRef}
                 aria-hidden="false"
                 tabIndex={-1}
-                className={`fixed inset-0 z-[1100] flex items-center justify-center overflow-hidden overscroll-none bg-[rgba(3,7,18,0.76)] p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] opacity-0 backdrop-blur-0 transition-[opacity,backdrop-filter] duration-200 ease-out md:p-6 ${
-                  entered ? "opacity-100 backdrop-blur-sm" : ""
+                className={`fixed inset-0 z-[1100] flex items-center justify-center overflow-hidden overscroll-none bg-bg p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] opacity-0  transition-[opacity,backdrop-filter] duration-200 ease-out md:p-6 ${
+                  entered ? "opacity-100 " : ""
                 }`}
                 onWheel={(event) => {
                   if (event.target === event.currentTarget) {
@@ -482,7 +482,7 @@ export function AdminDialog({
                   aria-modal="true"
                   aria-labelledby={titleId}
                   aria-describedby={description || showSaveStatus ? descriptionId : undefined}
-                  className={`flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl translate-y-3 scale-[0.985] flex-col rounded-[1.25rem] border border-[var(--border-strong)] bg-[var(--background-elevated)] opacity-0 shadow-[0_20px_80px_rgba(0,0,0,0.45)] transition-[opacity,transform] duration-200 ease-out sm:rounded-[1.75rem] md:max-h-[calc(100dvh-3rem)] ${
+                  className={`flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl translate-y-3 scale-[0.985] flex-col rounded-tile border border-line bg-surface opacity-0  transition-[opacity,transform] duration-200 ease-out sm:rounded-tile md:max-h-[calc(100dvh-3rem)] ${
                     entered ? "translate-y-0 scale-100 opacity-100" : ""
                   }`}
                   onClick={(event) => event.stopPropagation()}
@@ -493,11 +493,11 @@ export function AdminDialog({
                   onDragOver={(event) => event.stopPropagation()}
                   onDrop={(event) => event.stopPropagation()}
                 >
-                  <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] px-4 py-4 sm:px-5">
+                  <div className="flex items-start justify-between gap-4 border-b border-line px-4 py-4 sm:px-5">
                     <div className="min-w-0">
                       <h3
                         id={titleId}
-                        className="font-[family-name:var(--font-syne)] text-lg font-semibold text-white"
+                        className="font-display text-lg font-semibold text-ink"
                       >
                         {title}
                       </h3>
@@ -508,7 +508,7 @@ export function AdminDialog({
                           className="mt-1 flex flex-wrap items-center gap-2"
                         >
                           {description ? (
-                            <p className="text-sm text-[var(--foreground-muted)]">
+                            <p className="text-sm text-ink-muted">
                               {description}
                             </p>
                           ) : null}
@@ -517,8 +517,8 @@ export function AdminDialog({
                             <span
                               className={
                                 dirty
-                                  ? "inline-flex items-center rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-200"
-                                  : "inline-flex items-center rounded-full border border-emerald-400/25 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200"
+                                  ? "inline-flex items-center rounded-full border border-line bg-block-yellow px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-on-block"
+                                  : "inline-flex items-center rounded-full border border-line bg-block-green px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-on-block"
                               }
                             >
                               {dirty ? "Unsaved" : "Saved"}
@@ -532,7 +532,7 @@ export function AdminDialog({
                       type="button"
                       aria-label={`Close ${title}`}
                       onClick={() => setOpen(false)}
-                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] text-[var(--foreground-muted)] transition hover:border-[var(--border-strong)] hover:text-white"
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-line hover:text-ink"
                     >
                       <svg
                         viewBox="0 0 16 16"
@@ -555,12 +555,12 @@ export function AdminDialog({
                     {children}
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[var(--border)] px-4 py-4 sm:px-5">
+                  <div className="flex flex-wrap items-center justify-end gap-2 border-t border-line px-4 py-4 sm:px-5">
                     {uploadIntent && hasFileInput && uploadDialogState === "uploading" && canCancel && cancelSaving ? (
                       <button
                         type="button"
                         onClick={cancelSaving}
-                        className="rounded-full border border-red-400/20 px-4 py-2 text-sm font-medium text-red-200 transition hover:bg-red-500/10 hover:text-red-100"
+                        className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink transition hover:bg-block-orange hover:text-on-block"
                       >
                         Cancel upload
                       </button>
@@ -571,7 +571,7 @@ export function AdminDialog({
                         type="button"
                         onClick={handleDiscard}
                         disabled={!dirty || (uploadIntent && uploadDialogState === "uploading")}
-                        className="rounded-full border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--foreground-muted)] transition enabled:hover:border-[var(--border-strong)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
+                        className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45"
                       >
                         Discard
                       </button>
