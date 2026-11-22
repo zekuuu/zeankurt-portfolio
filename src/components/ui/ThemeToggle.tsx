@@ -52,7 +52,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-pressed={isDark}
       suppressHydrationWarning
       className={cn(
-        "label inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-ink transition-colors duration-150 hover:bg-ink hover:text-bg",
+        "label inline-flex min-h-11 cursor-pointer items-center gap-2 hover-fill rounded-full border border-line px-4 text-ink",
         className,
       )}
     >

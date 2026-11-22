@@ -1,6 +1,8 @@
 import { Container, Section } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Tile } from "@/components/ui/Tile";
+import { Tile, type TileVariant } from "@/components/ui/Tile";
+
+const STAT_COLORS: TileVariant[] = ["primary", "yellow", "orange", "green"];
 import { identity } from "@/lib/identity";
 import type { Certification, EventHighlight, Project, SkillCategory } from "@/types";
 
@@ -63,9 +65,9 @@ export function AboutSection({ projects, certifications, eventHighlights, hackat
         </div>
 
         <dl className="mt-1.5 grid grid-cols-2 gap-1.5 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <Tile key={stat.label} variant="outline" className="flex flex-col-reverse">
-              <dt className="label mt-2 text-ink-muted">{stat.label}</dt>
+          {stats.map((stat, index) => (
+            <Tile key={stat.label} variant={STAT_COLORS[index % STAT_COLORS.length]} className="flex flex-col-reverse">
+              <dt className="label mt-2 opacity-80">{stat.label}</dt>
               <dd className="display text-[clamp(2.25rem,5vw,3.5rem)]">{stat.value}</dd>
             </Tile>
           ))}

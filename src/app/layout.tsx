@@ -14,6 +14,7 @@ import { GlobalScrollManager } from "@/components/layout/GlobalScrollManager";
 import { DevStationBadge } from "@/components/ui/DevStationBadge";
 import { IntroLoader, introScript } from "@/components/ui/IntroLoader";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
+import { HoverColor } from "@/components/providers/HoverColor";
 import { identity, SITE_URL } from "@/lib/identity";
 import { JsonLdScript, siteGraph } from "@/lib/structured-data";
 import "./globals.css";
@@ -130,6 +131,7 @@ export default async function RootLayout({
         <ThemeProvider>
           <SavingProvider>
             <SmoothScroll />
+            <HoverColor />
             <GlobalScrollManager />
             <ScrollProgressBar />
             <div className="mx-auto flex w-full max-w-[var(--container-max)] flex-1 flex-col sm:border-x sm:border-line">

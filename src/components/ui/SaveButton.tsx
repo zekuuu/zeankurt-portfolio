@@ -22,7 +22,7 @@ export default function SaveButton({
     <button
       {...rest}
       disabled={isSaving || rest.disabled}
-      className={`min-h-11 cursor-pointer rounded-full bg-primary px-4 py-2 text-sm font-medium text-on-primary transition hover:bg-ink disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
+      className={`min-h-11 cursor-pointer rounded-full bg-primary px-4 py-2 text-sm font-medium text-on-primary hover-fill hover-fill-no-primary disabled:opacity-60 disabled:cursor-not-allowed ${className}`}
     >
       {isSaving ? (
         <span className="inline-flex items-center gap-2">

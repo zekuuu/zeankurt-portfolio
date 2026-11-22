@@ -305,6 +305,22 @@ html.lenis body {
   }
 }
 
+/* Random hover accents: HoverColor.tsx sets --hv/--on-hv/--hv-border on each
+   hover or focus. Without JS the fallback is ink. */
+.hover-fill {
+  transition:
+    background-color 150ms ease-out,
+    color 150ms ease-out,
+    border-color 150ms ease-out;
+}
+
+.hover-fill:hover,
+.hover-group:hover .hover-target {
+  background-color: var(--hv, var(--ink));
+  color: var(--on-hv, var(--bg));
+  border-color: var(--hv-border, var(--ink));
+}
+
 /* Chromatic logos: muted ink at rest, brand color on hover. */
 .logo-chip {
   color: var(--ink-muted);
@@ -337,6 +353,28 @@ html.lenis body {
 
 details[open] > :not(summary) {
   animation: enter 200ms ease-out;
+}
+
+/* FAQ open/close: animate the height where the browser supports it. */
+@supports selector(::details-content) {
+  details[name="faq"] {
+    interpolate-size: allow-keywords;
+  }
+
+  details[name="faq"]::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition:
+      block-size 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      opacity 200ms ease-out,
+      content-visibility 260ms allow-discrete;
+  }
+
+  details[name="faq"][open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
 }
 
 /* Route fade-in (template.tsx). Ends fully visible, also without JS. */

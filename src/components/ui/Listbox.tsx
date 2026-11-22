@@ -6,6 +6,14 @@ import { cn } from "@/lib/cn";
 
 export type ListboxOption = { label: string; value: string };
 
+/** Highlight colors for the active option, cycling so neighbours differ. */
+const ACTIVE = [
+  "bg-primary text-on-primary",
+  "bg-block-yellow text-on-block",
+  "bg-block-orange text-on-block",
+  "bg-block-green text-on-block",
+];
+
 interface ListboxProps {
   /** Accessible name; shown visually only when `showLabel` is set. */
   label: string;
@@ -128,7 +136,7 @@ export function Listbox({
         onClick={() => (open ? close() : openList())}
         onKeyDown={onButtonKeyDown}
         className={cn(
-          "flex min-h-11 w-full cursor-pointer items-center justify-between gap-3 rounded-field border border-line bg-surface px-3 text-left text-sm text-ink transition-colors hover:bg-surface-2",
+          "hover-fill flex min-h-11 w-full cursor-pointer items-center justify-between gap-3 rounded-field border border-line bg-surface px-3 text-left text-sm text-ink",
           open && "bg-surface-2",
         )}
       >
@@ -166,8 +174,8 @@ export function Listbox({
                 onPointerEnter={() => setActive(index)}
                 onClick={() => choose(index)}
                 className={cn(
-                  "flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-[8px] px-3",
-                  isSelected ? "bg-ink text-bg" : index === active ? "bg-surface-2 text-ink" : "text-ink",
+                  "flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-[8px] px-3 transition-colors duration-100",
+                  index === active ? ACTIVE[index % ACTIVE.length] : isSelected ? "bg-ink text-bg" : "text-ink",
                 )}
               >
                 <span className="truncate">{option.label}</span>

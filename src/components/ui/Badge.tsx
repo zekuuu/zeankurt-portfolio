@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 
-export type BadgeVariant = "default" | "solid" | "live" | "wip" | "archived";
+export type BadgeVariant = "default" | "solid" | "live" | "wip" | "archived" | "primary" | "yellow" | "green" | "orange";
 
 const variants: Record<BadgeVariant, string> = {
   default: "border-current",
@@ -9,6 +9,11 @@ const variants: Record<BadgeVariant, string> = {
   live: "border-on-block bg-block-green text-on-block",
   wip: "border-on-block bg-block-yellow text-on-block",
   archived: "border-line bg-surface-2 text-ink",
+  // Category colors (experience types).
+  primary: "border-transparent bg-primary text-on-primary",
+  yellow: "border-on-block bg-block-yellow text-on-block",
+  green: "border-on-block bg-block-green text-on-block",
+  orange: "border-on-block bg-block-orange text-on-block",
 };
 
 interface BadgeProps {

@@ -24,7 +24,7 @@ export function ScrollToTopButton() {
       data-no-print
       onClick={() => scrollToTop()}
       className={cn(
-        "fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-40 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-line bg-bg text-ink transition-opacity duration-200 hover:bg-ink hover:text-bg",
+        "fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] z-40 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-line bg-bg text-ink hover-fill transition-opacity duration-200",
         visible ? "opacity-100" : "pointer-events-none opacity-0",
       )}
     >

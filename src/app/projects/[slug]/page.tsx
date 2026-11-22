@@ -66,7 +66,7 @@ const BADGE_VARIANT: Record<string, BadgeVariant> = {
 };
 
 const neighbourClass =
-  "rounded-tile border border-line p-5 transition-colors hover:bg-ink hover:text-bg";
+  "hover-fill rounded-tile border border-line p-5";
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;

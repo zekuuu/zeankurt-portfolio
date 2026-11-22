@@ -24,7 +24,7 @@ const STATUS_LABEL: Record<NonNullable<Project["status"]>, string> = {
 
 function ProjectLinks({ project }: { project: Project }) {
   const iconLink =
-    "relative z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-current transition-colors hover:bg-ink hover:text-bg hover:border-ink";
+    "relative z-10 inline-flex h-11 w-11 items-center justify-center hover-fill rounded-full border border-current";
 
   return (
     <div className="flex items-center gap-1.5">

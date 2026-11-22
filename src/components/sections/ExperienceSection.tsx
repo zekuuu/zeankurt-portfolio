@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
-import { buttonClass } from "@/components/ui/Button";
 import { ImageViewer } from "@/components/ui/ImageViewer";
 import { Container, Section } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -21,6 +20,15 @@ const FILTERS = [
 type Filter = (typeof FILTERS)[number]["value"];
 
 const EVENTS_PREVIEW = 6;
+
+
+
+/** Each experience type has its own color: timeline dot and type badge. */
+const TYPE_COLOR: Record<ExperienceItem["type"], { dot: string; badge: "primary" | "green" | "yellow" }> = {
+  work: { dot: "bg-primary border-primary", badge: "primary" },
+  community: { dot: "bg-block-green border-line", badge: "green" },
+  hackathon: { dot: "bg-block-yellow border-line", badge: "yellow" },
+};
 
 interface ExperienceSectionProps {
   experience: ExperienceItem[];
@@ -71,11 +79,11 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                     onClick={() => setFilter(option.value)}
                     className={cn(
                       "label inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-line px-4 transition-colors",
-                      filter === option.value ? "bg-ink text-bg" : "hover:bg-surface-2",
+                      filter === option.value ? "border-primary bg-primary text-on-primary" : "hover-fill",
                     )}
                   >
                     {option.label}
-                    <span className="opacity-70">{count}</span>
+                    <span>({count})</span>
                   </button>
                 );
               })}
@@ -88,12 +96,15 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                   className="enter relative pb-8 pl-6 last:pb-0"
                   style={{ "--i": index } as React.CSSProperties}
                 >
-                  <span aria-hidden className="absolute -left-[5px] top-1.5 h-[9px] w-[9px] rounded-full border border-line bg-surface" />
+                  <span
+                    aria-hidden
+                    className={`absolute -left-[6px] top-[3px] h-[11px] w-[11px] rounded-full border ${TYPE_COLOR[item.type]?.dot ?? "border-line bg-surface"}`}
+                  />
                   <p className="label text-ink-muted">{item.period}</p>
                   <h3 className="display mt-2 text-lg leading-snug [overflow-wrap:anywhere] sm:text-xl">{item.role}</h3>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <span className="font-medium [overflow-wrap:anywhere]">{item.organization}</span>
-                    <Badge>{item.type}</Badge>
+                    <Badge variant={TYPE_COLOR[item.type]?.badge ?? "default"}>{item.type}</Badge>
                   </div>
                   <p className="mt-3 max-w-[64ch] leading-relaxed text-ink-muted [overflow-wrap:anywhere]">{item.description}</p>
                 </li>
@@ -122,7 +133,7 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                           <button
                             type="button"
                             onClick={() => setActiveCert({ name: cert.name, image: cert.image ?? "" })}
-                            className="label inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-full border border-line px-3 hover:bg-ink hover:text-bg"
+                            className={`label inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-full border border-line px-3 hover-fill`}
                           >
                             View<span className="sr-only"> {cert.name}</span>
                           </button>
@@ -134,15 +145,15 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
               ))}
             </Tile>
 
-            <Tile variant="muted">
+            <Tile variant="yellow">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="display text-xl">Recent events</h3>
-                <span className="label text-ink-muted">{eventHighlights.length}</span>
+                <span className="label opacity-80">{eventHighlights.length}</span>
               </div>
               <ul className="mt-4">
                 {events.map((event) => (
-                  <li key={event.id} className="border-t border-line-soft py-3">
-                    <p className="label text-ink-muted">
+                  <li key={event.id} className="border-t border-on-block py-3">
+                    <p className="label opacity-80">
                       {event.date}
                       {event.category ? ` · ${event.category}` : ""}
                     </p>
@@ -151,7 +162,10 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                   </li>
                 ))}
               </ul>
-              <Link href="/events" className={buttonClass("secondary", "mt-4")}>
+              <Link
+                href="/events"
+                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-on-block px-5 text-sm font-medium transition-colors hover:bg-on-block hover:text-block-yellow"
+              >
                 All events
               </Link>
             </Tile>

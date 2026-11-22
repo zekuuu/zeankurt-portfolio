@@ -198,7 +198,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
                   active={isActive(item)}
                   className={cn(
                     "label inline-flex min-h-11 items-center gap-1 rounded-full px-3.5 text-sm transition-colors duration-200",
-                    isActive(item) ? "text-bg" : "text-ink hover:bg-surface-2",
+                    isActive(item) ? "text-bg" : "hover-fill text-ink",
                   )}
                 />
               </li>
@@ -221,7 +221,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
             aria-haspopup="dialog"
             aria-expanded={open}
             onClick={() => setOpen(true)}
-            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-line text-ink transition-colors hover:bg-ink hover:text-bg lg:hidden"
+            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center hover-fill rounded-full border border-line text-ink lg:hidden"
           >
             <Menu aria-hidden className="h-5 w-5" strokeWidth={1.75} />
           </button>
@@ -242,7 +242,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
               type="button"
               aria-label="Close menu"
               onClick={() => setOpen(false)}
-              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-line hover:bg-ink hover:text-bg"
+              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center hover-fill rounded-full border border-line"
             >
               <X aria-hidden className="h-5 w-5" strokeWidth={1.75} />
             </button>

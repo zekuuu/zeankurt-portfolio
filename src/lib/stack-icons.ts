@@ -1,10 +1,19 @@
 import {
+  siClaude,
   siElectron,
   siFastapi,
+  siFigma,
+  siGit,
+  siGithub,
+  siGithubcopilot,
+  siGooglegemini,
+  siHtml5,
   siLaravel,
+  siLinux,
   siMysql,
   siNextdotjs,
   siNodedotjs,
+  siOpenjdk,
   siPostgresql,
   siReact,
   siRust,
@@ -17,7 +26,7 @@ import {
 } from "simple-icons";
 
 /**
- * Brand marks for the stack marquee (Simple Icons, CC0). Imported one by one,
+ * Brand marks for the stack marquee and skill tags (Simple Icons, CC0). Imported one by one,
  * so only these icons are bundled. Brand hex values come from the package and
  * are the one deliberate exception to the token-only color rule.
  */
@@ -36,6 +45,17 @@ const ICONS: Record<string, SimpleIcon> = {
   SQLite: siSqlite,
   Electron: siElectron,
   Rust: siRust,
+  // Skill tags. Only exact matches: no logo is better than a wrong one.
+  "HTML & CSS": siHtml5,
+  Java: siOpenjdk,
+  Git: siGit,
+  GitHub: siGithub,
+  Figma: siFigma,
+  Linux: siLinux,
+  "Github Copilot": siGithubcopilot,
+  "GitHub Copilot": siGithubcopilot,
+  Claude: siClaude,
+  Gemini: siGooglegemini,
 };
 
 export interface StackLogo {
@@ -54,12 +74,15 @@ function luminance(hex: string) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
+/** Brand mark for one label, or just the label when there is no exact match. */
+export function brandLogo(label: string): StackLogo {
+  // "Rust (Odra smart contracts)" matches "Rust".
+  const icon = ICONS[label] ?? ICONS[label.split(" (")[0]];
+  return icon
+    ? { label, path: icon.path, hex: `#${icon.hex}`, darkBrand: luminance(icon.hex) < 0.05 }
+    : { label };
+}
+
 export function stackLogos(stack: readonly string[]): StackLogo[] {
-  return stack.map((label) => {
-    // "Rust (Odra smart contracts)" matches "Rust".
-    const icon = ICONS[label] ?? ICONS[label.split(" (")[0]];
-    return icon
-      ? { label, path: icon.path, hex: `#${icon.hex}`, darkBrand: luminance(icon.hex) < 0.05 }
-      : { label };
-  });
+  return stack.map(brandLogo);
 }

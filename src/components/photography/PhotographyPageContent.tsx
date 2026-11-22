@@ -103,7 +103,7 @@ export function PhotographyPageContent({ creativeCategories, siteConfig }: Photo
                     onClick={() => selectCategory(option)}
                     className={cn(
                       "label inline-flex min-h-11 cursor-pointer items-center rounded-full border border-line px-4 transition-colors",
-                      category === option ? "bg-ink text-bg" : "hover:bg-surface-2",
+                      category === option ? "border-primary bg-primary text-on-primary" : "hover-fill",
                     )}
                   >
                     {option}

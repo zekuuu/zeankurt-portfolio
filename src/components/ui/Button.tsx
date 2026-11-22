@@ -16,9 +16,9 @@ interface ButtonProps {
 }
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "border-primary bg-primary text-on-primary hover:bg-ink hover:border-ink hover:text-bg",
-  secondary: "border-line bg-transparent text-ink hover:bg-ink hover:text-bg",
-  ghost: "border-transparent bg-transparent text-ink hover:border-line",
+  primary: "hover-fill hover-fill-no-primary border-primary bg-primary text-on-primary",
+  secondary: "hover-fill border-line bg-transparent text-ink",
+  ghost: "hover-fill border-transparent bg-transparent text-ink",
   inverse: "border-on-primary bg-transparent text-on-primary hover:bg-on-primary hover:text-primary",
 };
 
