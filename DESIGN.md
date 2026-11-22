@@ -70,7 +70,7 @@ The scroll progress bar is the single decorative exception: its flat color shift
 | `fieldClass`, `fileInputClass` | `ui/field.ts` | Inputs, textareas, date fields; native file button styled as a secondary pill. |
 | `ImageViewer` | `ui/ImageViewer.tsx` | One framed, always-dark `<dialog>` for screenshots, photos and certificates: blurred backdrop, zoom (double-click/tap, `+`/`-`), drag to pan, swipe, preload, loading/error states, optional filmstrip. |
 | `ThemeToggle` | `ui/ThemeToggle.tsx` | Circular reveal from the button via View Transitions; instant without the API or with reduced motion. |
-| `IntroLoader` | `ui/IntroLoader.tsx` | Once per tab session (`sessionStorage['zk-intro']`), decided before paint by an inline head script; never shown without JS, with reduced motion or on `/admin`; CSS fail-safe hides it after 2.5s. |
+| `IntroLoader` | `ui/IntroLoader.tsx` | Once per tab session (`sessionStorage['zk-intro']`), decided before paint by an inline head script; never shown without JS, with reduced motion or on `/admin`; CSS fail-safe hides it after 3s. |
 | `CopyEmailButton` | `ui/CopyEmailButton.tsx` | Clipboard plus an `sr-only` status message; `mailto:` stays as the fallback. |
 
 ## Motion (MOTION dial 2)
