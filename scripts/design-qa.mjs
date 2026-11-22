@@ -245,13 +245,13 @@ for (const width of [375, 1280]) {
   await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded" });
   const shown = await page.locator(".intro").isVisible();
   await page.screenshot({ path: `${OUT}/intro-light-1280.png` });
-  await page.waitForFunction(() => !document.documentElement.classList.contains("zk-intro"), null, { timeout: 3000 }).catch(() => {});
+  await page.waitForFunction(() => !document.documentElement.classList.contains("zk-intro"), null, { timeout: 4000 }).catch(() => {});
   const gone = await page.evaluate(() => !document.documentElement.classList.contains("zk-intro"));
   const flag = await page.evaluate(() => sessionStorage.getItem("zk-intro"));
   await page.reload({ waitUntil: "domcontentloaded" });
   const again = await page.locator(".intro").isVisible();
   if (!shown) fail("intro", "not shown on first visit");
-  if (!gone) fail("intro", "still visible after 3s");
+  if (!gone) fail("intro", "still visible after 4s");
   if (flag !== "1") fail("intro", "sessionStorage flag not set");
   if (again) fail("intro", "shown again after reload in the same tab");
   report.checks.intro = { shown, gone, flag, shownAfterReload: again };

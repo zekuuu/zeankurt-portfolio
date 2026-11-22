@@ -6,7 +6,8 @@ const KEY = "zk-intro";
 const MIN_MS = 1000; // lets the entrance animation finish
 const MAX_MS = 1800;
 const FILL_MS = 350; // line glides to full from wherever it is
-const EXIT_MS = FILL_MS + 500; // then the panel slides up
+const HOLD_MS = 300; // pause on the full line before the curtain
+const EXIT_MS = FILL_MS + HOLD_MS + 500; // then the panel slides up
 
 /**
  * Runs before paint (see layout.tsx): shows the intro once per tab session, only
