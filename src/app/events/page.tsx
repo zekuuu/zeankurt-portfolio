@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Container, Section } from "@/components/ui/Container";
+import { Badge } from "@/components/ui/Badge";
+import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getPortfolioContent } from "@/lib/cms/queries";
 import { identity } from "@/lib/identity";
@@ -19,41 +20,42 @@ export default async function EventsPage() {
 
   return (
     <main id="main-content">
-      <Section className="pt-28 sm:pt-32">
-        <Container className="max-w-4xl">
-          <nav aria-label="Breadcrumb" className="mb-6 text-sm text-[var(--foreground-muted)]">
-            <Link href="/" className="hover:text-white">
-              Home
-            </Link>{" "}
-            / <span>Events</span>
-          </nav>
+      <Container className="py-10 sm:py-14">
+        <nav aria-label="Breadcrumb" className="label text-ink-muted">
+          <Link href="/" className="inline-flex min-h-11 items-center hover:text-primary">
+            Home
+          </Link>{" "}
+          / <span className="text-ink">Events</span>
+        </nav>
 
-          <SectionHeading
-            as="h1"
-            eyebrow="Events"
-            title={
-              <>
-                Events & <span className="emphasis-glow-blue">community</span>
-              </>
-            }
-            description="Hackathons, conferences, workshops and meetups across the Philippine developer and Web3 community."
-          />
+        <SectionHeading
+          as="h1"
+          index="04"
+          eyebrow="Events"
+          title="Events & community"
+          description="Hackathons, conferences, workshops and meetups across the Philippine developer and Web3 community."
+          className="mt-6"
+        />
 
-          <ol className="mt-9 divide-y divide-[var(--border)] rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)]">
-            {eventHighlights.map((event) => (
-              <li key={event.id} className="grid gap-1 p-4 sm:grid-cols-[8rem_1fr] sm:gap-4 sm:p-5">
-                <p className="font-mono text-xs text-[var(--blue-300)]">{event.date}</p>
+        <ol className="mt-10 border-b border-line">
+          {eventHighlights.map((event) => (
+            <li key={event.id} className="grid gap-2 border-t border-line py-5 sm:grid-cols-[10rem_minmax(0,1fr)_auto] sm:gap-6">
+              <p className="label text-ink-muted">{event.date}</p>
+              <div className="min-w-0">
+                <h2 className="display text-lg leading-snug [overflow-wrap:anywhere]">{event.title}</h2>
+                <p className="mt-1 text-sm leading-relaxed text-ink-muted [overflow-wrap:anywhere]">
+                  {[event.role, event.venue, event.organizers].filter(Boolean).join(" · ")}
+                </p>
+              </div>
+              {event.category ? (
                 <div>
-                  <h2 className="text-base font-semibold text-white">{event.title}</h2>
-                  <p className="mt-1 text-sm leading-6 text-[var(--foreground)]/80">
-                    {[event.role, event.venue, event.organizers].filter(Boolean).join(" · ")}
-                  </p>
+                  <Badge variant={event.category === "hackathon" ? "wip" : "default"}>{event.category}</Badge>
                 </div>
-              </li>
-            ))}
-          </ol>
-        </Container>
-      </Section>
+              ) : null}
+            </li>
+          ))}
+        </ol>
+      </Container>
     </main>
   );
 }

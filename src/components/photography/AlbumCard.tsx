@@ -7,34 +7,26 @@ interface AlbumCardProps {
 
 export function AlbumCard({ album }: AlbumCardProps) {
   return (
-    <Link
-      href={`/photography/${album.slug}`}
-      className="group relative block min-w-0 cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] shadow-[0_16px_44px_rgba(0,0,0,0.18)] transition duration-300 hover:border-white/20 hover:bg-white/[0.05]"
-    >
-      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-white/[0.03]">
+    <Link href={`/photography/${album.slug}`} className="group block min-w-0">
+      <span className="relative block aspect-[4/3] overflow-hidden rounded-tile bg-surface-2">
         {album.coverImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={album.coverImage}
-            alt={album.title}
+            alt=""
             loading="lazy"
-            className="h-full w-full rounded-2xl object-cover transition duration-700 group-hover:scale-[1.03]"
+            decoding="async"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transform-none"
           />
-        ) : (
-          <div className="h-full w-full rounded-2xl bg-[radial-gradient(circle_at_30%_25%,rgba(72,202,228,0.18),transparent_32%),linear-gradient(145deg,rgba(10,15,26,0.96),rgba(2,62,138,0.22))]" />
-        )}
-
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-[#030712]/88 via-[#030712]/18 to-transparent" />
-
-        <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-          <h3 className="mt-1 break-words font-[family-name:var(--font-syne)] text-base font-semibold leading-snug text-white sm:text-lg">
-            {album.title}
-          </h3>
-
-          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/65 sm:text-sm">
-            {album.description}
-          </p>
-        </div>
-      </div>
+        ) : null}
+      </span>
+      <span className="mt-2 flex items-baseline justify-between gap-3 px-1">
+        <span className="display text-base [overflow-wrap:anywhere] group-hover:text-primary sm:text-lg">{album.title}</span>
+        <span className="label shrink-0 text-ink-muted">{album.photoCount}</span>
+      </span>
+      {album.description ? (
+        <span className="mt-1 line-clamp-2 block px-1 text-sm text-ink-muted">{album.description}</span>
+      ) : null}
     </Link>
   );
 }

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
-import { Container, Section } from "@/components/ui/Container";
+import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { Tile, tileVariantAt } from "@/components/ui/Tile";
 import { getPortfolioContent } from "@/lib/cms/queries";
 import { identity } from "@/lib/identity";
 import { projectBadges } from "@/lib/project-meta";
@@ -24,53 +25,51 @@ export default async function ProjectsPage() {
   return (
     <main id="main-content">
       <JsonLdScript data={projectsIndexGraph(projects)} />
-      <Section className="pt-28 sm:pt-32">
-        <Container>
-          <nav aria-label="Breadcrumb" className="mb-6 text-sm text-[var(--foreground-muted)]">
-            <Link href="/" className="hover:text-white">
-              Home
-            </Link>{" "}
-            / <span>Projects</span>
-          </nav>
+      <Container className="py-10 sm:py-14">
+        <nav aria-label="Breadcrumb" className="label text-ink-muted">
+          <Link href="/" className="inline-flex min-h-11 items-center hover:text-primary">
+            Home
+          </Link>{" "}
+          / <span className="text-ink">Projects</span>
+        </nav>
 
-          <SectionHeading
-            as="h1"
-            eyebrow="Projects"
-            title={
-              <>
-                Projects by <span className="emphasis-glow-blue">{identity.name}</span>
-              </>
-            }
-            description={`${projects.length} web apps, Web3 builds, templates and tools.`}
-          />
+        <SectionHeading
+          as="h1"
+          index="01"
+          eyebrow="Projects"
+          title={`Projects by ${identity.name}`}
+          description={`${projects.length} web apps, Web3 builds, templates and tools.`}
+          className="mt-6"
+        />
 
-          <ul className="mt-9 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {projects.map((project) => (
-              <li
-                key={project.slug}
-                className="flex flex-col rounded-2xl border border-[var(--border)] bg-[var(--background-elevated)] p-5 transition hover:border-[var(--border-strong)]"
-              >
-                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--blue-400)]">
-                  {project.year} · {project.role}
+        <ul className="mt-10 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
+          {projects.map((project, index) => (
+            <li key={project.slug} className="flex">
+              <Tile variant={tileVariantAt(index)} interactive className="flex w-full flex-col">
+                <p className="label">
+                  {String(index + 1).padStart(2, "0")} / {project.year} · {project.role}
                 </p>
-                <h2 className="mt-1.5 font-[family-name:var(--font-syne)] text-lg font-semibold leading-snug text-white">
-                  <Link href={`/projects/${project.slug}`} className="hover:text-[var(--blue-200)]">
+                <h2 className="display mt-4 text-2xl [overflow-wrap:anywhere]">
+                  <Link
+                    href={`/projects/${project.slug}`}
+                    className="after:absolute after:inset-0 after:rounded-tile after:content-['']"
+                  >
                     {project.title}
                   </Link>
                 </h2>
-                <p className="mt-2 flex-1 text-sm leading-7 text-[var(--foreground)]/80">
-                  {project.description}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-1.5">
+                <p className="mt-3 line-clamp-4 flex-1 text-sm leading-relaxed">{project.description}</p>
+                <ul className="mt-5 flex flex-wrap gap-1.5">
                   {[...projectBadges(project), ...project.tags].map((tag) => (
-                    <Badge key={tag}>{tag}</Badge>
+                    <li key={tag}>
+                      <Badge>{tag}</Badge>
+                    </li>
                   ))}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </Section>
+                </ul>
+              </Tile>
+            </li>
+          ))}
+        </ul>
+      </Container>
     </main>
   );
 }

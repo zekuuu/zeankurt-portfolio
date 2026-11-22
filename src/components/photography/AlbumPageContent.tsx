@@ -1,713 +1,114 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import type { PhotoAlbum, PhotoItem } from "@/types";
+import { ASPECT_CLASS, GalleryGrid } from "@/components/photography/GalleryGrid";
 import { Lightbox } from "@/components/photography/Lightbox";
+import { Pagination } from "@/components/photography/Pagination";
 import { Container } from "@/components/ui/Container";
-import { resolvePhotoAspectRatio } from "@/lib/photo-aspect";
+import { cn } from "@/lib/cn";
 
-const GRID_AUTO_ROW_HEIGHT = 8;
-const FALLBACK_COLUMN_WIDTH = 280;
-const DEFAULT_GRID_GAP = 16;
 const PHOTOS_PER_PAGE = 24;
-const BASELINE_ROW_GAP = 16;
 
 interface AlbumPageContentProps {
-  album: Pick<
-    PhotoAlbum,
-    "slug" | "title" | "description" | "category" | "coverImage"
-  >;
-  photos?: PhotoItem[];
-}
-
-interface AlbumGridMetrics {
-  columnWidth: number;
-  columnGap: number;
-  rowGap: number;
-}
-
-function getFallbackRatio(aspectRatio: PhotoItem["aspectRatio"]) {
-  if (aspectRatio === "portrait") return 3 / 4;
-  if (aspectRatio === "square") return 1;
-
-  return 4 / 3;
-}
-
-function readAlbumGridMetrics(element: HTMLElement): AlbumGridMetrics {
-  const styles = window.getComputedStyle(element);
-
-  const parsedColumns = styles.gridTemplateColumns
-    .split(" ")
-    .map((value) => Number.parseFloat(value))
-    .filter((value) => Number.isFinite(value) && value > 0);
-
-  const columnGap = Number.parseFloat(styles.columnGap) || DEFAULT_GRID_GAP;
-  const rowGap = Number.parseFloat(styles.rowGap) || DEFAULT_GRID_GAP;
-
-  return {
-    columnWidth: parsedColumns[0] ?? FALLBACK_COLUMN_WIDTH,
-    columnGap,
-    rowGap,
-  };
-}
-
-function getGridItemWidth(metrics: AlbumGridMetrics, columnSpan: number) {
-  return metrics.columnWidth * columnSpan + metrics.columnGap * (columnSpan - 1);
-}
-
-function getDynamicGridRowSpan({
-  ratio,
-  columnSpan,
-  metrics,
-  minimumRows,
-}: {
-  ratio: number;
-  columnSpan: number;
-  metrics: AlbumGridMetrics;
-  minimumRows: number;
-}) {
-  const safeRatio = Number.isFinite(ratio) && ratio > 0 ? ratio : 4 / 3;
-  const itemWidth = getGridItemWidth(metrics, columnSpan);
-  const targetHeight = itemWidth / safeRatio;
-
-  return Math.max(
-    minimumRows,
-    Math.ceil(
-      (targetHeight + metrics.rowGap) / (GRID_AUTO_ROW_HEIGHT + metrics.rowGap),
-    ),
-  );
-}
-
-function adjustRowSpanForGap(span: number, rowGap: number) {
-  const baselineUnit = GRID_AUTO_ROW_HEIGHT + BASELINE_ROW_GAP;
-  const currentUnit = GRID_AUTO_ROW_HEIGHT + rowGap;
-
-  return Math.max(span, Math.round((span * baselineUnit) / currentUnit));
-}
-
-function scrollElementIntoViewWithOffset(element: HTMLElement) {
-  const header = document.querySelector<HTMLElement>("[data-site-header]");
-  const headerHeight = header?.getBoundingClientRect().height ?? 72;
-  const extraOffset = window.innerWidth >= 1024 ? 28 : 20;
-  const top =
-    element.getBoundingClientRect().top +
-    window.scrollY -
-    headerHeight -
-    extraOffset;
-
-  window.scrollTo({
-    top: Math.max(0, top),
-    behavior: "smooth",
-  });
+  album: PhotoAlbum;
+  photos: PhotoItem[];
 }
 
 export function AlbumPageContent({ album, photos }: AlbumPageContentProps) {
-  const gridRef = useRef<HTMLDivElement>(null);
-  const gallerySectionRef = useRef<HTMLDivElement>(null);
-  const desktopQuickAccessPagerRef = useRef<HTMLDivElement>(null);
-  const mobileQuickAccessPagerRef = useRef<HTMLDivElement>(null);
-
-  const albumPhotos = useMemo(() => photos ?? [], [photos]);
-
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState(1);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [imageRatios, setImageRatios] = useState<Record<string, number>>({});
-  const [gridMetrics, setGridMetrics] = useState<AlbumGridMetrics>({
-    columnWidth: FALLBACK_COLUMN_WIDTH,
-    columnGap: DEFAULT_GRID_GAP,
-    rowGap: DEFAULT_GRID_GAP,
-  });
 
-  const fallbackFeaturedPhoto =
-    albumPhotos.find((photo) => photo.featured) ?? albumPhotos[0] ?? null;
+  // Cover: the album's showcase image, else its featured/first photo. A cover that
+  // is not part of the album becomes a virtual first lightbox item.
+  const fallback = photos.find((photo) => photo.featured) ?? photos[0] ?? null;
+  const coverImage = album.coverImage ?? fallback?.image ?? null;
+  const coverPhoto = useMemo<PhotoItem | null>(() => {
+    if (!coverImage) return fallback;
+    return (
+      photos.find((photo) => photo.image === coverImage) ?? {
+        id: `cover-${album.slug}`,
+        title: `${album.title} showcase`,
+        category: album.category,
+        albumSlug: album.slug,
+        imageSeed: album.slug,
+        image: coverImage,
+        aspectRatio: album.coverAspectRatio,
+      }
+    );
+  }, [album, coverImage, fallback, photos]);
 
-  const featuredImage = album.coverImage ?? fallbackFeaturedPhoto?.image ?? null;
-
-  const showCategoryLabel =
-    album.category.trim().toLowerCase() !== album.title.trim().toLowerCase();
-
-  const [featuredAspectRatio, setFeaturedAspectRatio] = useState<
-    PhotoItem["aspectRatio"]
-  >(fallbackFeaturedPhoto?.aspectRatio ?? "landscape");
-
-  useEffect(() => {
-    const grid = gridRef.current;
-
-    if (!grid) return;
-
-    const updateGridMetrics = () => {
-      const nextMetrics = readAlbumGridMetrics(grid);
-
-      setGridMetrics((current) => {
-        const sameColumnWidth =
-          Math.abs(current.columnWidth - nextMetrics.columnWidth) < 0.5;
-        const sameColumnGap =
-          Math.abs(current.columnGap - nextMetrics.columnGap) < 0.5;
-        const sameRowGap = Math.abs(current.rowGap - nextMetrics.rowGap) < 0.5;
-
-        if (sameColumnWidth && sameColumnGap && sameRowGap) {
-          return current;
-        }
-
-        return nextMetrics;
-      });
-    };
-
-    updateGridMetrics();
-
-    const observer = new ResizeObserver(updateGridMetrics);
-    observer.observe(grid);
-
-    window.addEventListener("resize", updateGridMetrics);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", updateGridMetrics);
-    };
-  }, []);
-
-  const registerImageRatio = useCallback(
-    (id: string, width: number, height: number) => {
-      if (width <= 0 || height <= 0) return;
-
-      const ratio = width / height;
-
-      setImageRatios((current) => {
-        if (Math.abs((current[id] ?? 0) - ratio) < 0.001) {
-          return current;
-        }
-
-        return {
-          ...current,
-          [id]: ratio,
-        };
-      });
-    },
-    [],
+  const lightboxPhotos = useMemo(
+    () => (coverPhoto && !photos.includes(coverPhoto) ? [coverPhoto, ...photos] : photos),
+    [coverPhoto, photos],
   );
 
-  useEffect(() => {
-    if (!featuredImage) return;
+  const totalPages = Math.max(1, Math.ceil(photos.length / PHOTOS_PER_PAGE));
+  const safePage = Math.min(page, totalPages);
+  const pagePhotos = photos.slice((safePage - 1) * PHOTOS_PER_PAGE, safePage * PHOTOS_PER_PAGE);
 
-    let mounted = true;
-    const img = new Image();
-
-    img.src = featuredImage;
-    img.onload = () => {
-      if (!mounted) return;
-
-      setFeaturedAspectRatio(
-        resolvePhotoAspectRatio(img.naturalWidth, img.naturalHeight),
-      );
-    };
-
-    return () => {
-      mounted = false;
-    };
-  }, [featuredImage]);
-
-  const displayedFeaturedPhoto = useMemo(() => {
-    if (!featuredImage) return fallbackFeaturedPhoto;
-
-    const matchingAlbumPhoto = albumPhotos.find(
-      (photo) => photo.image === featuredImage,
-    );
-
-    if (matchingAlbumPhoto) {
-      return matchingAlbumPhoto;
-    }
-
-    return {
-      id: `cover-${album.slug}`,
-      title: `${album.title} Showcase`,
-      category: album.category,
-      image: featuredImage,
-      aspectRatio: featuredAspectRatio,
-      featured: true,
-    } as PhotoItem;
-  }, [
-    album.slug,
-    album.title,
-    album.category,
-    albumPhotos,
-    featuredImage,
-    featuredAspectRatio,
-    fallbackFeaturedPhoto,
-  ]);
-
-  const isFeaturedImageFromAlbum = useMemo(() => {
-    if (!displayedFeaturedPhoto) return false;
-
-    return albumPhotos.some(
-      (photo) =>
-        photo.id === displayedFeaturedPhoto.id ||
-        photo.image === displayedFeaturedPhoto.image,
-    );
-  }, [displayedFeaturedPhoto, albumPhotos]);
-
-  const galleryPhotos = useMemo(() => {
-    /*
-      Always keep the full album photo count in the paginated gallery.
-      The featured image can still be highlighted separately without changing
-      the gallery totals shown to the user.
-    */
-    return albumPhotos;
-  }, [albumPhotos]);
-
-  const totalPages = Math.max(1, Math.ceil(galleryPhotos.length / PHOTOS_PER_PAGE));
-  const safeCurrentPage = Math.min(currentPage, totalPages);
-
-  const headerStart = (safeCurrentPage - 1) * PHOTOS_PER_PAGE + 1;
-  const headerEnd = Math.min(safeCurrentPage * PHOTOS_PER_PAGE, galleryPhotos.length);
-
-  const paginatedGalleryPhotos = useMemo(() => {
-    const start = (safeCurrentPage - 1) * PHOTOS_PER_PAGE;
-    const end = start + PHOTOS_PER_PAGE;
-
-    return galleryPhotos.slice(start, end);
-  }, [galleryPhotos, safeCurrentPage]);
-
-  const lightboxPhotos = useMemo(() => {
-    if (!displayedFeaturedPhoto) return albumPhotos;
-
-    /*
-      If the featured image is already one of the album photos,
-      do not duplicate it in the lightbox.
-    */
-    if (isFeaturedImageFromAlbum) {
-      return albumPhotos;
-    }
-
-    /*
-      If the featured image is a separate showcase/cover image,
-      add it as a virtual first lightbox item.
-    */
-    return [displayedFeaturedPhoto, ...albumPhotos];
-  }, [displayedFeaturedPhoto, isFeaturedImageFromAlbum, albumPhotos]);
-
-  useEffect(() => {
-    setCurrentPage(1);
-    setLightboxIndex(null);
-  }, [album.slug]);
-
-  useEffect(() => {
-    if (currentPage > totalPages) {
-      setCurrentPage(totalPages);
-    }
-  }, [currentPage, totalPages]);
-
-  const goToPage = (page: number) => {
-    const nextPage = Math.min(Math.max(1, page), totalPages);
-
-    setCurrentPage(nextPage);
-    setLightboxIndex(null);
-
-    requestAnimationFrame(() => {
-      const scrollTarget =
-        window.innerWidth >= 1024
-          ? desktopQuickAccessPagerRef.current ?? gallerySectionRef.current
-          : mobileQuickAccessPagerRef.current ?? gallerySectionRef.current;
-
-      if (scrollTarget) {
-        scrollElementIntoViewWithOffset(scrollTarget);
-      }
-    });
-  };
-
-  const openPhotoInLightbox = (photo: PhotoItem | null) => {
+  const open = (photo: PhotoItem | null) => {
     if (!photo) return;
-
-    const index = lightboxPhotos.findIndex(
-      (item) => item.id === photo.id || item.image === photo.image,
-    );
-
-    if (index >= 0) {
-      setLightboxIndex(index);
-    }
+    const index = lightboxPhotos.findIndex((item) => item.id === photo.id);
+    if (index >= 0) setLightboxIndex(index);
   };
 
-  const getGalleryRowSpan = (photo: PhotoItem) => {
-    const ratio = imageRatios[photo.id] ?? getFallbackRatio(photo.aspectRatio);
-    const isMobile = gridMetrics.columnWidth < 220;
-
-    if (isMobile) {
-      let targetHeight = gridMetrics.columnWidth / ratio;
-
-      if (ratio < 0.85) {
-        targetHeight *= 0.98;
-      } else if (ratio > 1.15) {
-        targetHeight *= 0.86;
-      } else {
-        targetHeight *= 0.95;
-      }
-
-      return Math.max(
-        4,
-        Math.ceil(
-          (targetHeight + gridMetrics.rowGap) /
-          (GRID_AUTO_ROW_HEIGHT + gridMetrics.rowGap),
-        ),
-      );
-    }
-
-    const itemWidth = getGridItemWidth(gridMetrics, 1);
-    const targetHeight = itemWidth / ratio;
-    const breathingRoom =
-      ratio < 0.85 ? 1.01 : ratio > 1.15 ? 0.96 : 1.01;
-
-    const dynamicSpan = Math.ceil(
-      (targetHeight * breathingRoom + gridMetrics.rowGap) /
-      (GRID_AUTO_ROW_HEIGHT + gridMetrics.rowGap),
-    );
-
-    if (ratio < 0.85) {
-      return Math.max(15, Math.min(27, dynamicSpan));
-    }
-
-    if (ratio > 1.15) {
-      return Math.max(7, Math.min(14, dynamicSpan));
-    }
-
-    return Math.max(11, Math.min(17, dynamicSpan));
+  const goToPage = (next: number) => {
+    setPage(Math.min(Math.max(1, next), totalPages));
+    requestAnimationFrame(() => galleryRef.current?.scrollIntoView({ block: "start" }));
   };
-
-  const getFeaturedRowSpan = () => {
-    const featuredId = displayedFeaturedPhoto?.id ?? "featured";
-    const ratio =
-      imageRatios[featuredId] ?? getFallbackRatio(featuredAspectRatio);
-    const isMobile = gridMetrics.columnWidth < 220;
-
-    if (isMobile) {
-      const minimumRows =
-        ratio < 0.9 ? 22 : ratio > 1.1 ? 11 : 14;
-
-      return getDynamicGridRowSpan({
-        ratio,
-        columnSpan: 2,
-        metrics: gridMetrics,
-        minimumRows,
-      });
-    }
-
-    if (displayedFeaturedPhoto?.aspectRatio === "portrait") {
-      return adjustRowSpanForGap(
-        Math.max(36, Math.round(24 * (0.75 / ratio))),
-        gridMetrics.rowGap,
-      );
-    }
-    if (displayedFeaturedPhoto?.aspectRatio === "square") {
-      return adjustRowSpanForGap(18, gridMetrics.rowGap);
-    }
-    const itemWidth = getGridItemWidth(gridMetrics, 2);
-    const compactHeight = (itemWidth / ratio) * 0.76;
-    const dynamicSpan = Math.ceil(
-      (compactHeight + gridMetrics.rowGap) /
-      (GRID_AUTO_ROW_HEIGHT + gridMetrics.rowGap),
-    );
-
-    return Math.max(
-      ratio > 1.65 ? 18 : 20,
-      Math.min(ratio > 1.65 ? 26 : 30, dynamicSpan),
-    );
-  };
-
-  const headerRowSpan = gridMetrics.columnWidth < 220 ? 10 : 10;
-  const isMobileGrid = gridMetrics.columnWidth < 220;
-  const featuredRowSpan = getFeaturedRowSpan();
 
   return (
     <>
-      <section className="relative isolate min-h-dvh overflow-hidden">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,7,18,0.72),rgba(3,7,18,0.42)_30%,rgba(3,7,18,0.58)_68%,rgba(3,7,18,0.82))]" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_16%,rgba(72,202,228,0.22),transparent_28%),radial-gradient(circle_at_82%_30%,rgba(0,180,216,0.16),transparent_30%),radial-gradient(circle_at_46%_72%,rgba(2,62,138,0.24),transparent_40%)]" />
-          <div className="absolute inset-0 opacity-70 [background-image:linear-gradient(rgba(72,202,228,0.07)_1px,transparent_1px),linear-gradient(90deg,rgba(72,202,228,0.07)_1px,transparent_1px)] [background-size:96px_96px] [mask-image:linear-gradient(180deg,transparent,white_10%,white_90%,transparent)]" />
-          <div className="absolute left-[6%] top-20 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(72,202,228,0.2),transparent_70%)] blur-3xl sm:h-80 sm:w-80" />
-          <div className="absolute bottom-10 right-[8%] h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(2,132,199,0.26),transparent_72%)] blur-3xl sm:h-96 sm:w-96" />
-        </div>
+      <Container className="py-10 sm:py-14">
+        <Link href="/photography" className="label inline-flex min-h-11 items-center gap-2 text-ink-muted hover:text-primary">
+          <ArrowLeft aria-hidden className="h-4 w-4" /> Photography
+        </Link>
 
-        <Container className="relative z-10 pb-16 pt-20 md:pt-20">
-          <Link
-            href="/photography"
-            className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm text-white/60 transition hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to photography
-          </Link>
-
-          <div ref={gallerySectionRef}>
-            <div
-              ref={gridRef}
-              className="mt-0 grid min-w-0 grid-cols-2 auto-rows-[8px] gap-1 sm:gap-2 md:gap-3 lg:gap-3 [grid-auto-flow:dense] lg:grid-cols-4"
-            >
-              <div
-                className="col-span-2 min-w-0 self-start lg:col-start-1 lg:row-start-1"
-                style={{ gridRowEnd: `span ${headerRowSpan}` }}
-              >
-                {showCategoryLabel ? (
-                  <p className="font-[family-name:var(--font-syne)] text-[0.74rem] font-medium tracking-[0.13em] text-[var(--blue-200)] sm:text-[0.8rem]">
-                    {album.category}
-                  </p>
-                ) : null}
-
-                <h1 className="mt-2 break-words font-[family-name:var(--font-syne)] text-[clamp(1.875rem,8vw,2.5rem)] font-semibold tracking-[-0.03em] text-white sm:text-5xl">
-                  {album.title}
-                </h1>
-
-                <p className="mt-2 max-w-2xl text-base leading-relaxed text-white/65">
-                  {album.description}
-                </p>
-                {totalPages > 1 ? (
-                  <div ref={desktopQuickAccessPagerRef} className="relative z-20 mt-6 hidden w-full max-w-2xl lg:flex lg:flex-col lg:gap-3">
-                    <p className="text-center font-mono text-xs tracking-[0.14em] text-[var(--foreground-subtle)]">
-                      Showing {headerStart}-{headerEnd} of {galleryPhotos.length}
-                    </p>
-
-                    <div className="grid lg:grid-cols-[1fr_auto_1fr] lg:items-center">
-                      <button
-                        type="button"
-                        onClick={() => goToPage(safeCurrentPage - 1)}
-                        disabled={safeCurrentPage <= 1}
-                        className="inline-flex min-h-10 w-auto cursor-pointer items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-2 text-xs font-medium text-white/70 transition enabled:hover:border-white/20 enabled:hover:bg-white/[0.05] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40 lg:justify-self-start"
-                      >
-                        <ArrowLeft className="h-3.5 w-3.5" />
-                        Previous
-                      </button>
-
-                      <div className="inline-flex min-h-10 items-center justify-self-center rounded-full border border-[rgba(72,202,228,0.18)] bg-[rgba(72,202,228,0.08)] px-3 py-2 font-mono text-xs text-[var(--blue-300)]">
-                        {safeCurrentPage} / {totalPages}
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => goToPage(safeCurrentPage + 1)}
-                        disabled={safeCurrentPage >= totalPages}
-                        className="inline-flex min-h-10 w-auto cursor-pointer items-center justify-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-3 py-2 text-xs font-medium text-white/70 transition enabled:hover:border-white/20 enabled:hover:bg-white/[0.05] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40 lg:justify-self-end"
-                      >
-                        Next
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-
-              {featuredImage || displayedFeaturedPhoto ? (
-                <button
-                  type="button"
-                  onClick={() => openPhotoInLightbox(displayedFeaturedPhoto)}
-                  className="group relative col-span-2 min-h-11 cursor-zoom-in overflow-hidden rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(8,14,28,0.92),rgba(4,8,18,0.98))] text-left transition hover:border-white/30 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 lg:col-start-3 lg:row-start-1"
-                  style={{
-                    gridRowStart: isMobileGrid ? headerRowSpan + 1 : undefined,
-                    gridRowEnd: `span ${featuredRowSpan}`,
-                  }}
-                >
-                  {featuredImage ? (
-                    <img
-                      src={featuredImage}
-                      alt={displayedFeaturedPhoto?.title ?? `${album.title} Showcase`}
-                      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
-                      loading="eager"
-                      onLoad={(event) => {
-                        const { naturalWidth, naturalHeight } = event.currentTarget;
-                        const featuredId = displayedFeaturedPhoto?.id ?? "featured";
-
-                        registerImageRatio(featuredId, naturalWidth, naturalHeight);
-
-                        setFeaturedAspectRatio(
-                          resolvePhotoAspectRatio(naturalWidth, naturalHeight),
-                        );
-                      }}
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-end bg-[linear-gradient(180deg,rgba(8,14,28,0.92),rgba(4,8,18,0.98))] p-6">
-                      <p className="text-sm uppercase tracking-[0.2em] text-white/45">
-                        No showcase image uploaded
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/20" />
-
-                  <div className="absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-white/80">
-                      {album.category}
-                    </p>
-                    <p className="mt-1 text-sm font-medium text-white">
-                      {isFeaturedImageFromAlbum
-                        ? displayedFeaturedPhoto?.title
-                        : `${album.title} Showcase`}
-                    </p>
-                  </div>
-                </button>
-              ) : null}
-              
-
-              {totalPages > 1 ? (
-                <>
-                  <div
-                    ref={mobileQuickAccessPagerRef}
-                    className="col-span-2 flex flex-col gap-3 px-3 py-3 lg:hidden"
-                    style={{
-                      gridRowStart: isMobileGrid ? headerRowSpan + featuredRowSpan + 1 : undefined,
-                      gridRowEnd: "span 8",
-                    }}
-                  >
-                    <p className="text-center font-mono text-xs tracking-[0.14em] text-[var(--foreground-subtle)]">
-                      Showing {headerStart}-{headerEnd} of {galleryPhotos.length}
-                    </p>
-
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-                      <button
-                      type="button"
-                      onClick={() => goToPage(safeCurrentPage - 1)}
-                      disabled={safeCurrentPage <= 1}
-                      className="inline-flex min-h-10 w-auto cursor-pointer items-center justify-center gap-2 justify-self-start rounded-full border border-white/10 bg-white/[0.02] px-3 py-2 text-xs font-medium text-white/70 transition enabled:hover:border-white/20 enabled:hover:bg-white/[0.05] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <ArrowLeft className="h-3.5 w-3.5" />
-                      Previous
-                    </button>
-
-                    <div className="inline-flex min-h-10 items-center rounded-full border border-[rgba(72,202,228,0.18)] bg-[rgba(72,202,228,0.08)] px-3 py-2 font-mono text-xs text-[var(--blue-300)]">
-                      {safeCurrentPage} / {totalPages}
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => goToPage(safeCurrentPage + 1)}
-                      disabled={safeCurrentPage >= totalPages}
-                      className="inline-flex min-h-10 w-auto cursor-pointer items-center justify-center gap-2 justify-self-end rounded-full border border-white/10 bg-white/[0.02] px-3 py-2 text-xs font-medium text-white/70 transition enabled:hover:border-white/20 enabled:hover:bg-white/[0.05] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      Next
-                      <ArrowRight className="h-3.5 w-3.5" />
-                    </button>
-                    </div>
-                  </div>
-                </>
-              ) : null}
-
-              {paginatedGalleryPhotos.map((photo) => (
-                <button
-                  key={photo.id}
-                  type="button"
-                  onClick={() => openPhotoInLightbox(photo)}
-                  className="group relative min-h-11 cursor-zoom-in overflow-hidden rounded-2xl bg-[linear-gradient(180deg,rgba(8,14,28,0.92),rgba(4,8,18,0.98))] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-                  style={{
-                    gridRowEnd: `span ${getGalleryRowSpan(photo)}`,
-                  }}
-                >
-                  {photo.image ? (
-                    <img
-                      src={photo.image}
-                      alt={photo.title}
-                      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
-                      loading="lazy"
-                      onLoad={(event) => {
-                        const { naturalWidth, naturalHeight } = event.currentTarget;
-
-                        registerImageRatio(photo.id, naturalWidth, naturalHeight);
-                      }}
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-end bg-[linear-gradient(180deg,rgba(8,14,28,0.92),rgba(4,8,18,0.98))] p-6">
-                      <p className="text-sm uppercase tracking-[0.2em] text-white/45">
-                        No image uploaded
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="absolute inset-0 bg-black/0 transition duration-300 group-hover:bg-black/20" />
-
-                  <div className="absolute inset-x-0 bottom-0 translate-y-2 p-4 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-white/80">
-                      {photo.category}
-                    </p>
-                    <p className="mt-1 text-sm font-medium text-white">
-                      {photo.title}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
+        <div className="mt-4 grid gap-6 lg:grid-cols-12 lg:items-end">
+          <div className="min-w-0 lg:col-span-5">
+            {album.category.trim().toLowerCase() !== album.title.trim().toLowerCase() ? (
+              <p className="label text-ink-muted">{album.category}</p>
+            ) : null}
+            <h1 className="display mt-2 text-[clamp(2.25rem,6vw,4.5rem)] leading-[0.98] [overflow-wrap:anywhere]">{album.title}</h1>
+            {album.description ? <p className="mt-4 max-w-prose leading-relaxed text-ink-muted">{album.description}</p> : null}
+            <p className="label mt-4 text-ink-muted">{photos.length} frames</p>
           </div>
 
-          <PaginationControls
-            currentPage={safeCurrentPage}
-            totalPages={totalPages}
-            totalItems={galleryPhotos.length}
-            pageSize={PHOTOS_PER_PAGE}
-            onPageChange={goToPage}
-          />
-        </Container>
-      </section>
-
-      <Lightbox
-        photos={lightboxPhotos}
-        activeIndex={lightboxIndex}
-        onClose={() => setLightboxIndex(null)}
-        onNavigate={setLightboxIndex}
-      />
-    </>
-  );
-}
-
-function PaginationControls({
-  currentPage,
-  totalPages,
-  totalItems,
-  pageSize,
-  onPageChange,
-}: {
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  pageSize: number;
-  onPageChange: (page: number) => void;
-}) {
-  if (totalPages <= 1) return null;
-
-  const start = (currentPage - 1) * pageSize + 1;
-  const end = Math.min(currentPage * pageSize, totalItems);
-
-  return (
-    <div className="mt-10 flex flex-col gap-4 sm:rounded-2xl sm:border sm:border-[var(--border)] sm:bg-white/[0.02] sm:px-4 sm:py-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-center font-mono text-xs tracking-[0.14em] text-[var(--foreground-subtle)] sm:text-left">
-        Showing {start}-{end} of {totalItems}
-      </p>
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2">
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:flex sm:items-center sm:gap-2">
-          <button
-            type="button"
-            onClick={() => onPageChange(currentPage - 1)}
-            disabled={currentPage <= 1}
-            className="inline-flex min-h-11 w-auto justify-self-start cursor-pointer items-center justify-start gap-2 rounded-full border border-[var(--border)] bg-white/[0.02] px-3 py-2 text-xs font-medium text-[var(--foreground-muted)] transition enabled:hover:border-[var(--border-strong)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-10 sm:justify-center"
-          >
-            <ArrowLeft className="h-3.5 w-3.5" />
-            Previous
-          </button>
-
-          <span className="inline-flex min-h-10 min-w-[3.75rem] items-center justify-center rounded-full border border-[rgba(72,202,228,0.18)] bg-[rgba(72,202,228,0.08)] px-2.5 py-2 font-mono text-xs text-[var(--blue-300)] sm:hidden">
-            {currentPage} / {totalPages}
-          </span>
-
-          <span className="hidden min-h-10 items-center rounded-full border border-[rgba(72,202,228,0.18)] bg-[rgba(72,202,228,0.08)] px-3 py-2 font-mono text-xs text-[var(--blue-300)] sm:inline-flex">
-            {currentPage} / {totalPages}
-          </span>
-
-          <button
-            type="button"
-            onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages}
-            className="inline-flex min-h-11 w-auto justify-self-end cursor-pointer items-center justify-end gap-2 rounded-full border border-[var(--border)] bg-white/[0.02] px-3 py-2 text-xs font-medium text-[var(--foreground-muted)] transition enabled:hover:border-[var(--border-strong)] enabled:hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-10 sm:justify-center"
-          >
-            Next
-            <ArrowRight className="h-3.5 w-3.5" />
-          </button>
+          {coverPhoto?.image ? (
+            <button
+              type="button"
+              onClick={() => open(coverPhoto)}
+              className={cn(
+                "relative block w-full cursor-zoom-in overflow-hidden rounded-tile bg-surface-2 lg:col-span-7",
+                ASPECT_CLASS[coverPhoto.aspectRatio],
+              )}
+              aria-label={`Open ${coverPhoto.title}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={coverPhoto.image} alt={coverPhoto.title} className="h-full w-full object-cover" />
+            </button>
+          ) : null}
         </div>
+      </Container>
+
+      <div ref={galleryRef} className="scroll-mt-[var(--header-height)] border-t border-line py-10 sm:py-14">
+        <Container>
+          {photos.length ? (
+            <>
+              <GalleryGrid photos={pagePhotos} onPhotoClick={(photo) => open(photo)} />
+              <Pagination page={safePage} totalPages={totalPages} totalItems={photos.length} pageSize={PHOTOS_PER_PAGE} onPageChange={goToPage} />
+            </>
+          ) : (
+            <p className="text-ink-muted">No photos in this album yet.</p>
+          )}
+        </Container>
       </div>
-    </div>
+
+      <Lightbox photos={lightboxPhotos} activeIndex={lightboxIndex} onClose={() => setLightboxIndex(null)} onNavigate={setLightboxIndex} />
+    </>
   );
 }
