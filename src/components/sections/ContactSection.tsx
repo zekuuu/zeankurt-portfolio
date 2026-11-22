@@ -18,7 +18,7 @@ export function ContactSection({ siteConfig }: ContactSectionProps) {
       <Container>
         <div className="grid gap-1.5 lg:grid-cols-12">
           <Tile variant="primary" className="flex flex-col gap-8 lg:col-span-8 lg:p-10">
-            <p className="label">06 / Contact</p>
+            <p className="label">Contact</p>
             <h2 id="contact-title" className="display max-w-[18ch] text-[clamp(2rem,5vw,4rem)]">
               Open to internships, client web projects, and collaborations.
             </h2>

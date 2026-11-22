@@ -150,7 +150,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </Tile>
 
             <div className="grid content-start gap-1.5 lg:col-span-4">
-              <Tile variant="yellow">
+              <Tile variant="muted">
                 <dl className="grid gap-4">
                   <div>
                     <dt className="label">Role</dt>

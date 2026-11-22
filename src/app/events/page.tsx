@@ -30,7 +30,6 @@ export default async function EventsPage() {
 
         <SectionHeading
           as="h1"
-          index="04"
           eyebrow="Events"
           title="Events & community"
           description="Hackathons, conferences, workshops and meetups across the Philippine developer and Web3 community."

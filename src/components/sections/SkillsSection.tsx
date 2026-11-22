@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/Badge";
 import { Container, Section } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { Tile } from "@/components/ui/Tile";
 import type { SkillCategory } from "@/types";
 
 interface SkillsSectionProps {
   skillCategories: SkillCategory[];
 }
 
+/** Ruled list instead of tiles, so this section reads differently from its neighbours. */
 export function SkillsSection({ skillCategories }: SkillsSectionProps) {
   const categories = skillCategories.filter((category) => category.skills.length > 0);
 
@@ -16,31 +16,35 @@ export function SkillsSection({ skillCategories }: SkillsSectionProps) {
       <Container>
         <SectionHeading
           id="skills-title"
-          index="03"
           eyebrow="Skills"
           title="Tools I build with."
           description="Full-stack development for websites and software products, shaped by hackathons, client work and hands-on builds."
         />
 
-        <div className="mt-10 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
-          {categories.map((category, index) => (
-            <Tile key={category.name} className="flex flex-col">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="display text-xl [overflow-wrap:anywhere]">{category.name}</h3>
-                <span className="label shrink-0 text-ink-muted">
-                  {String(index + 1).padStart(2, "0")} · {category.skills.length}
+        <dl className="mt-10 border-b border-line">
+          {categories.map((category) => (
+            <div
+              key={category.name}
+              className="grid gap-3 border-t border-line py-5 md:grid-cols-[minmax(12rem,1fr)_3fr] md:gap-8"
+            >
+              <dt className="flex items-baseline justify-between gap-3 md:block">
+                <span className="display block text-xl [overflow-wrap:anywhere]">{category.name}</span>
+                <span className="label text-ink-muted md:mt-1 md:block">
+                  {category.skills.length} {category.skills.length === 1 ? "tool" : "tools"}
                 </span>
-              </div>
-              <ul className="mt-5 flex flex-wrap gap-1.5">
-                {category.skills.map((skill) => (
-                  <li key={skill}>
-                    <Badge>{skill}</Badge>
-                  </li>
-                ))}
-              </ul>
-            </Tile>
+              </dt>
+              <dd>
+                <ul className="flex flex-wrap gap-1.5">
+                  {category.skills.map((skill) => (
+                    <li key={skill}>
+                      <Badge>{skill}</Badge>
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
           ))}
-        </div>
+        </dl>
       </Container>
     </Section>
   );

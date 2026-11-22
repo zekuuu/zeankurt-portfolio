@@ -29,6 +29,7 @@ import { createSupabaseAdminClient, createSupabaseServerClient } from "@/lib/sup
 import { isAllowedAdminEmail } from "@/lib/supabase/config";
 import { Award, BriefcaseBusiness, Camera, CalendarDays, Check, Code2, FileText, FolderKanban, SquarePen, Trash2 } from "lucide-react";
 import SaveButton from "@/components/ui/SaveButton";
+import { fieldClass } from "@/components/ui/field";
 import UploadWithValidation from "@/components/admin/UploadWithValidationClient";
 import UploadField from "@/components/admin/UploadFieldClient";
 import { AdminActionForm } from "@/app/admin/AdminActionForm";
@@ -149,7 +150,7 @@ function AdminCheckbox({
         />
         <span
           aria-hidden="true"
-          className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-line bg-surface-2 text-transparent transition peer-checked:border-primary peer-checked:bg-primary peer-checked:text-on-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg"
+          className="inline-flex h-5 w-5 items-center justify-center rounded-[4px] border border-line bg-surface text-transparent transition peer-checked:border-ink peer-checked:bg-ink peer-checked:text-bg peer-focus-visible:ring-2 peer-focus-visible:ring-primary peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-bg"
         >
           <Check className="h-3.5 w-3.5 stroke-[3]" />
         </span>
@@ -163,7 +164,7 @@ function labelValue(label: string, valueText?: string) {
   if (!valueText) return null;
   return (
     <div className="min-w-0 rounded-tile border border-line bg-surface-2 px-4 py-3">
-      <p className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">{label}</p>
+      <p className="text-xs text-ink-muted">{label}</p>
       <p className="mt-1 break-words text-sm text-ink">{valueText}</p>
     </div>
   );
@@ -220,8 +221,7 @@ function Field({
   required?: boolean;
   options?: Array<{ label: string; value: string }>;
 }) {
-  const className =
-    "rounded-field border border-line bg-surface-2 px-3 py-2 text-sm text-ink transition focus:border-primary";
+  const className = fieldClass;
 
   return (
     <label className="flex flex-col gap-1 text-xs text-ink-muted">
@@ -554,7 +554,7 @@ export default async function AdminPage() {
       <header className="sticky top-0 z-30 border-b border-line bg-bg">
         <div className="mx-auto flex min-h-14 max-w-screen-xl flex-wrap items-center justify-between gap-3 px-4 py-2 sm:flex-nowrap sm:px-5">
           <div className="flex items-center gap-3">
-            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-primary">CMS</span>
+            <span className="font-mono text-xs text-primary">CMS</span>
             <span className="h-4 w-px bg-line-soft" />
             <span className="font-display text-sm font-semibold">Admin</span>
           </div>
@@ -578,7 +578,7 @@ export default async function AdminPage() {
       <div className="mx-auto flex max-w-screen-xl gap-0 px-0 py-6 lg:gap-6 lg:px-5">
         <aside className="hidden w-52 shrink-0 lg:block">
           <nav className="sticky top-20 flex flex-col gap-1">
-            <p className="mb-2 px-3 text-[10px] font-medium uppercase tracking-[0.15em] text-ink-muted">
+            <p className="mb-2 px-3 text-xs font-medium text-ink-muted">
               Dev Portfolio
             </p>
             {navItems.filter((item) => item.id !== "creative-portfolio").map((item) => (
@@ -593,11 +593,11 @@ export default async function AdminPage() {
                   </span>
                   {item.label}
                 </span>
-                <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-surface-2 px-2 text-[10px] leading-none tabular-nums">{item.count}</span>
+                <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-surface-2 px-2 text-xs leading-none tabular-nums">{item.count}</span>
               </a>
             ))}
 
-            <p className="mb-2 mt-5 px-3 text-[10px] font-medium uppercase tracking-[0.15em] text-ink-muted">
+            <p className="mb-2 mt-5 px-3 text-xs font-medium text-ink-muted">
               Creative Portfolio
             </p>
             {navItems.filter((item) => item.id === "creative-portfolio").map((item) => (
@@ -612,7 +612,7 @@ export default async function AdminPage() {
                     </span>
                     {item.label}
                   </span>
-                  <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-surface-2 px-2 text-[10px] leading-none tabular-nums">{item.count}</span>
+                  <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-surface-2 px-2 text-xs leading-none tabular-nums">{item.count}</span>
                 </a>
                 {creativeSidebarItems.length > 0 ? (
                   <div className="ml-6 flex flex-col gap-1 border-l border-line pl-3">
@@ -623,7 +623,7 @@ export default async function AdminPage() {
                         className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2 py-2 text-xs text-ink-muted transition hover:bg-surface-2 hover:text-ink lg:min-h-0 lg:py-1.5"
                       >
                         <span className="truncate">{category.name}</span>
-                        <span className="pr-3 shrink-0 text-[10px] tabular-nums text-primary">
+                        <span className="pr-3 shrink-0 text-xs tabular-nums text-primary">
                           {category.photoCount}
                         </span>
                       </a>
@@ -634,7 +634,7 @@ export default async function AdminPage() {
             ))}
 
             <div className="mt-6 rounded-tile border border-line bg-surface-2 p-3">
-              <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.15em] text-ink-muted">
+              <p className="mb-2 text-xs font-medium text-ink-muted">
                 Total records
               </p>
               <p className="font-display text-2xl font-semibold text-primary">
@@ -1381,7 +1381,7 @@ export default async function AdminPage() {
                             name="value"
                             rows={12}
                             defaultValue={JSON.stringify(row.value, null, 2)}
-                            className="rounded-field border border-line bg-surface-2 px-3 py-2 font-mono text-xs text-ink transition focus:border-primary"
+                            className={`${fieldClass} font-mono text-xs`}
                             required
                           />
                         </label>

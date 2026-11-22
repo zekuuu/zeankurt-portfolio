@@ -3,7 +3,7 @@ import type { Project } from "@/types";
 export const projects: Project[] = [
   {
     slug: "clario",
-    title: "Clario — Spreadsheet Validation & Auditing Tool",
+    title: "Clario: Spreadsheet Validation & Auditing Tool",
     description:
       "Desktop tool for validating and auditing spreadsheets, built as a full-stack Electron app.",
     tags: ["React", "TypeScript", "Vite", "FastAPI", "SQLite", "Electron"],
@@ -15,7 +15,7 @@ export const projects: Project[] = [
   },
   {
     slug: "cliniq",
-    title: "CLINIQ — Clinic Tracking System",
+    title: "CLINIQ: Clinic Tracking System",
     description:
       "Clinic tracking system for Mendez Christian Academy, built with CvSU CEIT teammates.",
     tags: ["React", "TypeScript", "Laravel", "Tailwind CSS", "MySQL"],
@@ -28,9 +28,9 @@ export const projects: Project[] = [
   },
   {
     slug: "salikop",
-    title: "Salikop — Centralized Campus Org Event Management",
+    title: "Salikop: Centralized Campus Org Event Management",
     description:
-      "A centralized platform for managing campus organization events — scheduling, registration, and coordination in one system.",
+      "A centralized platform for managing campus organization events: scheduling, registration, and coordination in one system.",
     longDescription:
       "Built to streamline how student organizations plan and run events at university scale. TypeScript-first architecture designed for maintainability and future CMS integration.",
     tags: ["TypeScript", "Next.js", "Event Management", "Campus"],
@@ -42,7 +42,7 @@ export const projects: Project[] = [
   },
   {
     slug: "lost-and-found-hub",
-    title: "LF Hub — Lost & Found",
+    title: "LF Hub: Lost & Found",
     description:
       "Campus lost-and-found web app for reporting found items and browsing listings to reunite belongings with owners.",
     longDescription:
@@ -95,7 +95,7 @@ export const projects: Project[] = [
   },
   {
     slug: "dalisay",
-    title: "Dalisay — Automated Faculty Load Room Scheduler",
+    title: "Dalisay: Automated Faculty Load Room Scheduler",
     description:
       "Database-driven web app for automating faculty load assignments and room scheduling in academic settings.",
     longDescription:

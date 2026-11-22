@@ -27,6 +27,7 @@ import { deleteCreativePhotosByIds } from "@/app/admin/actions";
 import { Lightbox } from "@/components/photography/Lightbox";
 import { cn } from "@/lib/cn";
 import type { PhotoItem } from "@/types";
+import { fieldClass } from "@/components/ui/field";
 
 type SortField = "custom" | "name" | "featured" | "status";
 type SortDirection = "asc" | "desc";
@@ -608,13 +609,13 @@ function PhotoManagerModal({
                 {category.name}
               </h3>
 
-              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-bg px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-bg px-2.5 py-1 text-xs font-medium text-ink-muted">
                 <Images className="h-3 w-3" />
                 {category.photoCount} photos
               </span>
 
               {featuredCount > 0 ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-primary">
+                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-primary">
                   <Star className="h-3 w-3 fill-current" />
                   {featuredCount} featured
                 </span>
@@ -650,7 +651,7 @@ function PhotoManagerModal({
                       setPage(1);
                     }}
                     placeholder={`Search ${category.name.toLowerCase()} photos`}
-                    className="min-h-11 w-full rounded-full border border-line bg-surface-2 pl-9 pr-3 text-sm text-ink transition placeholder:text-ink-muted focus:border-primary sm:min-h-10"
+                    className={`${fieldClass} pl-9`}
                   />
                 </label>
 
@@ -893,7 +894,7 @@ function PhotoManagerModal({
                         <div className="absolute inset-x-0 bottom-0 p-3">
                           <div className="flex flex-wrap items-center gap-2">
                             {photo.featured ? (
-                              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-primary">
+                              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-xs font-medium text-primary">
                                 <Star className="h-3 w-3 fill-current" />
                                 Featured
                               </span>
@@ -901,7 +902,7 @@ function PhotoManagerModal({
 
                             <span
                               className={cn(
-                                "inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]",
+                                "inline-flex rounded-full border px-2 py-0.5 text-xs font-medium",
                                 photo.published
                                   ? "border-line bg-block-green text-on-block"
                                   : "border-line bg-surface text-ink",
@@ -999,13 +1000,13 @@ function PhotoCategoryCard({ category }: { category: PhotoBrowserCategory }) {
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-sm font-semibold text-ink">{localCategory.name}</p>
 
-              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-bg px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-ink-muted">
+              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-bg px-2.5 py-1 text-xs font-medium text-ink-muted">
                 <Images className="h-3 w-3" />
                 {localCategory.photoCount}
               </span>
 
               {featuredCount > 0 ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-primary">
+                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-primary">
                   <Star className="h-3 w-3 fill-current" />
                   {featuredCount} featured
                 </span>

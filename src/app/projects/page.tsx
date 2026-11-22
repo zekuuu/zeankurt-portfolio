@@ -35,7 +35,6 @@ export default async function ProjectsPage() {
 
         <SectionHeading
           as="h1"
-          index="01"
           eyebrow="Projects"
           title={`Projects by ${identity.name}`}
           description={`${projects.length} web apps, Web3 builds, templates and tools.`}
@@ -46,8 +45,8 @@ export default async function ProjectsPage() {
           {projects.map((project, index) => (
             <li key={project.slug} className="flex">
               <Tile variant={tileVariantAt(index)} interactive className="flex w-full flex-col">
-                <p className="label">
-                  {String(index + 1).padStart(2, "0")} / {project.year} · {project.role}
+                <p className="label opacity-80">
+                  {project.year} · {project.role}
                 </p>
                 <h2 className="display mt-4 text-2xl [overflow-wrap:anywhere]">
                   <Link

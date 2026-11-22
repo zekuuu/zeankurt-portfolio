@@ -2,6 +2,7 @@
 
 import React from "react";
 import { buildUploadMetricMap, formatBytes } from "@/components/admin/uploadMetrics";
+import { fileInputClass } from "@/components/ui/field";
 
 const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
 
@@ -79,7 +80,7 @@ export default function UploadField({
         accept={accept}
         multiple={multiple}
         {...(directory ? { webkitdirectory: "" } : {})}
-        className="mt-2 text-sm text-ink-muted file:mr-3 file:rounded-full file:border-0 file:bg-surface-2 file:px-3 file:py-2 file:font-semibold file:text-primary"
+        className={`mt-2 block ${fileInputClass}`}
       />
       {notice ? <span className="mt-2 block text-[11px] text-primary">{notice}</span> : null}
       {selectedFiles.length > 0 ? (

@@ -84,7 +84,7 @@ export async function buildUploadMetricMap(files: File[]) {
 
 export function formatBytes(bytes: number | null | undefined) {
   if (typeof bytes !== "number" || !Number.isFinite(bytes) || bytes < 0) {
-    return "—";
+    return "Unknown";
   }
 
   if (bytes < 1024) return `${bytes} B`;

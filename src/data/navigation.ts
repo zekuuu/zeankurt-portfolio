@@ -1,10 +1,11 @@
 import type { NavItem } from "@/types";
 
+/** Same order as the sections on the home page. */
 export const mainNav: NavItem[] = [
-  { label: "About", href: "/#about" },
   { label: "Projects", href: "/#projects" },
-  { label: "Experience", href: "/#experience" },
+  { label: "About", href: "/#about" },
   { label: "Skills", href: "/#skills" },
+  { label: "Experience", href: "/#experience" },
   { label: "Contact", href: "/#contact" },
 ];
 

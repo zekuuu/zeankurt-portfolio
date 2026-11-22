@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/types";
@@ -9,6 +9,7 @@ import { buttonClass } from "@/components/ui/Button";
 import { Container, Section } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SocialIcon } from "@/components/ui/SocialIcon";
+import { Listbox } from "@/components/ui/Listbox";
 import { Tile, tileVariantAt } from "@/components/ui/Tile";
 import { ZoomableImage } from "@/components/ui/ZoomableImage";
 import { cn } from "@/lib/cn";
@@ -20,8 +21,6 @@ const STATUS_LABEL: Record<NonNullable<Project["status"]>, string> = {
   wip: "WIP",
   archived: "Archived",
 };
-
-const pad = (n: number) => String(n).padStart(2, "0");
 
 function ProjectLinks({ project }: { project: Project }) {
   const iconLink =
@@ -52,9 +51,7 @@ function FeaturedTile({ project, index, wide }: { project: Project; index: numbe
       className={cn("flex flex-col gap-4", wide && "md:col-span-2")}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="label">
-          {pad(index + 1)} / {project.year}
-        </p>
+        <p className="label opacity-80">{project.year}</p>
         {project.status ? <Badge variant={statusBadgeVariant(project.status)}>{STATUS_LABEL[project.status]}</Badge> : null}
       </div>
 
@@ -93,10 +90,15 @@ function FeaturedTile({ project, index, wide }: { project: Project; index: numbe
   );
 }
 
-function ProjectRow({ project, index }: { project: Project; index: number }) {
+function ProjectRow({ project, animate, order }: { project: Project; animate: boolean; order: number }) {
   return (
-    <li className="group relative grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 border-t border-line py-4 transition-colors hover:bg-surface md:grid-cols-[3rem_minmax(0,1.4fr)_minmax(0,1fr)_auto_auto] md:px-2">
-      <span className="label text-ink-muted">{pad(index + 1)}</span>
+    <li
+      className={cn(
+        "group relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-1 border-t border-line py-4 transition-colors hover:bg-surface md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto_auto] md:px-2",
+        animate && "enter",
+      )}
+      style={animate ? ({ "--i": order } as React.CSSProperties) : undefined}
+    >
       <div className="min-w-0">
         <h4 className="display text-lg [overflow-wrap:anywhere] sm:text-xl">
           <Link href={`/projects/${project.slug}`} className="after:absolute after:inset-0 after:content-['']">
@@ -106,11 +108,11 @@ function ProjectRow({ project, index }: { project: Project; index: number }) {
         <p className="mt-1 line-clamp-2 text-sm text-ink-muted md:line-clamp-1">{project.description}</p>
       </div>
       <p className="label hidden text-ink-muted md:block">{project.role}</p>
-      <div className="col-start-2 row-start-2 flex flex-wrap items-center gap-1.5 md:col-start-auto md:row-start-auto">
+      <div className="col-start-1 row-start-2 flex flex-wrap items-center gap-1.5 md:col-start-auto md:row-start-auto">
         <span className="label text-ink-muted">{project.year}</span>
         {project.status ? <Badge variant={statusBadgeVariant(project.status)}>{STATUS_LABEL[project.status]}</Badge> : null}
       </div>
-      <div className="col-start-3 row-span-2 row-start-1 md:row-span-1 md:col-start-auto">
+      <div className="col-start-2 row-span-2 row-start-1 md:row-span-1 md:col-start-auto">
         <ProjectLinks project={project} />
       </div>
     </li>
@@ -124,6 +126,10 @@ interface ProjectsSectionProps {
 export function ProjectsSection({ projects }: ProjectsSectionProps) {
   const [role, setRole] = useState(ALL);
   const [expanded, setExpanded] = useState(false);
+  // Rows animate only when they newly appear after a visitor action (filter
+  // switch or show more), never on first paint or when already on screen.
+  const [interacted, setInteracted] = useState(false);
+  const seen = useRef(new Set<string>());
 
   const featured = useMemo(() => projects.filter((p) => p.featured), [projects]);
   const rest = useMemo(() => projects.filter((p) => !p.featured), [projects]);
@@ -144,6 +150,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
   }, [roles]);
 
   const changeRole = (next: string) => {
+    setInteracted(true);
     setRole(next);
     setExpanded(false);
     const url = new URL(window.location.href);
@@ -154,13 +161,18 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
 
   const filtered = role === ALL ? rest : rest.filter((p) => p.role === role);
   const visible = expanded ? filtered : filtered.slice(0, INITIAL_SHOW);
+  const keyOf = (project: Project) => `${role}-${project.slug}`;
+  const fresh = visible.filter((project) => interacted && !seen.current.has(keyOf(project)));
+
+  useEffect(() => {
+    visible.forEach((project) => seen.current.add(keyOf(project)));
+  });
 
   return (
     <Section id="projects" aria-labelledby="projects-title">
       <Container>
         <SectionHeading
           id="projects-title"
-          index="01"
           eyebrow="Projects"
           title="Software built for real use."
           description="Web systems, product builds and blockchain work shaped by client needs, community projects and practical delivery."
@@ -181,38 +193,40 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                 More projects <span className="label align-middle text-ink-muted">({filtered.length})</span>
               </h3>
               {roles.length > 1 ? (
-                <label className="flex items-center gap-3">
-                  <span className="label text-ink-muted">Filter by role</span>
-                  <select
-                    value={role}
-                    onChange={(event) => changeRole(event.target.value)}
-                    className="label min-h-11 max-w-[60vw] cursor-pointer rounded-none border border-line bg-bg px-3 text-ink sm:max-w-xs"
-                  >
-                    {[ALL, ...roles].map((option) => (
-                      <option key={option} value={option}>
-                        {option}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <Listbox
+                  label="Filter by role"
+                  showLabel
+                  value={role}
+                  onChange={changeRole}
+                  options={[ALL, ...roles].map((option) => ({ label: option === ALL ? "All roles" : option, value: option }))}
+                  className="w-full sm:w-72"
+                />
               ) : null}
             </div>
 
             <ol className="mt-5 border-b border-line" aria-live="polite">
               {visible.map((project) => (
-                <ProjectRow key={project.slug} project={project} index={featured.length + rest.indexOf(project)} />
+                <ProjectRow
+                  key={keyOf(project)}
+                  project={project}
+                  animate={fresh.includes(project)}
+                  order={fresh.indexOf(project)}
+                />
               ))}
               {filtered.length === 0 ? <li className="border-t border-line py-8 text-ink-muted">No projects match that role.</li> : null}
             </ol>
 
             <div className="mt-6 flex flex-wrap gap-2">
               {filtered.length > INITIAL_SHOW ? (
-                <button type="button" aria-expanded={expanded} onClick={() => setExpanded((v) => !v)} className={buttonClass("secondary")}>
+                <button type="button" aria-expanded={expanded} onClick={() => {
+                    setInteracted(true);
+                    setExpanded((v) => !v);
+                  }} className={buttonClass("secondary")}>
                   {expanded ? "Show less" : `Show ${filtered.length - INITIAL_SHOW} more`}
                 </button>
               ) : null}
               <Link href="/projects" className={buttonClass("ghost")}>
-                All {projects.length} projects <ArrowUpRight aria-hidden className="h-4 w-4" />
+                All {projects.length} projects
               </Link>
             </div>
           </div>

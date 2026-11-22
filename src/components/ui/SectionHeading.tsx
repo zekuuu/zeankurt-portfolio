@@ -3,8 +3,6 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 interface SectionHeadingProps {
-  /** Section index, e.g. "02". Rendered as `02 / EYEBROW`. */
-  index?: string;
   eyebrow?: string;
   title: ReactNode;
   description?: ReactNode;
@@ -19,7 +17,6 @@ interface SectionHeadingProps {
 }
 
 export function SectionHeading({
-  index,
   eyebrow,
   title,
   description,
@@ -33,11 +30,7 @@ export function SectionHeading({
   return (
     <div className={cn("grid min-w-0 gap-4 lg:grid-cols-12 lg:items-end lg:gap-6", className)}>
       <div className="min-w-0 lg:col-span-8">
-        {eyebrow || index ? (
-          <p className="label text-ink-muted">
-            {[index, eyebrow].filter(Boolean).join(" / ")}
-          </p>
-        ) : null}
+        {eyebrow ? <p className="label text-ink-muted">{eyebrow}</p> : null}
 
         <Heading
           id={id}

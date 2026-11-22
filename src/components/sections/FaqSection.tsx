@@ -12,7 +12,7 @@ export function FaqSection({ items }: FaqSectionProps) {
     <Section id="faq" aria-labelledby="faq-title">
       <Container className="grid gap-10 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <SectionHeading id="faq-title" index="05" eyebrow="FAQ" title="Quick answers." className="lg:block" />
+          <SectionHeading id="faq-title" eyebrow="FAQ" title="Quick answers." className="lg:block" />
         </div>
 
         <div className="border-b border-line lg:col-span-8">

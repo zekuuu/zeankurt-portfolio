@@ -467,7 +467,7 @@ export function AdminSortableList({
                     {projectStatus ? (
                       <span
                         className={cn(
-                          "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em]",
+                          "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold",
                           projectStatus.className,
                         )}
                       >
@@ -476,7 +476,7 @@ export function AdminSortableList({
                     ) : null}
 
                     {item.featured ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-primary bg-surface-2 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-primary">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-primary bg-surface-2 px-2 py-0.5 text-xs font-medium text-primary">
                         <Star className="h-3 w-3 fill-current" />
                         Featured
                       </span>

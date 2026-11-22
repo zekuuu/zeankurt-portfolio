@@ -5,9 +5,10 @@ export type BadgeVariant = "default" | "solid" | "live" | "wip" | "archived";
 const variants: Record<BadgeVariant, string> = {
   default: "border-current",
   solid: "border-ink bg-ink text-bg",
-  live: "border-transparent bg-block-green text-on-block",
-  wip: "border-transparent bg-block-yellow text-on-block",
-  archived: "border-transparent bg-surface-2 text-ink",
+  // Ink border keeps a status badge visible on a tile of the same color.
+  live: "border-on-block bg-block-green text-on-block",
+  wip: "border-on-block bg-block-yellow text-on-block",
+  archived: "border-line bg-surface-2 text-ink",
 };
 
 interface BadgeProps {
@@ -21,7 +22,7 @@ export function Badge({ children, className, variant = "default" }: BadgeProps) 
   return (
     <span
       className={cn(
-        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 font-mono text-[0.6875rem] font-medium uppercase leading-none tracking-[0.08em] [overflow-wrap:anywhere]",
+        "inline-flex max-w-full items-center rounded-full border px-2.5 py-1 font-mono text-xs font-medium leading-none [overflow-wrap:anywhere]",
         variants[variant],
         className,
       )}

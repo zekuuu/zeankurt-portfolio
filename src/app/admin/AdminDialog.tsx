@@ -517,8 +517,8 @@ export function AdminDialog({
                             <span
                               className={
                                 dirty
-                                  ? "inline-flex items-center rounded-full border border-line bg-block-yellow px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-on-block"
-                                  : "inline-flex items-center rounded-full border border-line bg-block-green px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-on-block"
+                                  ? "inline-flex items-center rounded-full border border-line bg-block-yellow px-2 py-0.5 text-xs font-semibold text-on-block"
+                                  : "inline-flex items-center rounded-full border border-line bg-block-green px-2 py-0.5 text-xs font-semibold text-on-block"
                               }
                             >
                               {dirty ? "Unsaved" : "Saved"}

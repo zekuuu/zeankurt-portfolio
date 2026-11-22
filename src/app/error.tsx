@@ -14,7 +14,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
         </Tile>
         <Tile className="flex flex-col justify-between gap-8 lg:col-span-7 lg:p-10">
           <div>
-            <p className="label text-ink-muted">Error / Something broke</p>
+            <p className="label text-ink-muted">Something went wrong</p>
             <h1 className="display mt-3 text-[clamp(2rem,5vw,3.5rem)]">This page failed to load.</h1>
             <p className="mt-4 max-w-prose leading-relaxed text-ink-muted">Try again, or head back to the homepage.</p>
           </div>

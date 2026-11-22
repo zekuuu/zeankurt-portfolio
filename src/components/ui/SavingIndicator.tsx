@@ -59,7 +59,7 @@ export function SavingIndicator() {
                       {isUpload ? "Upload in progress" : "Saving in progress"}
                     </p>
                     {hasProgress ? (
-                      <span className="rounded-full border border-primary bg-surface-2 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
+                      <span className="rounded-full border border-primary bg-surface-2 px-2 py-1 text-xs font-semibold text-primary">
                         {task.progressPercent}%
                       </span>
                     ) : null}
@@ -76,18 +76,18 @@ export function SavingIndicator() {
                           transition={{ duration: 0.2, ease: "easeOut" }}
                         />
                       </div>
-                      <p className="mt-2 text-[11px] text-ink-muted">
+                      <p className="mt-2 text-xs text-ink-muted">
                         {Math.min(task.completedCount ?? 0, totalUploaded)} of {totalUploaded} uploaded
                       </p>
                       {remainingLabel ? (
-                        <p className="mt-1 text-[11px] text-ink-muted">
+                        <p className="mt-1 text-xs text-ink-muted">
                           Estimated time remaining: {remainingLabel}
                         </p>
                       ) : null}
                     </>
                   ) : null}
                   {isUpload ? (
-                    <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-primary">
+                    <p className="mt-2 text-xs text-primary">
                       Safe to close the modal
                     </p>
                   ) : null}

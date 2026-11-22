@@ -20,8 +20,11 @@ export const tileVariants: Record<TileVariant, string> = {
   outline: "bg-transparent text-ink border border-line",
 };
 
-/** Rotating block colors for content tiles. Index-based, so stable across builds. */
-const ROTATION: TileVariant[] = ["primary", "yellow", "surface", "orange", "surface", "muted"];
+/**
+ * Rotating block colors for project cards (owner choice: the multi-color cards
+ * are part of the site's identity). Index-based, so stable across builds.
+ */
+const ROTATION: TileVariant[] = ["primary", "yellow", "surface", "orange", "green", "surface"];
 
 export function tileVariantAt(index: number): TileVariant {
   return ROTATION[index % ROTATION.length];

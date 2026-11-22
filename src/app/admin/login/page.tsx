@@ -3,6 +3,7 @@ import { signInWithMagicLink } from "@/app/admin/actions";
 import SaveButton from "@/components/ui/SaveButton";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { hasSupabasePublicEnv, isAllowedAdminEmail } from "@/lib/supabase/config";
+import { fieldClass } from "@/components/ui/field";
 
 interface AdminLoginPageProps {
   searchParams: Promise<{
@@ -24,7 +25,7 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
   return (
     <main className="min-h-dvh bg-bg px-4 py-24 text-ink">
       <div className="mx-auto max-w-md rounded-tile border border-line bg-surface p-6">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-primary">
+        <p className="font-mono text-xs text-primary">
           Admin
         </p>
         <h1 className="mt-3 font-display text-3xl font-semibold">
@@ -76,7 +77,7 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
               type="email"
               required
               autoComplete="email"
-              className="rounded-field border border-line bg-surface-2 px-4 py-3 text-ink transition focus:border-primary"
+              className={fieldClass}
               placeholder="you@example.com"
             />
           </label>

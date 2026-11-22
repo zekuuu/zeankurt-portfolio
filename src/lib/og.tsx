@@ -70,7 +70,7 @@ export async function renderOgImage({
             color: OG.ink,
           }}
         >
-          <div style={{ display: "flex", fontSize: 22, letterSpacing: 4, color: OG.muted, textTransform: "uppercase" }}>
+          <div style={{ display: "flex", fontSize: 24, color: OG.muted }}>
             {eyebrow}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -98,8 +98,6 @@ export async function renderOgImage({
                   borderRadius: 999,
                   border: `2px solid ${OG.ink}`,
                   fontSize: 20,
-                  textTransform: "uppercase",
-                  letterSpacing: 2,
                 }}
               >
                 {chip}
@@ -124,7 +122,7 @@ export async function renderOgImage({
           >
             ZK.
           </div>
-          <div style={{ height: 150, display: "flex", alignItems: "flex-end", padding: 28, borderRadius: 24, background: OG.yellow, color: OG.ink, fontSize: 22, letterSpacing: 3, textTransform: "uppercase" }}>
+          <div style={{ height: 150, display: "flex", alignItems: "flex-end", padding: 28, borderRadius: 24, background: OG.yellow, color: OG.ink, fontSize: 24 }}>
             {identity.location.label}
           </div>
         </div>

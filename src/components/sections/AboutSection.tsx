@@ -43,9 +43,9 @@ export function AboutSection({ projects, certifications, eventHighlights, hackat
   const [first, ...rest] = identity.bios.long;
 
   return (
-    <Section id="about" aria-labelledby="about-title" surface="subtle">
+    <Section id="about" aria-labelledby="about-title">
       <Container>
-        <SectionHeading id="about-title" index="02" eyebrow="About" title="Building full-stack web products." />
+        <SectionHeading id="about-title" eyebrow="About" title="Building full-stack web products." />
 
         <div className="mt-10 grid gap-1.5 lg:grid-cols-12">
           <Tile className="lg:col-span-7 lg:row-span-2 lg:p-10">
