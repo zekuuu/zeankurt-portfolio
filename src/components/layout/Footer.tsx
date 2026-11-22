@@ -20,7 +20,7 @@ export function Footer({ siteConfig }: FooterProps) {
       <div className="grid gap-10 px-4 py-12 sm:px-6 lg:grid-cols-12 lg:px-8 lg:py-16">
         <div className="min-w-0 lg:col-span-6">
           <Link href="/" className="display text-[clamp(2.5rem,8vw,4.5rem)] text-ink">
-            ZK.
+            ZK.<span className="sr-only"> {siteConfig.name}, home</span>
           </Link>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-ink-muted">{identity.metaDescription}</p>
           <SocialLinks links={socialGroups.personal} size="sm" className="mt-6" />

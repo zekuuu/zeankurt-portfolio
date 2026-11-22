@@ -9,7 +9,8 @@ export default function AdminLayout({ children }: Readonly<{ children: React.Rea
     <>
       <div className="sticky top-0 z-50 flex h-[var(--header-height)] items-center justify-between gap-3 border-b border-line bg-bg px-4 sm:px-6">
         <Link href="/" className="display flex min-h-11 items-center gap-2 text-xl">
-          ZK.<span className="label text-ink-muted">/ Admin</span>
+          ZK.<span className="sr-only"> Home</span>
+          <span className="label text-ink-muted">/ Admin</span>
         </Link>
         <ThemeToggle />
       </div>

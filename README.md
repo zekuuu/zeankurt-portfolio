@@ -16,9 +16,9 @@ This site shows my projects, experience, hackathons and skills. A separate photo
 
 - **Project Showcase** – Clean, interactive project cards with live links and source code references
 - **Photography Gallery** – Multi-album layout with lightbox and optimized image loading
-- **Smooth Animations** – GSAP-powered scroll effects, micro-interactions, and animated UI elements
+- **Neo-Swiss bento design** – Flat tokens, sharp page frame, rounded tiles and CSS-only motion (see [DESIGN.md](DESIGN.md))
 - **Responsive Design** – Mobile-first, pixel-perfect across all devices
-- **Dark Mode Ready** – Tailwind-based theming with accessibility in mind
+- **Light and dark themes** – Light by default, persisted toggle, WCAG AA in both themes
 - **Performance Optimized** – Next.js static generation, image optimization, and minimal runtime dependencies
 
 ---
@@ -31,7 +31,7 @@ This site shows my projects, experience, hackathons and skills. A separate photo
 | **UI** | React 19 with Server/Client boundaries |
 | **Language** | [TypeScript](https://www.typescriptlang.org) |
 | **Styling** | [Tailwind CSS](https://tailwindcss.com) 4 |
-| **Animation** | GSAP, Framer Motion, three.js |
+| **Design** | Unbounded, Geist, Geist Mono; CSS-only motion; Framer Motion in the admin only |
 | **Content** | [Supabase](https://supabase.com) (Postgres CMS + Auth + Storage) with an `/admin` panel |
 | **Deployment** | Vercel (+ Analytics, Speed Insights) |
 
@@ -84,7 +84,7 @@ src/
 │   ├── robots.ts, sitemap.ts, manifest.ts, opengraph-image.tsx
 │   └── llms.txt/, llms-full.txt/  # Plain-text profile for AI crawlers
 ├── components/
-│   ├── animation/         # GSAP & animation components
+│   ├── animation/         # Scroll progress bar (CSS scroll timeline)
 │   ├── layout/            # Header, Footer
 │   ├── photography/       # Gallery, Lightbox, Albums
 │   ├── sections/          # Hero, Projects, Skills, etc.

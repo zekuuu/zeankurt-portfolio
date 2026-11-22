@@ -1,7 +1,11 @@
-/** Flat skeleton in the bento shape; shown only during client navigation. */
+/**
+ * Flat skeleton for admin navigation. Kept out of the public routes on purpose:
+ * a root loading.tsx wraps static pages in Suspense, so without JS visitors
+ * would only ever see this skeleton.
+ */
 export default function Loading() {
   return (
-    <main id="main-content" aria-busy="true" className="grid gap-1.5 p-1.5 lg:grid-cols-12">
+    <main aria-busy="true" className="grid gap-1.5 p-1.5 lg:grid-cols-12">
       <span className="sr-only" role="status">
         Loading
       </span>

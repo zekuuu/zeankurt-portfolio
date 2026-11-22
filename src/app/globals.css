@@ -62,20 +62,6 @@
   }
 }
 
-/* Legacy aliases: remaining admin/photography code still reads these.
-   Removed in the cleanup phase once every file uses the tokens above. */
-:root,
-.dark {
-  --background: var(--bg);
-  --background-elevated: var(--surface);
-  --background-subtle: var(--surface-2);
-  --foreground: var(--ink);
-  --foreground-muted: var(--ink-muted);
-  --foreground-subtle: var(--ink-muted);
-  --border-strong: var(--line);
-  --accent: var(--primary);
-}
-
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -92,11 +78,6 @@
   --color-on-block: var(--on-block);
   --color-overlay: var(--overlay);
   --color-on-overlay: var(--on-overlay);
-
-  /* legacy names, see aliases above */
-  --color-background: var(--bg);
-  --color-foreground: var(--ink);
-  --color-muted: var(--ink-muted);
 
   --radius-tile: var(--tile-radius);
   --radius-field: var(--field-radius);

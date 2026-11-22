@@ -71,3 +71,13 @@ The site no longer renders these fields. They are still serialized into the page
 - [ ] X `@Ze_kuuuu` and Instagram `@sc.kurty.z`: lead with the developer role.
 - [ ] Same portfolio URL and the same name spelling in every profile.
 - [ ] Re-check Google AI Mode, Gemini, ChatGPT and Perplexity in 2–6 weeks.
+
+## 5. Redesign follow-ups (neo-Swiss bento)
+
+- [ ] **Resume/CV**: no file exists in the repo or config, so the site has no CV link. Add a PDF (e.g. `public/zean-kurt-balboa-cv.pdf`) and say where to link it (hero or contact).
+- [ ] **Availability status**: the hero "Open to" tile reads `identity.lookingFor` in `src/lib/identity.ts`. Update that list when your availability changes.
+- [ ] **Headshot**: the redesign uses no photo of you. If you want one in the About section, provide a square image.
+- [ ] **Project screenshots**: some project tiles have no image. Upload screenshots (`projects.image_path`); tiles look better with them, and the detail page uses them as the main image.
+- [ ] **Dark favicon**: the generated `ZK.` icon is cobalt on both themes. Say so if you want a separate dark-scheme favicon.
+- [ ] **Local image optimization (dev machine only)**: `next start` on Windows cannot load sharp's native binary (`ERR_DLOPEN_FAILED`), so images are served unoptimized locally. Vercel is unaffected. The root `sharp@0.32.6` dependency (used by `scripts/optimize-existing-images.mjs`) probably conflicts with Next's `sharp@0.34`; upgrading it to `^0.34` likely fixes it. Re-run that script after the upgrade to confirm.
+- [ ] **Removed mobile "view on desktop" tip**: the old `MobileViewingTip` was removed because the redesign is mobile-first. Say so if you want it back.

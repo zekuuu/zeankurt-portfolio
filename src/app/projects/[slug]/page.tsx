@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
@@ -126,11 +127,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <div className="mt-8 grid gap-1.5 lg:grid-cols-12">
             {project.image ? (
               <Tile variant="muted" className="p-1.5 sm:p-1.5 lg:col-span-12">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                {/* LCP element: optimized and preloaded. The CMS has no dimensions, so
+                    16:9 is a placeholder ratio; h-auto lets the real ratio win. */}
+                <Image
                   src={project.image}
                   alt={`${project.title} screenshot`}
-                  className="w-full rounded-[calc(var(--tile-radius)-6px)] border border-line object-cover"
+                  width={1600}
+                  height={900}
+                  priority
+                  sizes="(max-width: 1440px) 100vw, 1440px"
+                  className="h-auto w-full rounded-[calc(var(--tile-radius)-6px)] border border-line"
                 />
               </Tile>
             ) : null}

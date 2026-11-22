@@ -166,10 +166,9 @@ export function Header({ variant, siteConfig }: HeaderProps) {
       <div className="flex h-full items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
-          aria-label={`${siteConfig.name}, home`}
           className="display flex min-h-11 shrink-0 items-center text-xl text-ink"
         >
-          ZK.
+          ZK.<span className="sr-only"> {siteConfig.name}, home</span>
         </Link>
 
         <nav aria-label="Primary" className="hidden lg:block">
