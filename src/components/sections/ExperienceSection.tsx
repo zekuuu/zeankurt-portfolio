@@ -79,7 +79,7 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                     onClick={() => setFilter(option.value)}
                     className={cn(
                       "label inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-line px-4 transition-colors",
-                      filter === option.value ? "border-primary bg-primary text-on-primary" : "hover-fill",
+                      filter === option.value ? "hover-fill hover-fill-no-primary border-primary bg-primary text-on-primary" : "hover-fill",
                     )}
                   >
                     {option.label}
@@ -164,7 +164,7 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
               </ul>
               <Link
                 href="/events"
-                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-on-block px-5 text-sm font-medium transition-colors hover:bg-on-block hover:text-block-yellow"
+                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-on-block px-5 text-sm font-medium hover-fill hover-fill-no-yellow"
               >
                 All events
               </Link>

@@ -198,7 +198,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
                   active={isActive(item)}
                   className={cn(
                     "label inline-flex min-h-11 items-center gap-1 rounded-full px-3.5 text-sm transition-colors duration-200",
-                    isActive(item) ? "text-bg" : "hover-fill text-ink",
+                    isActive(item) ? "hover-fill text-bg" : "hover-fill text-ink",
                   )}
                 />
               </li>

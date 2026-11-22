@@ -29,7 +29,11 @@ export function Marquee({ items, label, className }: { items: StackLogo[]; label
   );
 
   return (
-    <div className={cn("marquee overflow-hidden", className)} aria-label={label} role="region">
+    <div
+      className={cn("marquee select-none overflow-hidden [-webkit-user-drag:none] [&_*]:[-webkit-user-drag:none]", className)}
+      aria-label={label}
+      role="region"
+    >
       <div className="marquee-track flex w-max">
         {row(false)}
         {row(true)}

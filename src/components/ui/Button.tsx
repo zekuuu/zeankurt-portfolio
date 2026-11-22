@@ -19,7 +19,7 @@ const variants: Record<ButtonVariant, string> = {
   primary: "hover-fill hover-fill-no-primary border-primary bg-primary text-on-primary",
   secondary: "hover-fill border-line bg-transparent text-ink",
   ghost: "hover-fill border-transparent bg-transparent text-ink",
-  inverse: "border-on-primary bg-transparent text-on-primary hover:bg-on-primary hover:text-primary",
+  inverse: "hover-fill hover-fill-no-primary border-on-primary bg-transparent text-on-primary",
 };
 
 export const buttonClass = (variant: ButtonVariant = "primary", className?: string) =>

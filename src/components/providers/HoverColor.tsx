@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 /** [fill, text, border] per accent; all tokens, so both themes stay readable. */
+const NAMES = ["primary", "yellow", "orange", "green"] as const;
 const ACCENTS = [
   ["var(--primary)", "var(--on-primary)", "var(--primary)"],
   ["var(--block-yellow)", "var(--on-block)", "var(--on-block)"],
@@ -18,7 +19,7 @@ const ACCENTS = [
  */
 export function HoverColor() {
   useEffect(() => {
-    let last = -1;
+    let last = -1; // never the same color twice in a row, even on the same control
 
     const pick = (event: Event) => {
       const el = (event.target as Element | null)?.closest?.<HTMLElement>(".hover-fill, .hover-group");
@@ -26,8 +27,9 @@ export function HoverColor() {
       const related = (event as PointerEvent).relatedTarget as Node | null;
       if (related && el.contains(related)) return;
 
+      // `hover-fill-no-<color>` skips the color of the tile the control sits on.
       const pool = ACCENTS.map((_, i) => i).filter(
-        (i) => i !== last && !(i === 0 && el.classList.contains("hover-fill-no-primary")),
+        (i) => i !== last && !el.classList.contains(`hover-fill-no-${NAMES[i]}`),
       );
       const index = pool[Math.floor(Math.random() * pool.length)];
       last = index;
