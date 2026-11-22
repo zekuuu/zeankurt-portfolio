@@ -12,6 +12,8 @@ import { getPortfolioContent } from "@/lib/cms/queries";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { GlobalScrollManager } from "@/components/layout/GlobalScrollManager";
 import { DevStationBadge } from "@/components/ui/DevStationBadge";
+import { IntroLoader, introScript } from "@/components/ui/IntroLoader";
+import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { identity, SITE_URL } from "@/lib/identity";
 import { JsonLdScript, siteGraph } from "@/lib/structured-data";
 import "./globals.css";
@@ -109,6 +111,10 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${unbounded.variable} h-full antialiased`}
     >
+      <head>
+        {/* Decides before first paint whether the once-per-tab intro shows. */}
+        <script dangerouslySetInnerHTML={{ __html: introScript }} />
+      </head>
       <body
         className="flex min-h-full flex-col bg-bg text-ink"
         suppressHydrationWarning
@@ -120,8 +126,10 @@ export default async function RootLayout({
           Skip to content
         </a>
         <JsonLdScript data={siteGraph()} />
+        <IntroLoader name={identity.name} />
         <ThemeProvider>
           <SavingProvider>
+            <SmoothScroll />
             <GlobalScrollManager />
             <ScrollProgressBar />
             <div className="mx-auto flex w-full max-w-[var(--container-max)] flex-1 flex-col sm:border-x sm:border-line">

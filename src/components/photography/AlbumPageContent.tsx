@@ -99,7 +99,7 @@ export function AlbumPageContent({ album, photos }: AlbumPageContentProps) {
         <Container>
           {photos.length ? (
             <>
-              <GalleryGrid photos={pagePhotos} onPhotoClick={(photo) => open(photo)} />
+              <GalleryGrid key={safePage} photos={pagePhotos} onPhotoClick={(photo) => open(photo)} />
               <Pagination page={safePage} totalPages={totalPages} totalItems={photos.length} pageSize={PHOTOS_PER_PAGE} onPageChange={goToPage} />
             </>
           ) : (

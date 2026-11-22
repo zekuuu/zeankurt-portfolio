@@ -177,32 +177,81 @@ select:-webkit-autofill {
   transition: background-color 9999s;
 }
 
+/* Themed, thin scrollbars (visible on Windows desktop). */
 * {
-  scrollbar-color: var(--ink-muted) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink-muted) var(--bg);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid var(--bg);
+  border-radius: 999px;
+  background: var(--ink-muted);
+}
+
+/* No grey/blue flash on tap; focus rings and :active states give feedback. */
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Lenis (inertial scroll). Rules mirrored from lenis/dist/lenis.css. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
 /* ─── Type helpers ──────────────────────────────────────────────────────────── */
 
-/* Mono eyebrow/label: `01 / PROJECTS`, tags, dates. */
-.label {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  line-height: 1.4;
-  text-transform: uppercase;
-}
+/* In the components layer so utilities (text-sm, leading-*) can override them. */
+@layer components {
+  /* Mono label for data: dates, years, counts, status. Sentence case, normal
+     tracking: no all-caps eyebrows (antislop R-06). */
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.4;
+  }
 
-.display {
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  .display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
 }
 
 /* ─── Motion ────────────────────────────────────────────────────────────────── */
 
-/* Scroll progress: flat 2px primary bar on a CSS scroll timeline. */
+/* Scroll progress: flat bar on a CSS scroll timeline. Its single flat color
+   shifts cobalt, green, yellow, orange as the page scrolls (owner request; the
+   only place block colors are used decoratively). The 1px ink edge keeps the
+   pale yellow stage visible on the light background. */
 .scroll-progress {
   display: none;
 }
@@ -213,7 +262,8 @@ select:-webkit-autofill {
     inset: 0 0 auto;
     z-index: 60;
     display: block;
-    height: 2px;
+    height: 3px;
+    border-bottom: 1px solid var(--line);
     background: var(--primary);
     transform-origin: left;
     animation: progress linear both;
@@ -222,18 +272,24 @@ select:-webkit-autofill {
 }
 
 @keyframes progress {
-  from {
+  0% {
     transform: scaleX(0);
+    background-color: var(--primary);
+  }
+  33% {
+    background-color: var(--block-green);
+  }
+  66% {
+    background-color: var(--block-yellow);
+  }
+  100% {
+    transform: scaleX(1);
+    background-color: var(--block-orange);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .scroll-progress {
-    display: none;
-  }
-}
-
-/* Tech marquee (CSS only). */
+/* Tech marquee (CSS only, owner request). Pauses on hover/focus; static under
+   reduced motion. */
 .marquee-track {
   animation: marquee 40s linear infinite;
 }
@@ -246,6 +302,176 @@ select:-webkit-autofill {
 @keyframes marquee {
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* Chromatic logos: muted ink at rest, brand color on hover. */
+.logo-chip {
+  color: var(--ink-muted);
+  transition: color 200ms ease-out;
+}
+
+.logo-chip:hover {
+  color: var(--brand, var(--ink));
+}
+
+.dark .logo-chip[data-dark-brand]:hover {
+  color: var(--ink);
+}
+
+/* Enter: shows what just changed (show more, filter switch, FAQ answer). */
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.enter {
+  animation: enter 200ms ease-out both;
+  animation-delay: calc(min(var(--i, 0), 8) * 30ms);
+}
+
+details[open] > :not(summary) {
+  animation: enter 200ms ease-out;
+}
+
+/* Route fade-in (template.tsx). Ends fully visible, also without JS. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.page-enter {
+  animation: page-in 180ms ease-out;
+}
+
+/* ─── Intro loader ──────────────────────────────────────────────────────────── */
+
+/* Hidden unless the inline head script added .zk-intro (JS on, first visit in
+   this tab, motion allowed). The fail-safe hides it even if hydration fails. */
+.intro {
+  display: none;
+}
+
+.zk-intro .intro {
+  display: flex;
+  animation: intro-failsafe 0s linear 2.5s forwards;
+}
+
+.intro[data-state="out"] {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+@keyframes intro-failsafe {
+  to {
+    visibility: hidden;
+    opacity: 0;
+  }
+}
+
+/* ─── Image viewer ──────────────────────────────────────────────────────────── */
+
+/* The one blur in the system: the page stays visible, dimmed and softened,
+   behind the viewer frame. */
+.viewer {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 160ms ease-out,
+    transform 160ms ease-out,
+    overlay 160ms allow-discrete,
+    display 160ms allow-discrete;
+}
+
+.viewer:not([open]) {
+  opacity: 0;
+  transform: scale(0.98);
+  transition-duration: 120ms;
+}
+
+@starting-style {
+  .viewer[open] {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+.viewer::backdrop {
+  background: color-mix(in srgb, var(--overlay) 72%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  opacity: 1;
+  transition:
+    opacity 160ms ease-out,
+    overlay 160ms allow-discrete,
+    display 160ms allow-discrete;
+}
+
+.viewer:not([open])::backdrop {
+  opacity: 0;
+}
+
+@starting-style {
+  .viewer[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.viewer-img {
+  animation: page-in 120ms ease-out;
+}
+
+@keyframes viewer-loading {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.viewer-loading {
+  animation: viewer-loading 900ms ease-in-out infinite;
+}
+
+/* ─── Theme switch reveal ───────────────────────────────────────────────────── */
+
+/* ThemeToggle sets --vt-x/--vt-y/--vt-r and starts a view transition; the new
+   theme grows as a circle from the toggle. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--vt-x, 50%) var(--vt-y, 0%));
+  }
+  to {
+    clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 50%) var(--vt-y, 0%));
+  }
+}
+
+/* Header slides away on scroll down below lg (Header.tsx). */
+[data-site-header] {
+  transition: transform 200ms ease-out;
+}
+
+[data-site-header][data-hidden="true"] {
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress {
+    display: none;
   }
 }
 
@@ -262,37 +488,6 @@ select:-webkit-autofill {
   animation: fadeIn 0.2s ease-out;
 }
 
-/* Zoom overlay (ZoomableImage). */
-@keyframes zoomableBackdropIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes zoomableBackdropOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes zoomableModalIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes zoomableModalOut {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(8px); }
-}
-
-@keyframes zoomableImageIn {
-  from { opacity: 0.7; }
-  to { opacity: 1; }
-}
-
-@keyframes zoomableImageOut {
-  from { opacity: 1; }
-  to { opacity: 0.7; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -302,12 +497,25 @@ select:-webkit-autofill {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 
+  .intro {
+    display: none !important;
+  }
+
   .marquee-track {
     animation: none !important;
+  }
+
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+
+  [data-site-header][data-hidden="true"] {
+    transform: none;
   }
 }
 

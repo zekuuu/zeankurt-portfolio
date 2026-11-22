@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { mainNav, photographyNav } from "@/data/navigation";
 import type { SiteConfig } from "@/types/site";
 import type { NavItem } from "@/types";
 import { cn } from "@/lib/cn";
+import { lockScroll, scrollToTarget } from "@/lib/smooth-scroll";
 import { buttonClass } from "@/components/ui/Button";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
@@ -17,39 +18,6 @@ interface HeaderProps {
 }
 
 const isExternal = (item: NavItem) => item.external || item.href.startsWith("http");
-
-function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-/**
- * Same-page hash links scroll without a route change. `scroll-margin-top` on
- * every [id] keeps targets clear of the sticky header.
- */
-function handleInternalAnchorClick(event: MouseEvent<HTMLElement>, href: string, onNavigate?: () => void) {
-  onNavigate?.();
-
-  let url: URL;
-  try {
-    url = new URL(href, window.location.origin);
-  } catch {
-    return;
-  }
-
-  if (url.origin !== window.location.origin || url.pathname !== window.location.pathname || !url.hash) {
-    return;
-  }
-
-  const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
-  if (!target) return;
-
-  event.preventDefault();
-  window.history.pushState(null, "", `${url.pathname}${url.hash}`);
-  window.dispatchEvent(new Event("hashchange"));
-  requestAnimationFrame(() =>
-    target.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", block: "start" }),
-  );
-}
 
 /** Highlights the nav item whose section is in the upper part of the viewport. */
 function useActiveSection(items: NavItem[], pathname: string) {
@@ -85,6 +53,35 @@ function useActiveSection(items: NavItem[], pathname: string) {
   return active;
 }
 
+/** Below lg the header slides away while scrolling down and returns on scroll up. */
+function useHideOnScroll(pinned: boolean) {
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    if (pinned) {
+      setHidden(false);
+      return;
+    }
+
+    const narrow = window.matchMedia("(max-width: 1023px)");
+    let lastY = window.scrollY;
+
+    const onScroll = () => {
+      const y = window.scrollY;
+      const delta = y - lastY;
+      if (!narrow.matches || y < 120) setHidden(false);
+      else if (delta > 8) setHidden(true);
+      else if (delta < -8) setHidden(false);
+      if (Math.abs(delta) > 8) lastY = y;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [pinned]);
+
+  return [hidden, setHidden] as const;
+}
+
 function NavAnchor({
   item,
   active,
@@ -110,7 +107,7 @@ function NavAnchor({
       href={item.href}
       aria-current={active ? "location" : undefined}
       className={className}
-      onClick={(event) => handleInternalAnchorClick(event, item.href, onNavigate)}
+      onClick={onNavigate}
     >
       {item.label}
     </Link>
@@ -120,7 +117,10 @@ function NavAnchor({
 export function Header({ variant, siteConfig }: HeaderProps) {
   const pathname = usePathname() ?? "/";
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const navRef = useRef<HTMLUListElement>(null);
   const [open, setOpen] = useState(false);
+  const [indicator, setIndicator] = useState<{ x: number; width: number } | null>(null);
+  const [hidden, setHidden] = useHideOnScroll(open);
 
   const resolvedVariant = variant ?? (pathname.startsWith("/photography") ? "photography" : "default");
   const navItems = resolvedVariant === "photography" ? photographyNav : mainNav;
@@ -133,18 +133,29 @@ export function Header({ variant, siteConfig }: HeaderProps) {
     return pathname === item.href;
   };
 
+  const activeIndex = navItems.findIndex(isActive);
+
+  // One ink pill slides to the active link instead of each link toggling a fill.
+  useLayoutEffect(() => {
+    const measure = () => {
+      const link = navRef.current?.querySelectorAll<HTMLElement>("[data-nav-link]")[activeIndex];
+      setIndicator(link ? { x: link.offsetLeft, width: link.offsetWidth } : null);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    document.fonts?.ready.then(measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [activeIndex]);
+
   // Native <dialog>: focus trap, Esc to close and inert background come for free.
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-
     if (open && !dialog.open) dialog.showModal();
     if (!open && dialog.open) dialog.close();
-
-    document.documentElement.style.overflow = open ? "hidden" : "";
-    return () => {
-      document.documentElement.style.overflow = "";
-    };
+    if (!open) return;
+    lockScroll(true);
+    return () => lockScroll(false);
   }, [open]);
 
   useEffect(() => setOpen(false), [pathname]);
@@ -153,7 +164,8 @@ export function Header({ variant, siteConfig }: HeaderProps) {
   useEffect(() => {
     if (!window.location.hash) return;
     const timeout = window.setTimeout(() => {
-      document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView({ block: "start" });
+      const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+      if (target) scrollToTarget(target);
     }, 80);
     return () => window.clearTimeout(timeout);
   }, [pathname]);
@@ -161,26 +173,32 @@ export function Header({ variant, siteConfig }: HeaderProps) {
   return (
     <header
       data-site-header
+      data-hidden={hidden}
+      onFocusCapture={() => setHidden(false)}
       className="sticky top-0 z-50 h-[var(--header-height)] border-b border-line bg-bg"
     >
       <div className="flex h-full items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-        <Link
-          href="/"
-          className="display flex min-h-11 shrink-0 items-center text-xl text-ink"
-        >
+        <Link href="/" className="display flex min-h-11 shrink-0 items-center text-xl text-ink">
           ZK.<span className="sr-only"> {siteConfig.name}, home</span>
         </Link>
 
         <nav aria-label="Primary" className="hidden lg:block">
-          <ul className="flex items-center gap-1">
+          <ul ref={navRef} className="relative flex items-center gap-1">
+            {indicator ? (
+              <li
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-ink transition-[transform,width] duration-200 ease-out"
+                style={{ width: indicator.width, transform: `translateX(${indicator.x}px)` }}
+              />
+            ) : null}
             {navItems.map((item) => (
-              <li key={item.href}>
+              <li key={item.href} data-nav-link className="relative">
                 <NavAnchor
                   item={item}
                   active={isActive(item)}
                   className={cn(
-                    "label inline-flex min-h-11 items-center gap-1 rounded-full px-3.5 transition-colors duration-150",
-                    isActive(item) ? "bg-ink text-bg" : "text-ink hover:bg-surface-2",
+                    "label inline-flex min-h-11 items-center gap-1 rounded-full px-3.5 text-sm transition-colors duration-200",
+                    isActive(item) ? "text-bg" : "text-ink hover:bg-surface-2",
                   )}
                 />
               </li>
@@ -193,11 +211,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
             <ThemeToggle />
           </div>
           <div className="hidden lg:block">
-            <Link
-              href="/#contact"
-              onClick={(event) => handleInternalAnchorClick(event, "/#contact")}
-              className={buttonClass("primary")}
-            >
+            <Link href="/#contact" className={buttonClass("primary")}>
               Contact
             </Link>
           </div>
@@ -236,8 +250,8 @@ export function Header({ variant, siteConfig }: HeaderProps) {
 
           <nav aria-label="Mobile" className="flex-1 px-4 py-6 sm:px-6">
             <ol className="grid">
-              {navItems.map((item) => (
-                <li key={item.href} className="border-b border-line">
+              {navItems.map((item, index) => (
+                <li key={item.href} className="enter border-b border-line" style={{ "--i": index } as React.CSSProperties}>
                   <NavAnchor
                     item={item}
                     active={isActive(item)}

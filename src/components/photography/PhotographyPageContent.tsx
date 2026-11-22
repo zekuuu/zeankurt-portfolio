@@ -68,7 +68,7 @@ export function PhotographyPageContent({ creativeCategories, siteConfig }: Photo
 
       <section id="albums" aria-labelledby="albums-title" className="border-t border-line py-10 sm:py-14">
         <Container>
-          <p className="label text-ink-muted">01 / Albums</p>
+          <p className="label text-ink-muted">Albums</p>
           <h2 id="albums-title" className="display mt-2 text-3xl">
             Collections
           </h2>
@@ -88,7 +88,7 @@ export function PhotographyPageContent({ creativeCategories, siteConfig }: Photo
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="label text-ink-muted">02 / Gallery</p>
+              <p className="label text-ink-muted">Gallery</p>
               <h2 id="gallery-title" className="display mt-2 text-3xl">
                 All frames <span className="label align-middle text-ink-muted">({filtered.length})</span>
               </h2>
@@ -116,6 +116,7 @@ export function PhotographyPageContent({ creativeCategories, siteConfig }: Photo
           {filtered.length ? (
             <>
               <GalleryGrid
+                key={`${category}-${safePage}`}
                 className="mt-6"
                 photos={pagePhotos}
                 onPhotoClick={(photo) => setLightboxIndex(filtered.findIndex((item) => item.id === photo.id))}

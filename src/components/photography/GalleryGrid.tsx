@@ -14,12 +14,12 @@ export const ASPECT_CLASS: Record<PhotoItem["aspectRatio"], string> = {
   landscape: "aspect-[4/3]",
 };
 
-/** CSS-columns masonry: no JS measuring, 6px gaps, rounded tiles, mono captions. */
+/** CSS-columns masonry: no JS measuring, 6px gaps, rounded tiles. Titles live in alt text and the viewer. */
 export function GalleryGrid({ photos, onPhotoClick, className }: GalleryGridProps) {
   return (
     <ul className={cn("columns-2 gap-1.5 lg:columns-3 2xl:columns-4", className)}>
       {photos.map((photo, index) => (
-        <li key={photo.id} className="mb-1.5 break-inside-avoid">
+        <li key={photo.id} className="enter mb-1.5 break-inside-avoid" style={{ "--i": index } as React.CSSProperties}>
           <button
             type="button"
             onClick={() => onPhotoClick(photo, index)}
@@ -39,7 +39,6 @@ export function GalleryGrid({ photos, onPhotoClick, className }: GalleryGridProp
                 <span className="label absolute inset-0 flex items-center justify-center text-ink-muted">No image</span>
               )}
             </span>
-            <span className="label mt-1.5 block truncate px-1 text-ink-muted">{photo.title}</span>
           </button>
         </li>
       ))}

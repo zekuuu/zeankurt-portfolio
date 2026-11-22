@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, X } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
+import { buttonClass } from "@/components/ui/Button";
+import { ImageViewer } from "@/components/ui/ImageViewer";
 import { Container, Section } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Tile } from "@/components/ui/Tile";
@@ -37,55 +37,6 @@ function groupCertifications(certifications: Certification[]) {
   return other.length ? [...major, ["Other", other] as [string, Certification[]]] : major;
 }
 
-function CertificateViewer({ cert, onClose }: { cert: { name: string; image: string } | null; onClose: () => void }) {
-  const ref = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    if (cert && !dialog.open) dialog.showModal();
-    if (!cert && dialog.open) dialog.close();
-  }, [cert]);
-
-  const isPdf = cert?.image.toLowerCase().endsWith(".pdf") ?? false;
-
-  return (
-    <dialog
-      ref={ref}
-      onClose={onClose}
-      aria-label={cert?.name ?? "Certificate"}
-      className="m-auto w-[min(64rem,calc(100vw-1.5rem))] max-w-none bg-overlay p-0 text-on-overlay backdrop:bg-overlay"
-    >
-      {cert ? (
-        <div className="border border-on-overlay p-3 sm:p-4">
-          <div className="mb-3 flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="font-medium [overflow-wrap:anywhere]">{cert.name}</p>
-              <p className="label mt-1 opacity-80">Certificate viewer</p>
-            </div>
-            <button
-              type="button"
-              autoFocus
-              onClick={onClose}
-              aria-label="Close certificate viewer"
-              className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-on-overlay hover:bg-on-overlay hover:text-overlay"
-            >
-              <X aria-hidden className="h-5 w-5" />
-            </button>
-          </div>
-          {isPdf ? (
-            <iframe src={cert.image} title={cert.name} className="h-[75vh] w-full border-0 bg-surface" />
-          ) : (
-            <div className="relative h-[75vh] w-full">
-              <Image src={cert.image} alt={cert.name} fill sizes="100vw" className="object-contain" />
-            </div>
-          )}
-        </div>
-      ) : null}
-    </dialog>
-  );
-}
-
 export function ExperienceSection({ experience, certifications, eventHighlights }: ExperienceSectionProps) {
   const [filter, setFilter] = useState<Filter>("all");
   const [activeCert, setActiveCert] = useState<{ name: string; image: string } | null>(null);
@@ -98,11 +49,10 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
   );
 
   return (
-    <Section id="experience" aria-labelledby="experience-title" surface="subtle">
+    <Section id="experience" aria-labelledby="experience-title">
       <Container>
         <SectionHeading
           id="experience-title"
-          index="04"
           eyebrow="Experience"
           title="Work, community and hackathons."
           description="Roles, hackathon builds, certifications and the events behind them."
@@ -132,14 +82,18 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
             </div>
 
             <ol className="mt-8 border-l border-line">
-              {items.map((item) => (
-                <li key={item.id} className="relative pb-8 pl-6 last:pb-0">
+              {items.map((item, index) => (
+                <li
+                  key={`${filter}-${item.id}`}
+                  className="enter relative pb-8 pl-6 last:pb-0"
+                  style={{ "--i": index } as React.CSSProperties}
+                >
                   <span aria-hidden className="absolute -left-[5px] top-1.5 h-[9px] w-[9px] rounded-full border border-line bg-surface" />
                   <p className="label text-ink-muted">{item.period}</p>
                   <h3 className="display mt-2 text-lg leading-snug [overflow-wrap:anywhere] sm:text-xl">{item.role}</h3>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <span className="font-medium [overflow-wrap:anywhere]">{item.organization}</span>
-                    <Badge variant={item.type === "hackathon" ? "wip" : "default"}>{item.type}</Badge>
+                    <Badge>{item.type}</Badge>
                   </div>
                   <p className="mt-3 max-w-[64ch] leading-relaxed text-ink-muted [overflow-wrap:anywhere]">{item.description}</p>
                 </li>
@@ -180,15 +134,15 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
               ))}
             </Tile>
 
-            <Tile variant="yellow">
+            <Tile variant="muted">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="display text-xl">Recent events</h3>
-                <span className="label">{eventHighlights.length}</span>
+                <span className="label text-ink-muted">{eventHighlights.length}</span>
               </div>
               <ul className="mt-4">
                 {events.map((event) => (
-                  <li key={event.id} className="border-t border-on-block py-3">
-                    <p className="label">
+                  <li key={event.id} className="border-t border-line-soft py-3">
+                    <p className="label text-ink-muted">
                       {event.date}
                       {event.category ? ` · ${event.category}` : ""}
                     </p>
@@ -197,18 +151,31 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                   </li>
                 ))}
               </ul>
-              <Link
-                href="/events"
-                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-on-block px-5 text-sm font-medium transition-colors hover:bg-on-block hover:text-block-yellow"
-              >
-                All events <ArrowUpRight aria-hidden className="h-4 w-4" />
+              <Link href="/events" className={buttonClass("secondary", "mt-4")}>
+                All events
               </Link>
             </Tile>
           </div>
         </div>
       </Container>
 
-      <CertificateViewer cert={activeCert} onClose={() => setActiveCert(null)} />
+      <ImageViewer
+        items={
+          activeCert
+            ? [
+                {
+                  id: activeCert.image,
+                  src: activeCert.image,
+                  alt: activeCert.name,
+                  meta: "Certificate",
+                  kind: activeCert.image.toLowerCase().endsWith(".pdf") ? "pdf" : "image",
+                },
+              ]
+            : []
+        }
+        index={activeCert ? 0 : null}
+        onClose={() => setActiveCert(null)}
+      />
     </Section>
   );
 }

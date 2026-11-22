@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { scrollToTop } from "@/lib/smooth-scroll";
 
 function removeHashFromUrl() {
     const url = new URL(window.location.href);
@@ -65,13 +66,7 @@ export function GlobalScrollManager() {
                 return;
             }
 
-            requestAnimationFrame(() => {
-                window.scrollTo({
-                    top: 0,
-                    left: 0,
-                    behavior: "auto",
-                });
-            });
+            requestAnimationFrame(() => scrollToTop(true));
         };
 
         handleScrollBehavior();
