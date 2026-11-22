@@ -27,11 +27,12 @@
   --overlay: #0a0a0a;
   --on-overlay: #f4f1ea;
 
-  /* Shape */
+  /* Shape: sharp everywhere (neo-brutalist) except bento tiles, which keep a
+     rounded corner inside the sharp page frame. */
   --radius-frame: 0px;
-  --tile-radius: 14px;
-  --field-radius: 12px;
-  --radius-pill: 999px;
+  --tile-radius: 6px;
+  --field-radius: 0px;
+  --radius-pill: 0px;
   --gap: 6px;
   --border: 1px solid var(--line);
 
@@ -58,7 +59,7 @@
 
 @media (min-width: 640px) {
   :root {
-    --tile-radius: 18px;
+    --tile-radius: 8px;
   }
 }
 
@@ -147,7 +148,7 @@ pre {
 kbd,
 code {
   border: 1px solid var(--line-soft);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--surface-2);
   padding: 0.1em 0.35em;
 }
@@ -194,7 +195,7 @@ select:-webkit-autofill {
 
 ::-webkit-scrollbar-thumb {
   border: 3px solid var(--bg);
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--ink-muted);
 }
 

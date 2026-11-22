@@ -71,7 +71,7 @@ export default function UploadField({
   }, []);
 
   return (
-    <label className="rounded-tile border border-dashed border-line bg-surface-2 px-4 py-3 text-xs font-medium text-ink-muted">
+    <label className="rounded-none border border-dashed border-line bg-surface-2 px-4 py-3 text-xs font-medium text-ink-muted">
       {label}
       <input
         ref={inputRef}
@@ -90,7 +90,7 @@ export default function UploadField({
             const metric = metrics[key];
 
             return (
-              <div key={key} className="rounded-tile border border-line bg-surface-2 px-3 py-2">
+              <div key={key} className="rounded-none border border-line bg-surface-2 px-3 py-2">
                 <div className="truncate text-sm text-ink">{file.name}</div>
                 <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-ink-muted">
                   <span>Original: {formatBytes(file.size)}</span>

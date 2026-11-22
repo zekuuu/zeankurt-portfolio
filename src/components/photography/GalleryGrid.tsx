@@ -14,7 +14,7 @@ export const ASPECT_CLASS: Record<PhotoItem["aspectRatio"], string> = {
   landscape: "aspect-[4/3]",
 };
 
-/** CSS-columns masonry: no JS measuring, 6px gaps, rounded tiles. Titles live in alt text and the viewer. */
+/** CSS-columns masonry: no JS measuring, 6px gaps, rounded-none tiles. Titles live in alt text and the viewer. */
 export function GalleryGrid({ photos, onPhotoClick, className }: GalleryGridProps) {
   return (
     <ul className={cn("columns-2 gap-1.5 lg:columns-3 2xl:columns-4", className)}>
@@ -25,7 +25,7 @@ export function GalleryGrid({ photos, onPhotoClick, className }: GalleryGridProp
             onClick={() => onPhotoClick(photo, index)}
             className="group block w-full cursor-zoom-in text-left"
           >
-            <span className={cn("relative block overflow-hidden rounded-tile bg-surface-2", ASPECT_CLASS[photo.aspectRatio])}>
+            <span className={cn("relative block overflow-hidden rounded-none bg-surface-2", ASPECT_CLASS[photo.aspectRatio])}>
               {photo.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img

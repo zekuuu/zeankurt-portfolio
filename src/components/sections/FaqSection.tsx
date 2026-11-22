@@ -34,7 +34,7 @@ export function FaqSection({ items }: FaqSectionProps) {
                 <h3 className="display text-base leading-snug sm:text-lg">{item.q}</h3>
                 <span
                   aria-hidden
-                  className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line transition-[transform,background-color,color,border-color] duration-200 group-open:rotate-45 hover-target ${ACCENTS[index % ACCENTS.length]}`}
+                  className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-none border border-line transition-[rotate,background-color,color,border-color] duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] group-open:rotate-45 hover-target ${ACCENTS[index % ACCENTS.length]}`}
                 >
                   <Plus className="h-4 w-4" strokeWidth={1.75} />
                 </span>

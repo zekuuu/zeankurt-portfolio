@@ -125,14 +125,14 @@ function PickerButton<T extends string>({
         aria-label={ariaLabel}
         onClick={() => setOpen((current) => !current)}
         className={cn(
-          "group inline-flex min-h-11 items-center gap-3 rounded-full border border-line bg-surface px-4 text-sm font-medium text-ink  transition hover:border-line hover:bg-surface-2 sm:min-h-10",
+          "group inline-flex min-h-11 items-center gap-3 rounded-none border border-line bg-surface px-4 text-sm font-medium text-ink  transition hover:border-line hover:bg-surface-2 sm:min-h-10",
           open &&
           "border-primary bg-surface-2/50 text-primary ",
           className,
         )}
       >
         <span className="whitespace-nowrap">{selected?.label ?? ariaLabel}</span>
-        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-line bg-surface-2 text-ink transition">
+        <span className="inline-flex h-6 w-6 items-center justify-center rounded-none border border-line bg-surface-2 text-ink transition">
           <ChevronDown className={cn("h-3.5 w-3.5 transition", open && "rotate-180")} />
         </span>
       </button>
@@ -140,7 +140,7 @@ function PickerButton<T extends string>({
       {open ? (
         <div
           role="listbox"
-          className="absolute right-0 top-[calc(100%+0.6rem)] z-30 min-w-full overflow-hidden rounded-tile border border-line bg-surface p-1.5"
+          className="absolute right-0 top-[calc(100%+0.6rem)] z-30 min-w-full overflow-hidden rounded-none border border-line bg-surface p-1.5"
         >
           {options.map((option) => {
             const active = option.value === value;
@@ -164,7 +164,7 @@ function PickerButton<T extends string>({
               >
                 <span>{option.label}</span>
                 {active ? (
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-primary bg-surface-2 text-primary">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-none border border-primary bg-surface-2 text-primary">
                     <Check className="h-3.5 w-3.5" />
                   </span>
                 ) : null}
@@ -595,7 +595,7 @@ function PhotoManagerModal({
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
         className={cn(
-          "flex max-h-[calc(100dvh-1.5rem)] w-full max-w-7xl flex-col overflow-hidden rounded-tile border border-line bg-surface  will-change-transform sm:rounded-tile md:max-h-[calc(100dvh-3rem)]",
+          "flex max-h-[calc(100dvh-1.5rem)] w-full max-w-7xl flex-col overflow-hidden rounded-none border border-line bg-surface  will-change-transform sm:rounded-none md:max-h-[calc(100dvh-3rem)]",
         )}
         onClick={(event) => event.stopPropagation()}
       >
@@ -609,13 +609,13 @@ function PhotoManagerModal({
                 {category.name}
               </h3>
 
-              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-bg px-2.5 py-1 text-xs font-medium text-ink-muted">
+              <span className="inline-flex items-center gap-1 rounded-none border border-line bg-bg px-2.5 py-1 text-xs font-medium text-ink-muted">
                 <Images className="h-3 w-3" />
                 {category.photoCount} photos
               </span>
 
               {featuredCount > 0 ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-primary">
+                <span className="inline-flex items-center gap-1 rounded-none border border-line bg-surface px-2.5 py-1 text-xs font-medium text-primary">
                   <Star className="h-3 w-3 fill-current" />
                   {featuredCount} featured
                 </span>
@@ -631,14 +631,14 @@ function PhotoManagerModal({
             type="button"
             aria-label={`Close ${category.name}`}
             onClick={onClose}
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-line hover:text-ink"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-line text-ink-muted transition hover:border-line hover:text-ink"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div ref={scrollAreaRef} className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
-          <div className="flex flex-col gap-3 rounded-tile border border-line bg-bg p-3">
+          <div className="flex flex-col gap-3 rounded-none border border-line bg-bg p-3">
             <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
               <div className="flex flex-1 flex-col gap-3 lg:flex-row lg:items-center">
                 <label className="relative flex-1">
@@ -660,7 +660,7 @@ function PhotoManagerModal({
                     type="button"
                     onClick={() => setMode("edit")}
                     className={cn(
-                      "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border px-4 text-sm font-medium transition sm:min-h-10",
+                      "inline-flex min-h-11 items-center justify-center gap-2 rounded-none border px-4 text-sm font-medium transition sm:min-h-10",
                       mode === "edit"
                         ? "border-primary bg-surface-2 text-primary"
                         : "border-line text-ink-muted hover:border-line hover:text-ink",
@@ -674,7 +674,7 @@ function PhotoManagerModal({
                     type="button"
                     onClick={() => setMode("select")}
                     className={cn(
-                      "inline-flex min-h-11 items-center justify-center gap-2 rounded-full border px-4 text-sm font-medium transition sm:min-h-10",
+                      "inline-flex min-h-11 items-center justify-center gap-2 rounded-none border px-4 text-sm font-medium transition sm:min-h-10",
                       mode === "select"
                         ? "border-primary bg-surface-2 text-primary"
                         : "border-line text-ink-muted hover:border-line hover:text-ink",
@@ -709,7 +709,7 @@ function PhotoManagerModal({
                     setSortDirection((current) => (current === "asc" ? "desc" : "asc"));
                     setPage(1);
                   }}
-                  className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3 text-xs font-medium text-ink-muted transition hover:border-line hover:text-ink sm:min-h-10"
+                  className="inline-flex min-h-11 items-center justify-center rounded-none border border-line px-3 text-xs font-medium text-ink-muted transition hover:border-line hover:text-ink sm:min-h-10"
                 >
                   {sortDirection === "asc" ? "Asc" : "Desc"}
                 </button>
@@ -739,7 +739,7 @@ function PhotoManagerModal({
                     type="button"
                     onClick={() => setSelectedIds(filteredPhotos.map((photo) => photo.id))}
                     disabled={filteredPhotos.length === 0 || allFilteredSelected || isDeleting}
-                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
+                    className="inline-flex min-h-11 items-center justify-center rounded-none border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
                   >
                     Select all
                   </button>
@@ -748,7 +748,7 @@ function PhotoManagerModal({
                     type="button"
                     onClick={toggleSelectVisible}
                     disabled={visiblePhotos.length === 0 || isDeleting}
-                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
+                    className="inline-flex min-h-11 items-center justify-center rounded-none border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
                   >
                     {allVisibleSelected ? "Clear visible" : "Select visible"}
                   </button>
@@ -757,7 +757,7 @@ function PhotoManagerModal({
                     type="button"
                     onClick={() => setSelectedIds([])}
                     disabled={selectedIds.length === 0 || isDeleting}
-                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
+                    className="inline-flex min-h-11 items-center justify-center rounded-none border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
                   >
                     Clear all
                   </button>
@@ -766,7 +766,7 @@ function PhotoManagerModal({
                     type="button"
                     onClick={handleDeleteSelected}
                     disabled={selectedIds.length === 0 || isDeleting}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line px-4 text-xs font-medium text-ink transition enabled:hover:bg-block-orange disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-line px-4 text-xs font-medium text-ink transition enabled:hover:bg-block-orange disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
                   >
                     <Trash2 className="h-4 w-4" />
                     {isDeleting ? "Removing..." : `Remove selected (${selectedIds.length})`}
@@ -781,7 +781,7 @@ function PhotoManagerModal({
           </div>
 
           {deleteError ? (
-            <div className="mt-4 rounded-tile border border-line bg-block-orange px-4 py-3 text-sm text-on-block">
+            <div className="mt-4 rounded-none border border-line bg-block-orange px-4 py-3 text-sm text-on-block">
               {deleteError}
             </div>
           ) : null}
@@ -816,7 +816,7 @@ function PhotoManagerModal({
                         )}`,
                       }}
                       className={cn(
-                        "relative h-full overflow-hidden bg-surface-2 group rounded-tile",
+                        "relative h-full overflow-hidden bg-surface-2 group rounded-none",
                         mode === "select" ? "cursor-pointer" : photo.imagePath ? "cursor-zoom-in" : undefined,
                       )}
                     >
@@ -879,7 +879,7 @@ function PhotoManagerModal({
                               toggleSelected(photo.id);
                             }}
                             className={cn(
-                              "absolute right-2 top-2 inline-flex h-11 w-11 items-center justify-center rounded-full border transition sm:right-3 sm:top-3",
+                              "absolute right-2 top-2 inline-flex h-11 w-11 items-center justify-center rounded-none border transition sm:right-3 sm:top-3",
                               selected
                                 ? "border-primary bg-primary text-on-primary"
                                 : "border-on-overlay bg-overlay text-on-overlay",
@@ -894,7 +894,7 @@ function PhotoManagerModal({
                         <div className="absolute inset-x-0 bottom-0 p-3">
                           <div className="flex flex-wrap items-center gap-2">
                             {photo.featured ? (
-                              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2 py-0.5 text-xs font-medium text-primary">
+                              <span className="inline-flex items-center gap-1 rounded-none border border-line bg-surface px-2 py-0.5 text-xs font-medium text-primary">
                                 <Star className="h-3 w-3 fill-current" />
                                 Featured
                               </span>
@@ -902,7 +902,7 @@ function PhotoManagerModal({
 
                             <span
                               className={cn(
-                                "inline-flex rounded-full border px-2 py-0.5 text-xs font-medium",
+                                "inline-flex rounded-none border px-2 py-0.5 text-xs font-medium",
                                 photo.published
                                   ? "border-line bg-block-green text-on-block"
                                   : "border-line bg-surface text-ink",
@@ -928,7 +928,7 @@ function PhotoManagerModal({
               </AnimatePresence>
             </div>
           ) : (
-            <div className="mt-4 rounded-tile border border-dashed border-line bg-surface-2 px-4 py-10 text-center">
+            <div className="mt-4 rounded-none border border-dashed border-line bg-surface-2 px-4 py-10 text-center">
               <p className="text-sm font-medium text-ink">No photos match this view.</p>
               <p className="mt-1 text-xs text-ink-muted">
                 Adjust the search or sort settings for {category.name.toLowerCase()}.
@@ -937,7 +937,7 @@ function PhotoManagerModal({
           )}
 
           {filteredPhotos.length > pageSize ? (
-            <div className="mt-4 flex flex-col gap-3 rounded-tile border border-line bg-bg p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-4 flex flex-col gap-3 rounded-none border border-line bg-bg p-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs text-ink-muted">
                 Page {currentPage} of {totalPages}
               </p>
@@ -947,7 +947,7 @@ function PhotoManagerModal({
                   type="button"
                   onClick={() => setPage((current) => Math.max(1, current - 1))}
                   disabled={currentPage === 1}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Prev
@@ -957,7 +957,7 @@ function PhotoManagerModal({
                   type="button"
                   onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
                   disabled={currentPage === totalPages}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-line px-3 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45 sm:min-h-10"
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />
@@ -994,19 +994,19 @@ function PhotoCategoryCard({ category }: { category: PhotoBrowserCategory }) {
 
   return (
     <>
-      <section className="rounded-tile border border-line bg-surface-2 p-4 sm:p-5">
+      <section className="rounded-none border border-line bg-surface-2 p-4 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <p className="text-sm font-semibold text-ink">{localCategory.name}</p>
 
-              <span className="inline-flex items-center gap-1 rounded-full border border-line bg-bg px-2.5 py-1 text-xs font-medium text-ink-muted">
+              <span className="inline-flex items-center gap-1 rounded-none border border-line bg-bg px-2.5 py-1 text-xs font-medium text-ink-muted">
                 <Images className="h-3 w-3" />
                 {localCategory.photoCount}
               </span>
 
               {featuredCount > 0 ? (
-                <span className="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-medium text-primary">
+                <span className="inline-flex items-center gap-1 rounded-none border border-line bg-surface px-2.5 py-1 text-xs font-medium text-primary">
                   <Star className="h-3 w-3 fill-current" />
                   {featuredCount} featured
                 </span>
@@ -1022,7 +1022,7 @@ function PhotoCategoryCard({ category }: { category: PhotoBrowserCategory }) {
             <button
               type="button"
               onClick={() => setOpen(true)}
-              className="inline-flex min-h-11 items-center justify-center rounded-full border border-line px-4 text-sm font-medium text-ink-muted transition hover:border-line hover:text-ink"
+              className="inline-flex min-h-11 items-center justify-center rounded-none border border-line px-4 text-sm font-medium text-ink-muted transition hover:border-line hover:text-ink"
             >
               Manage photos
             </button>

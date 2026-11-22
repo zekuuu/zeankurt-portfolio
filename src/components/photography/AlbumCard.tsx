@@ -8,7 +8,7 @@ interface AlbumCardProps {
 export function AlbumCard({ album }: AlbumCardProps) {
   return (
     <Link href={`/photography/${album.slug}`} className="group block min-w-0">
-      <span className="relative block aspect-[4/3] overflow-hidden rounded-tile bg-surface-2">
+      <span className="relative block aspect-[4/3] overflow-hidden rounded-none bg-surface-2">
         {album.coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

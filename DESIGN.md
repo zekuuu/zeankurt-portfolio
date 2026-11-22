@@ -1,6 +1,6 @@
 # Design system
 
-Neo-Swiss grid and typography with neo-brutalist honesty: a sharp 1px page frame, flat color, rounded bento tiles inside, pill controls. Light by default, with a persisted dark theme.
+Neo-Swiss grid and typography with neo-brutalist honesty: a 1px page frame, flat color and sharp rectangular tiles, buttons and tags throughout. Light by default, with a persisted dark theme.
 
 Everything below is implemented in `src/app/globals.css` and `src/components/ui/*`. Change the tokens there, not in components.
 
@@ -21,7 +21,7 @@ Everything below is implemented in `src/app/globals.css` and `src/components/ui/
 | `--on-block` | `#0a0a0a` | `#0a0a0a` | `text-on-block` | Text on any block color, in both themes |
 | `--overlay` / `--on-overlay` | `#0a0a0a` / `#f4f1ea` | same | `bg-overlay` | Image viewer: always dark for image fidelity |
 
-Shape: `--tile-radius` (14px mobile, 18px from 640px, `rounded-tile`), `--field-radius` 12px (`rounded-field`), pills `rounded-full` for buttons and tags only, frame 0. Bento gap is 6px: use `gap-1.5`.
+Shape: sharp everywhere, with one exception. Bento tiles (`Tile`, `rounded-tile`) keep a 6px radius (8px from 640px) inside the sharp page frame; nothing else is rounded. Buttons, tags, inputs, dropdowns, icon buttons, dots, images and dialogs use `rounded-none`; `--field-radius` and `--radius-pill` are 0. Bento gap is 6px: use `gap-1.5`.
 
 Type: `display` = Unbounded 700, tight tracking, sentence case. Body = Geist. `label` = Geist Mono 12px, sentence case, normal tracking, used only for data: dates, years, counts, status and short section names.
 
@@ -87,6 +87,7 @@ Every motion has a purpose and is off under `prefers-reduced-motion`.
 ## Decisions (one line each)
 
 - Unbounded / Geist / Geist Mono: chosen by the owner; wide display face for identity, neutral sans for reading, mono only for data.
+- Sharp edges everywhere except bento tiles: owner choice; rectangles fit the neo-Swiss grid and neo-brutalist honesty, while rounded bento tiles inside the sharp frame keep the original reference.
 - Bento layout: chosen by the owner; used where content has different weights (hero, projects), not as every section's default.
 - Lucide icons: owner chose one consistent set; icons appear only where they add meaning (actions, external, navigation).
 - Warm off-white base: softer than pure white for long reading, and distinct from default white pages.

@@ -15,7 +15,7 @@ export function Marquee({ items, label, className }: { items: StackLogo[]; label
           key={item.label}
           data-dark-brand={item.darkBrand || undefined}
           style={item.hex ? ({ "--brand": item.hex } as CSSProperties) : undefined}
-          className="logo-chip flex items-center gap-2.5 whitespace-nowrap rounded-full px-3 py-2"
+          className="logo-chip flex items-center gap-2.5 whitespace-nowrap rounded-none px-3 py-2"
         >
           {item.path ? (
             <svg aria-hidden viewBox="0 0 24 24" className="h-5 w-5 shrink-0 fill-current">

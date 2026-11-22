@@ -24,7 +24,7 @@ const variants: Record<ButtonVariant, string> = {
 
 export const buttonClass = (variant: ButtonVariant = "primary", className?: string) =>
   cn(
-    "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-full border px-5 text-sm font-medium transition-colors duration-150",
+    "inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-none border px-5 text-sm font-medium transition-colors duration-150",
     variants[variant],
     className,
   );

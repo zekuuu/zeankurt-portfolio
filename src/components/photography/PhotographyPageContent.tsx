@@ -102,7 +102,7 @@ export function PhotographyPageContent({ creativeCategories, siteConfig }: Photo
                     aria-pressed={category === option}
                     onClick={() => selectCategory(option)}
                     className={cn(
-                      "label inline-flex min-h-11 cursor-pointer items-center rounded-full border border-line px-4 transition-colors",
+                      "label inline-flex min-h-11 cursor-pointer items-center rounded-none border border-line px-4 transition-colors",
                       category === option ? "hover-fill hover-fill-no-primary border-primary bg-primary text-on-primary" : "hover-fill",
                     )}
                   >

@@ -66,7 +66,7 @@ const BADGE_VARIANT: Record<string, BadgeVariant> = {
 };
 
 const neighbourClass =
-  "hover-fill rounded-tile border border-line p-5";
+  "hover-fill rounded-none border border-line p-5";
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
@@ -136,7 +136,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                   height={900}
                   priority
                   sizes="(max-width: 1440px) 100vw, 1440px"
-                  className="h-auto w-full rounded-[calc(var(--tile-radius)-6px)] border border-line"
+                  className="h-auto w-full rounded-none border border-line"
                 />
               </Tile>
             ) : null}

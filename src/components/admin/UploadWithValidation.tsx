@@ -530,7 +530,7 @@ export default function UploadWithValidation({
   };
 
   return (
-    <div className="rounded-tile border border-dashed border-line bg-surface px-4 py-4 text-xs font-medium text-ink-muted">
+    <div className="rounded-none border border-dashed border-line bg-surface px-4 py-4 text-xs font-medium text-ink-muted">
       <div className="flex items-center justify-between">
         <span>{label}</span>
         {fileCount > 0 ? (
@@ -553,7 +553,7 @@ export default function UploadWithValidation({
             <button
               type="button"
               onClick={handleDirectoryPick}
-              className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-bg focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary"
+              className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-none border border-line px-4 text-sm font-medium text-ink transition-colors hover:bg-ink hover:text-bg focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary"
             >
               <TriggerIcon className="h-4 w-4" />
               {triggerLabel}
@@ -569,7 +569,7 @@ export default function UploadWithValidation({
             />
           </>
         ) : (
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-surface-2 px-4 py-2 text-sm font-semibold text-primary transition hover:border-line hover:text-ink">
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-none border border-line bg-surface-2 px-4 py-2 text-sm font-semibold text-primary transition hover:border-line hover:text-ink">
             <TriggerIcon className="h-4 w-4" />
             {triggerLabel}
             <input
@@ -603,7 +603,7 @@ export default function UploadWithValidation({
               uploadStartedAtRef.current = null;
               emitUploadState("idle");
             }}
-            className="inline-flex items-center gap-2 rounded-full border border-line px-3 py-2 text-xs font-medium text-ink transition hover:bg-block-orange"
+            className="inline-flex items-center gap-2 rounded-none border border-line px-3 py-2 text-xs font-medium text-ink transition hover:bg-block-orange"
           >
             <Trash2 className="h-3.5 w-3.5" />
             Clear
@@ -628,9 +628,9 @@ export default function UploadWithValidation({
       ) : null}
 
       {overLimit && !selectionApproved ? (
-        <div className="mt-3 rounded-tile border border-line bg-block-yellow p-3 text-on-block">
+        <div className="mt-3 rounded-none border border-line bg-block-yellow p-3 text-on-block">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-on-block text-on-block">
+            <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-none border border-on-block text-on-block">
               <AlertTriangle className="h-4 w-4" />
             </span>
             <div className="min-w-0 flex-1">
@@ -644,7 +644,7 @@ export default function UploadWithValidation({
                 <button
                   type="button"
                   onClick={() => setSelectionApproved(true)}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-line bg-block-green px-3 py-2 text-xs font-medium text-on-block transition hover:bg-block-green"
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-none border border-line bg-block-green px-3 py-2 text-xs font-medium text-on-block transition hover:bg-block-green"
                 >
                   <Check className="h-3.5 w-3.5" />
                   Keep selection
@@ -665,7 +665,7 @@ export default function UploadWithValidation({
                     uploadStartedAtRef.current = null;
                     emitUploadState("idle");
                   }}
-                  className="inline-flex items-center gap-2 rounded-full border border-on-block px-3 py-2 text-xs font-medium text-on-block transition hover:bg-on-block hover:text-block-yellow"
+                  className="inline-flex items-center gap-2 rounded-none border border-on-block px-3 py-2 text-xs font-medium text-on-block transition hover:bg-on-block hover:text-block-yellow"
                 >
                   <X className="h-3.5 w-3.5" />
                   Remove selection
@@ -677,13 +677,13 @@ export default function UploadWithValidation({
       ) : null}
 
       {uploadNotice ? (
-        <div className="mt-3 rounded-tile border border-line bg-surface-2 p-3 text-xs text-ink-muted">
+        <div className="mt-3 rounded-none border border-line bg-surface-2 p-3 text-xs text-ink-muted">
           {uploadNotice}
         </div>
       ) : null}
 
       {uploadErrors.length > 0 ? (
-        <div className="mt-3 rounded-tile border border-line bg-block-orange p-3 text-xs text-on-block">
+        <div className="mt-3 rounded-none border border-line bg-block-orange p-3 text-xs text-on-block">
           <p className="font-semibold">Some files failed to upload.</p>
           <div className="mt-2 space-y-1">
             {uploadErrors.slice(0, 3).map((error) => (
@@ -711,9 +711,9 @@ export default function UploadWithValidation({
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="relative h-2 w-full rounded bg-surface-2">
+                  <div className="relative h-2 w-full rounded-none bg-surface-2">
                     <div
-                      className="absolute left-0 top-0 h-2 rounded bg-primary transition-all"
+                      className="absolute left-0 top-0 h-2 rounded-none bg-primary transition-all"
                       style={{
                         width: currentProgress
                           ? `${(currentProgress.loaded / Math.max(1, currentProgress.total)) * 100}%`
@@ -740,7 +740,7 @@ export default function UploadWithValidation({
       ) : null}
 
       {submitting ? (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-tile border border-line bg-surface-2 px-3 py-3 text-xs text-ink-muted">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-none border border-line bg-surface-2 px-3 py-3 text-xs text-ink-muted">
           <div className="flex items-center gap-2">
             <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" opacity="0.2" />
@@ -756,7 +756,7 @@ export default function UploadWithValidation({
           <button
             type="button"
             onClick={cancelUpload}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-3 py-2 font-semibold text-ink transition hover:bg-block-orange hover:text-on-block"
+            className="inline-flex min-h-11 items-center gap-2 rounded-none border border-line px-3 py-2 font-semibold text-ink transition hover:bg-block-orange hover:text-on-block"
           >
             <X className="h-3.5 w-3.5" />
             Cancel upload

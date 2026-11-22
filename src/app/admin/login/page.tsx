@@ -24,7 +24,7 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
 
   return (
     <main className="flex min-h-[calc(100dvh-var(--header-height))] items-center bg-bg px-4 py-12 text-ink">
-      <div className="mx-auto w-full max-w-md rounded-tile border border-line bg-surface p-6">
+      <div className="mx-auto w-full max-w-md rounded-none border border-line bg-surface p-6">
         <h1 className="font-display text-3xl font-semibold">
           Portfolio CMS
         </h1>
@@ -34,19 +34,19 @@ export default async function AdminLoginPage({ searchParams }: AdminLoginPagePro
         </p>
 
         {!hasSupabasePublicEnv() ? (
-          <p className="mt-5 rounded-tile border border-line bg-block-yellow p-4 text-sm text-on-block">
+          <p className="mt-5 rounded-none border border-line bg-block-yellow p-4 text-sm text-on-block">
             Supabase public environment variables are missing.
           </p>
         ) : null}
 
         {params.sent ? (
-          <p className="mt-5 rounded-tile border border-line bg-block-green p-4 text-sm text-on-block">
+          <p className="mt-5 rounded-none border border-line bg-block-green p-4 text-sm text-on-block">
             Check your email for the login link.
           </p>
         ) : null}
 
         {params.error ? (
-          <p className="mt-5 rounded-tile border border-line bg-block-orange p-4 text-sm text-on-block">
+          <p className="mt-5 rounded-none border border-line bg-block-orange p-4 text-sm text-on-block">
             {params.error === "forbidden" ? (
               "This email is not allowlisted for admin access."
             ) : params.error === "callback" ? (

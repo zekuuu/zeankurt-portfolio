@@ -37,7 +37,7 @@ interface TileProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
 }
 
-/** Rounded bento tile: one flat fill, 1px border on neutral variants, no shadow. */
+/** Sharp bento tile: one flat fill, 1px border on neutral variants, no shadow. */
 export function Tile({
   as: Component = "div",
   variant = "surface",

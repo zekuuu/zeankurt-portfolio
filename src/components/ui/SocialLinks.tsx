@@ -61,7 +61,7 @@ function SocialLinkButton({
       rel="noopener noreferrer"
       aria-label={showLabels ? undefined : `${link.label} (opens in a new tab)`}
       className={cn(
-        "inline-flex min-h-11 items-center justify-center gap-2 hover-fill rounded-full border border-current",
+        "inline-flex min-h-11 items-center justify-center gap-2 hover-fill rounded-none border border-current",
         showLabels ? "px-4 text-sm font-medium" : "w-11",
       )}
     >

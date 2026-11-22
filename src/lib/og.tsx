@@ -64,7 +64,7 @@ export async function renderOgImage({
             flexDirection: "column",
             justifyContent: "space-between",
             padding: 56,
-            borderRadius: 24,
+            borderRadius: 0,
             border: `2px solid ${OG.ink}`,
             background: OG.surface,
             color: OG.ink,
@@ -95,7 +95,7 @@ export async function renderOgImage({
                 style={{
                   display: "flex",
                   padding: "8px 18px",
-                  borderRadius: 999,
+                  borderRadius: 0,
                   border: `2px solid ${OG.ink}`,
                   fontSize: 20,
                 }}
@@ -112,7 +112,7 @@ export async function renderOgImage({
               display: "flex",
               alignItems: "flex-end",
               padding: 36,
-              borderRadius: 24,
+              borderRadius: 0,
               background: OG.primary,
               color: OG.onPrimary,
               fontFamily: display,
@@ -122,7 +122,7 @@ export async function renderOgImage({
           >
             ZK.
           </div>
-          <div style={{ height: 150, display: "flex", alignItems: "flex-end", padding: 28, borderRadius: 24, background: OG.yellow, color: OG.ink, fontSize: 24 }}>
+          <div style={{ height: 150, display: "flex", alignItems: "flex-end", padding: 28, borderRadius: 0, background: OG.yellow, color: OG.ink, fontSize: 24 }}>
             {identity.location.label}
           </div>
         </div>

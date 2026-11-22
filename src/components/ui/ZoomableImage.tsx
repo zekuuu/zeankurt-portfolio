@@ -37,7 +37,7 @@ export function ZoomableImage({
           aria-label={`Zoom ${alt}`}
           onClick={() => setOpen(true)}
           className={cn(
-            "absolute right-2 top-2 z-20 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-on-overlay bg-overlay text-on-overlay hover-fill",
+            "absolute right-2 top-2 z-20 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-none border border-on-overlay bg-overlay text-on-overlay hover-fill",
             buttonClassName,
           )}
         >

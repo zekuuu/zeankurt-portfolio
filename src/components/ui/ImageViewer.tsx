@@ -37,7 +37,7 @@ function viewerSrc(src: string, width = 1920) {
 }
 
 const pill =
-  "inline-flex h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-full border border-on-overlay px-3 text-on-overlay transition-colors hover:bg-on-overlay hover:text-overlay disabled:cursor-not-allowed disabled:opacity-40";
+  "inline-flex h-11 min-w-11 cursor-pointer items-center justify-center gap-2 rounded-none border border-on-overlay px-3 text-on-overlay transition-colors hover:bg-on-overlay hover:text-overlay disabled:cursor-not-allowed disabled:opacity-40";
 
 /**
  * One framed, always-dark viewer for project screenshots, photos and
@@ -161,7 +161,7 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
       className="viewer m-auto h-[min(92dvh,60rem)] w-[min(96vw,80rem)] max-h-none max-w-none bg-transparent p-0 text-on-overlay"
     >
       {current && (open || visible) ? (
-        <div className="flex h-full flex-col overflow-hidden rounded-tile border border-on-overlay bg-overlay">
+        <div className="flex h-full flex-col overflow-hidden rounded-none border border-on-overlay bg-overlay">
           <div className="flex items-center justify-between gap-3 border-b border-on-overlay px-3 py-2 sm:px-4">
             <div className="min-w-0">
               <p className="truncate text-sm font-medium">{current.caption ?? current.alt}</p>
@@ -270,7 +270,7 @@ export function ImageViewer({ items, index, onClose, onIndexChange, filmstrip = 
                         if (el && i === index) el.scrollIntoView({ block: "nearest", inline: "nearest" });
                       }}
                       className={cn(
-                        "block h-11 w-14 overflow-hidden rounded-[8px] border transition-opacity",
+                        "block h-11 w-14 overflow-hidden rounded-none border transition-opacity",
                         i === index ? "border-on-overlay opacity-100" : "border-transparent opacity-50 hover:opacity-100",
                       )}
                     >

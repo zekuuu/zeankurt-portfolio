@@ -187,7 +187,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
             {indicator ? (
               <li
                 aria-hidden
-                className="pointer-events-none absolute inset-y-0 left-0 rounded-full bg-ink transition-[transform,width] duration-200 ease-out"
+                className="pointer-events-none absolute inset-y-0 left-0 rounded-none bg-ink transition-[transform,width] duration-200 ease-out"
                 style={{ width: indicator.width, transform: `translateX(${indicator.x}px)` }}
               />
             ) : null}
@@ -197,7 +197,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
                   item={item}
                   active={isActive(item)}
                   className={cn(
-                    "label inline-flex min-h-11 items-center gap-1 rounded-full px-3.5 text-sm transition-colors duration-200",
+                    "label inline-flex min-h-11 items-center gap-1 rounded-none px-3.5 text-sm transition-colors duration-200",
                     isActive(item) ? "hover-fill text-bg" : "hover-fill text-ink",
                   )}
                 />
@@ -221,7 +221,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
             aria-haspopup="dialog"
             aria-expanded={open}
             onClick={() => setOpen(true)}
-            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center hover-fill rounded-full border border-line text-ink lg:hidden"
+            className="inline-flex h-11 w-11 cursor-pointer items-center justify-center hover-fill rounded-none border border-line text-ink lg:hidden"
           >
             <Menu aria-hidden className="h-5 w-5" strokeWidth={1.75} />
           </button>
@@ -242,7 +242,7 @@ export function Header({ variant, siteConfig }: HeaderProps) {
               type="button"
               aria-label="Close menu"
               onClick={() => setOpen(false)}
-              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center hover-fill rounded-full border border-line"
+              className="inline-flex h-11 w-11 cursor-pointer items-center justify-center hover-fill rounded-none border border-line"
             >
               <X aria-hidden className="h-5 w-5" strokeWidth={1.75} />
             </button>

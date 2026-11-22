@@ -40,7 +40,7 @@ export function SkillsSection({ skillCategories }: SkillsSectionProps) {
             >
               <dt className="flex items-baseline justify-between gap-3 md:block">
                 <span className="display flex items-center gap-3 text-xl [overflow-wrap:anywhere]">
-                  <span aria-hidden className={`inline-block h-3.5 w-3.5 shrink-0 rounded-[4px] border border-line group-hover:border-current ${color.swatch}`} />
+                  <span aria-hidden className={`inline-block h-3.5 w-3.5 shrink-0 rounded-none border border-line group-hover:border-current ${color.swatch}`} />
                   {category.name}
                 </span>
                 <span className="label text-ink-muted group-hover:text-inherit md:mt-1 md:block">

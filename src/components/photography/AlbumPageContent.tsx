@@ -83,7 +83,7 @@ export function AlbumPageContent({ album, photos }: AlbumPageContentProps) {
               type="button"
               onClick={() => open(coverPhoto)}
               className={cn(
-                "relative block w-full cursor-zoom-in overflow-hidden rounded-tile bg-surface-2 lg:col-span-7",
+                "relative block w-full cursor-zoom-in overflow-hidden rounded-none bg-surface-2 lg:col-span-7",
                 ASPECT_CLASS[coverPhoto.aspectRatio],
               )}
               aria-label={`Open ${coverPhoto.title}`}

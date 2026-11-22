@@ -174,7 +174,7 @@ export function Listbox({
                 onPointerEnter={() => setActive(index)}
                 onClick={() => choose(index)}
                 className={cn(
-                  "flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-[8px] px-3 transition-colors duration-100",
+                  "flex min-h-10 cursor-pointer items-center justify-between gap-3 rounded-none px-3 transition-colors duration-100",
                   index === active ? ACTIVE[index % ACTIVE.length] : isSelected ? "bg-ink text-bg" : "text-ink",
                 )}
               >

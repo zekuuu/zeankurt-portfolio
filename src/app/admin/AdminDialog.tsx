@@ -422,8 +422,8 @@ export function AdminDialog({
 
   const defaultTriggerClassName =
     triggerVariant === "primary"
-      ? "inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 py-2 text-sm font-medium text-on-primary transition hover:bg-ink"
-      : "inline-flex min-h-11 items-center justify-center rounded-full border border-line px-3 py-2 text-xs font-medium text-ink-muted transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5";
+      ? "inline-flex min-h-11 items-center justify-center rounded-none bg-primary px-4 py-2 text-sm font-medium text-on-primary transition hover:bg-ink"
+      : "inline-flex min-h-11 items-center justify-center rounded-none border border-line px-3 py-2 text-xs font-medium text-ink-muted transition hover:border-line hover:text-ink sm:min-h-0 sm:py-1.5";
 
   return (
     <>
@@ -482,7 +482,7 @@ export function AdminDialog({
                   aria-modal="true"
                   aria-labelledby={titleId}
                   aria-describedby={description || showSaveStatus ? descriptionId : undefined}
-                  className={`flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl translate-y-3 scale-[0.985] flex-col rounded-tile border border-line bg-surface opacity-0  transition-[opacity,transform] duration-200 ease-out sm:rounded-tile md:max-h-[calc(100dvh-3rem)] ${
+                  className={`flex max-h-[calc(100dvh-1.5rem)] w-full max-w-3xl translate-y-3 scale-[0.985] flex-col rounded-none border border-line bg-surface opacity-0  transition-[opacity,transform] duration-200 ease-out sm:rounded-none md:max-h-[calc(100dvh-3rem)] ${
                     entered ? "translate-y-0 scale-100 opacity-100" : ""
                   }`}
                   onClick={(event) => event.stopPropagation()}
@@ -517,8 +517,8 @@ export function AdminDialog({
                             <span
                               className={
                                 dirty
-                                  ? "inline-flex items-center rounded-full border border-line bg-block-yellow px-2 py-0.5 text-xs font-semibold text-on-block"
-                                  : "inline-flex items-center rounded-full border border-line bg-block-green px-2 py-0.5 text-xs font-semibold text-on-block"
+                                  ? "inline-flex items-center rounded-none border border-line bg-block-yellow px-2 py-0.5 text-xs font-semibold text-on-block"
+                                  : "inline-flex items-center rounded-none border border-line bg-block-green px-2 py-0.5 text-xs font-semibold text-on-block"
                               }
                             >
                               {dirty ? "Unsaved" : "Saved"}
@@ -532,7 +532,7 @@ export function AdminDialog({
                       type="button"
                       aria-label={`Close ${title}`}
                       onClick={() => setOpen(false)}
-                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-line hover:text-ink"
+                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-line text-ink-muted transition hover:border-line hover:text-ink"
                     >
                       <svg
                         viewBox="0 0 16 16"
@@ -560,7 +560,7 @@ export function AdminDialog({
                       <button
                         type="button"
                         onClick={cancelSaving}
-                        className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink transition hover:bg-block-orange hover:text-on-block"
+                        className="rounded-none border border-line px-4 py-2 text-sm font-medium text-ink transition hover:bg-block-orange hover:text-on-block"
                       >
                         Cancel upload
                       </button>
@@ -571,7 +571,7 @@ export function AdminDialog({
                         type="button"
                         onClick={handleDiscard}
                         disabled={!dirty || (uploadIntent && uploadDialogState === "uploading")}
-                        className="rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45"
+                        className="rounded-none border border-line px-4 py-2 text-sm font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45"
                       >
                         Discard
                       </button>

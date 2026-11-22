@@ -309,13 +309,13 @@ export function AdminSortableList({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-col gap-2 rounded-tile border border-line bg-surface-2 p-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 rounded-none border border-line bg-surface-2 p-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <div ref={menuRef} className="relative">
             <button
               type="button"
               onClick={() => setMenuOpen((current) => !current)}
-              className="inline-flex min-h-11 min-w-32 items-center justify-between gap-2 rounded-full border border-line bg-bg px-3 text-xs font-medium text-ink transition hover:border-line focus:border-primary sm:min-h-9"
+              className="inline-flex min-h-11 min-w-32 items-center justify-between gap-2 rounded-none border border-line bg-bg px-3 text-xs font-medium text-ink transition hover:border-line focus:border-primary sm:min-h-9"
               aria-haspopup="listbox"
               aria-expanded={menuOpen}
               aria-label="Sort field"
@@ -348,7 +348,7 @@ export function AdminSortableList({
                         setMenuOpen(false);
                       }}
                       className={cn(
-                        "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-medium transition",
+                        "flex w-full items-center justify-between rounded-none px-3 py-2 text-left text-xs font-medium transition",
                         selected
                           ? "bg-surface-2 text-ink"
                           : "text-ink-muted hover:bg-surface-2 hover:text-ink",
@@ -371,7 +371,7 @@ export function AdminSortableList({
               const nextDirection = direction === "asc" ? "desc" : "asc";
               applySort(sortField, nextDirection);
             }}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-line text-ink-muted transition hover:border-line hover:text-ink sm:h-9 sm:w-9"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-none border border-line text-ink-muted transition hover:border-line hover:text-ink sm:h-9 sm:w-9"
             aria-label={`Sort ${direction === "asc" ? "descending" : "ascending"}`}
             title={direction === "asc" ? "Ascending" : "Descending"}
           >
@@ -387,7 +387,7 @@ export function AdminSortableList({
           type="button"
           onClick={saveOrder}
           disabled={!dirty || isPending}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-line px-3 py-2 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-none border border-line px-3 py-2 text-xs font-medium text-ink-muted transition enabled:hover:border-line enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-45"
         >
           <Save className="h-3.5 w-3.5" />
           {isPending ? "Saving" : dirty ? "Save custom order" : "Order saved"}
@@ -395,7 +395,7 @@ export function AdminSortableList({
       </div>
 
       {saveError ? (
-        <p className="rounded-tile border border-line bg-block-orange px-4 py-3 text-xs text-on-block">
+        <p className="rounded-none border border-line bg-block-orange px-4 py-3 text-xs text-on-block">
           {saveError}
         </p>
       ) : null}
@@ -435,23 +435,23 @@ export function AdminSortableList({
                 moveItem();
               }}
               className={cn(
-                "relative flex flex-col gap-3 rounded-tile border border-line bg-surface-2 px-4 py-4 transition md:flex-row md:items-center md:justify-between",
+                "relative flex flex-col gap-3 rounded-none border border-line bg-surface-2 px-4 py-4 transition md:flex-row md:items-center md:justify-between",
                 draggedId === item.id &&
                   "border-line bg-surface-2 opacity-70",
               )}
             >
               {isDropBefore ? (
-                <span className="pointer-events-none absolute inset-x-3 -top-2 h-0.5 rounded-full bg-primary" />
+                <span className="pointer-events-none absolute inset-x-3 -top-2 h-0.5 rounded-none bg-primary" />
               ) : null}
 
               {isDropAfter ? (
-                <span className="pointer-events-none absolute inset-x-3 -bottom-2 h-0.5 rounded-full bg-primary" />
+                <span className="pointer-events-none absolute inset-x-3 -bottom-2 h-0.5 rounded-none bg-primary" />
               ) : null}
 
               <div className="flex min-w-0 items-start gap-3">
                 <button
                   type="button"
-                  className="mt-0.5 inline-flex h-11 w-11 shrink-0 cursor-grab items-center justify-center rounded-full border border-line text-ink-muted active:cursor-grabbing sm:h-8 sm:w-8"
+                  className="mt-0.5 inline-flex h-11 w-11 shrink-0 cursor-grab items-center justify-center rounded-none border border-line text-ink-muted active:cursor-grabbing sm:h-8 sm:w-8"
                   aria-label={`Drag ${item.title}`}
                   title="Drag to reorder"
                 >
@@ -467,7 +467,7 @@ export function AdminSortableList({
                     {projectStatus ? (
                       <span
                         className={cn(
-                          "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-semibold",
+                          "inline-flex items-center rounded-none border px-2 py-0.5 text-xs font-semibold",
                           projectStatus.className,
                         )}
                       >
@@ -476,7 +476,7 @@ export function AdminSortableList({
                     ) : null}
 
                     {item.featured ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-primary bg-surface-2 px-2 py-0.5 text-xs font-medium text-primary">
+                      <span className="inline-flex items-center gap-1 rounded-none border border-primary bg-surface-2 px-2 py-0.5 text-xs font-medium text-primary">
                         <Star className="h-3 w-3 fill-current" />
                         Featured
                       </span>

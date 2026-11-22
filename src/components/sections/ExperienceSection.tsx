@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { buttonClass } from "@/components/ui/Button";
 import { categoryBadge, categoryDot } from "@/lib/category-colors";
 import { ImageViewer } from "@/components/ui/ImageViewer";
 import { Container, Section } from "@/components/ui/Container";
@@ -73,7 +74,7 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                     aria-pressed={filter === option.value}
                     onClick={() => setFilter(option.value)}
                     className={cn(
-                      "label inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-line px-4 transition-colors",
+                      "label inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-none border border-line px-4 transition-colors",
                       filter === option.value ? "hover-fill hover-fill-no-primary border-primary bg-primary text-on-primary" : "hover-fill",
                     )}
                   >
@@ -93,7 +94,7 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                 >
                   <span
                     aria-hidden
-                    className={`absolute -left-[6px] top-[3px] h-[11px] w-[11px] rounded-full border ${categoryDot(item.type)}`}
+                    className={`absolute -left-[6px] top-[3px] h-[11px] w-[11px] rounded-none border ${categoryDot(item.type)}`}
                   />
                   <p className="label text-ink-muted">{item.period}</p>
                   <h3 className="display mt-2 text-lg leading-snug [overflow-wrap:anywhere] sm:text-xl">{item.role}</h3>
@@ -128,7 +129,7 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                           <button
                             type="button"
                             onClick={() => setActiveCert({ name: cert.name, image: cert.image ?? "" })}
-                            className={`label inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-full border border-line px-3 hover-fill`}
+                            className={`label inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-none border border-line px-3 hover-fill`}
                           >
                             View<span className="sr-only"> {cert.name}</span>
                           </button>
@@ -140,27 +141,26 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
               ))}
             </Tile>
 
-            <Tile variant="yellow">
+            <Tile>
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="display text-xl">Recent events</h3>
-                <span className="label opacity-80">{eventHighlights.length}</span>
+                <span className="label text-ink-muted">{eventHighlights.length}</span>
               </div>
               <ul className="mt-4">
                 {events.map((event) => (
-                  <li key={event.id} className="border-t border-on-block py-3">
-                    <p className="label opacity-80">
-                      {event.date}
-                      {event.category ? ` · ${event.category}` : ""}
+                  <li key={event.id} className="border-t border-line-soft py-3">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="label text-ink-muted">{event.date}</p>
+                      {event.category ? <Badge variant={categoryBadge(event.category)}>{event.category}</Badge> : null}
+                    </div>
+                    <p className="mt-1.5 text-sm font-semibold leading-snug [overflow-wrap:anywhere]">{event.title}</p>
+                    <p className="mt-0.5 text-sm text-ink-muted [overflow-wrap:anywhere]">
+                      {[event.role, event.venue].filter(Boolean).join(" · ")}
                     </p>
-                    <p className="mt-1 text-sm font-semibold leading-snug [overflow-wrap:anywhere]">{event.title}</p>
-                    <p className="mt-0.5 text-sm [overflow-wrap:anywhere]">{[event.role, event.venue].filter(Boolean).join(" · ")}</p>
                   </li>
                 ))}
               </ul>
-              <Link
-                href="/events"
-                className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-on-block px-5 text-sm font-medium hover-fill hover-fill-no-yellow"
-              >
+              <Link href="/events" className={buttonClass("secondary", "mt-4")}>
                 All events
               </Link>
             </Tile>

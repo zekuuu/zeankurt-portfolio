@@ -38,7 +38,7 @@ export function AdminCollapsibleSection({
   return (
     <section
       id={id}
-      className="scroll-mt-6 rounded-tile border border-line bg-surface p-4 sm:p-6"
+      className="scroll-mt-6 rounded-none border border-line bg-surface p-4 sm:p-6"
     >
       <button
         type="button"
@@ -52,14 +52,14 @@ export function AdminCollapsibleSection({
             {title}
           </span>
           {count !== undefined ? (
-            <span className="rounded-full border border-line px-3 py-1 text-xs text-ink-muted">
+            <span className="rounded-none border border-line px-3 py-1 text-xs text-ink-muted">
               {count} {count === 1 ? "record" : "records"}
             </span>
           ) : null}
         </span>
         <span
           className={cn(
-            "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-line text-ink-muted transition duration-300 sm:h-9 sm:w-9",
+            "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-none border border-line text-ink-muted transition duration-300 sm:h-9 sm:w-9",
             open && "border-line text-ink rotate-180",
           )}
         >

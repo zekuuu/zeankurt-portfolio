@@ -28,7 +28,7 @@ export function ContactSection({ siteConfig }: ContactSectionProps) {
             <div className="flex flex-wrap gap-2">
               <a
                 href={`mailto:${siteConfig.email}`}
-                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-on-primary bg-on-primary px-5 text-sm font-medium text-primary hover-fill hover-fill-no-primary"
+                className="inline-flex min-h-11 items-center gap-2 rounded-none border border-on-primary bg-on-primary px-5 text-sm font-medium text-primary hover-fill hover-fill-no-primary"
               >
                 <Mail aria-hidden className="h-4 w-4" /> Email me
               </a>

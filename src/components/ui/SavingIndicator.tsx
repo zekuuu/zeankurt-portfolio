@@ -46,11 +46,11 @@ export function SavingIndicator() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.96 }}
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              className="pointer-events-auto rounded-tile border border-line bg-surface px-4 py-3"
+              className="pointer-events-auto rounded-none border border-line bg-surface px-4 py-3"
               aria-live="polite"
             >
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-tile border border-primary bg-surface-2 text-primary">
+                <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-none border border-primary bg-surface-2 text-primary">
                   {isUpload ? <Upload className="h-4 w-4" /> : <LoaderCircle className="h-4 w-4 animate-spin" />}
                 </span>
                 <div className="min-w-0 flex-1">
@@ -59,7 +59,7 @@ export function SavingIndicator() {
                       {isUpload ? "Upload in progress" : "Saving in progress"}
                     </p>
                     {hasProgress ? (
-                      <span className="rounded-full border border-primary bg-surface-2 px-2 py-1 text-xs font-semibold text-primary">
+                      <span className="rounded-none border border-primary bg-surface-2 px-2 py-1 text-xs font-semibold text-primary">
                         {task.progressPercent}%
                       </span>
                     ) : null}
@@ -69,9 +69,9 @@ export function SavingIndicator() {
                   </p>
                   {hasProgress ? (
                     <>
-                      <div className="mt-3 h-2 overflow-hidden rounded-full bg-surface-2">
+                      <div className="mt-3 h-2 overflow-hidden rounded-none bg-surface-2">
                         <motion.div
-                          className="h-full rounded-full bg-surface"
+                          className="h-full rounded-none bg-surface"
                           animate={{ width: `${task.progressPercent}%` }}
                           transition={{ duration: 0.2, ease: "easeOut" }}
                         />
@@ -98,7 +98,7 @@ export function SavingIndicator() {
                         task.cancelAction?.();
                         setSaving(false, null, undefined, task.id);
                       }}
-                      className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-full border border-line px-3 py-2 text-xs font-semibold text-ink transition hover:bg-block-orange hover:text-on-block"
+                      className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-none border border-line px-3 py-2 text-xs font-semibold text-ink transition hover:bg-block-orange hover:text-on-block"
                     >
                       <X className="h-3.5 w-3.5" />
                       Cancel upload

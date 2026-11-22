@@ -24,7 +24,7 @@ const STATUS_LABEL: Record<NonNullable<Project["status"]>, string> = {
 
 function ProjectLinks({ project }: { project: Project }) {
   const iconLink =
-    "relative z-10 inline-flex h-11 w-11 items-center justify-center hover-fill rounded-full border border-current";
+    "relative z-10 inline-flex h-11 w-11 items-center justify-center hover-fill rounded-none border border-current";
 
   return (
     <div className="flex items-center gap-1.5">
@@ -56,7 +56,7 @@ function FeaturedTile({ project, index, wide }: { project: Project; index: numbe
       </div>
 
       {project.image ? (
-        <div className={cn("relative overflow-hidden rounded-[10px] border border-current", wide ? "aspect-[16/8]" : "aspect-[16/10]")}>
+        <div className={cn("relative overflow-hidden rounded-none border border-current", wide ? "aspect-[16/8]" : "aspect-[16/10]")}>
           <ZoomableImage
             src={project.image}
             alt={`${project.title} screenshot`}
