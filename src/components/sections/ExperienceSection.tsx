@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { categoryBadge, categoryDot } from "@/lib/category-colors";
 import { ImageViewer } from "@/components/ui/ImageViewer";
 import { Container, Section } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -23,12 +24,6 @@ const EVENTS_PREVIEW = 6;
 
 
 
-/** Each experience type has its own color: timeline dot and type badge. */
-const TYPE_COLOR: Record<ExperienceItem["type"], { dot: string; badge: "primary" | "green" | "yellow" }> = {
-  work: { dot: "bg-primary border-primary", badge: "primary" },
-  community: { dot: "bg-block-green border-line", badge: "green" },
-  hackathon: { dot: "bg-block-yellow border-line", badge: "yellow" },
-};
 
 interface ExperienceSectionProps {
   experience: ExperienceItem[];
@@ -98,13 +93,13 @@ export function ExperienceSection({ experience, certifications, eventHighlights 
                 >
                   <span
                     aria-hidden
-                    className={`absolute -left-[6px] top-[3px] h-[11px] w-[11px] rounded-full border ${TYPE_COLOR[item.type]?.dot ?? "border-line bg-surface"}`}
+                    className={`absolute -left-[6px] top-[3px] h-[11px] w-[11px] rounded-full border ${categoryDot(item.type)}`}
                   />
                   <p className="label text-ink-muted">{item.period}</p>
                   <h3 className="display mt-2 text-lg leading-snug [overflow-wrap:anywhere] sm:text-xl">{item.role}</h3>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
                     <span className="font-medium [overflow-wrap:anywhere]">{item.organization}</span>
-                    <Badge variant={TYPE_COLOR[item.type]?.badge ?? "default"}>{item.type}</Badge>
+                    <Badge variant={categoryBadge(item.type)}>{item.type}</Badge>
                   </div>
                   <p className="mt-3 max-w-[64ch] leading-relaxed text-ink-muted [overflow-wrap:anywhere]">{item.description}</p>
                 </li>

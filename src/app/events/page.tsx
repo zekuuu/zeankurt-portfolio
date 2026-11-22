@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Badge } from "@/components/ui/Badge";
+import { categoryBadge } from "@/lib/category-colors";
 import { Container } from "@/components/ui/Container";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { getPortfolioContent } from "@/lib/cms/queries";
@@ -48,7 +49,7 @@ export default async function EventsPage() {
               </div>
               {event.category ? (
                 <div>
-                  <Badge variant={event.category === "hackathon" ? "wip" : "default"}>{event.category}</Badge>
+                  <Badge variant={categoryBadge(event.category)}>{event.category}</Badge>
                 </div>
               ) : null}
             </li>
